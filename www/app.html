@@ -225,6 +225,9 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:80}
 .ftask.done{opacity:.6}.ftask.done .t{text-decoration:line-through}
 .ftask .t{font-size:15px;font-weight:700;display:block}
 .ftask .n{font-size:13px;color:#C9D0E2;margin-top:3px;line-height:1.4}
+.items{margin-top:8px;background:rgba(0,0,0,.2);border-radius:14px;padding:4px 10px}
+.items .li{padding:7px 0}.items .cb{width:22px;height:22px;border-radius:7px}
+.typeic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none}
 .status{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px}
 .status.wait{background:rgba(251,191,36,.14);color:var(--gold)}.status.ok{background:rgba(52,211,153,.15);color:var(--ok)}
 select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:var(--tx);border-radius:14px;padding:12px 14px;font-family:inherit;font-size:15px;outline:none;appearance:none}
@@ -362,12 +365,16 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <div class="sheet" id="reportSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your weekly report</h3><div id="reportBody"></div><div class="row"><button class="btn" onclick="closeSheets()">Keep going</button></div></div></div>
 <!-- Send task sheet -->
 <div class="sheet" id="sendSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Send a task</h3>
+  <label>Type</label><div class="seg" id="sType"></div>
   <label>To</label><select id="sTo"></select>
-  <label>Task</label><input id="sTitle" placeholder="e.g. Bring bread on the way home">
+  <label id="sTitleL">Task</label><input id="sTitle" placeholder="e.g. Bring bread on the way home">
+  <div id="sItemsBox" style="display:none"><label>Items (one per line)</label><textarea id="sItems" rows="5" placeholder="Bread&#10;Milk 2L&#10;Tomatoes 1kg&#10;Rice"></textarea></div>
   <label>Note (optional)</label><input id="sNote" placeholder="Details, address, amount…">
   <label>Time (optional)</label><input id="sTime" type="time">
   <label>Points reward</label><input id="sPts" type="number" min="1" max="100" value="15">
   <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" id="sBtn" onclick="sendTask()">Send</button></div></div></div>
+<!-- Member sheet -->
+<div class="sheet" id="memberSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><div id="memberBody"></div></div></div>
 <!-- City sheet -->
 <div class="sheet" id="citySheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your city</h3><div id="cityList"></div></div></div>
 
@@ -591,8 +598,8 @@ function render(){
 function renderToday2(list,rec,now){
  const dl=daysLeft(),pp=projPct();
  document.getElementById('projChip').innerHTML=`<div class="chip" onclick="go('goals')"><span class="ico c-violet" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('graduation',18)}</span><div class="t">${esc(S.project.name)} · ${pp}%<div class="mini-bar"><i style="width:${pp}%"></i></div></div><b>${dl===null?'Set deadline':dl>0?dl+' days left':dl===0?'Today!':'Passed'}</b>${ic('chevron',16)}</div>`;
- const mine=FAM.tasks.filter(t=>t.to===FB.uid&&t.status==='open');
- document.getElementById('projChip').innerHTML+=mine.length?`<div class="chip" onclick="go('family')" style="border-color:rgba(244,114,182,.35)"><span class="ico c-pink" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('users',18)}</span><div class="t">${mine.length} family task${mine.length>1?'s':''} for you<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${esc(mine[0].title)} · from ${esc(mine[0].fromName)}</div></div>${ic('chevron',16)}</div>`:'';
+ const mine=FAM.tasks.filter(t=>FB.uid&&forMe(t)&&t.status==='open');
+ document.getElementById('projChip').innerHTML+=mine.length?`<div class="chip" onclick="go('family')" style="border-color:rgba(244,114,182,.35)"><span class="ico c-pink" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('users',18)}</span><div class="t">${mine.length} family task${mine.length>1?'s':''} for you<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${esc(mine[0].title)} · from ${esc(nameOf(mine[0].from,mine[0].fromName))}</div></div>${ic('chevron',16)}</div>`:'';
  const missed=list.filter(t=>!t.prayer&&!rec.done.includes(t.id)&&effTime(t)<now);
  document.getElementById('rescue').innerHTML=missed.length?`<div class="banner"><span class="ico">${ic('buoy',26)}</span><p><b>${missed.length} step${missed.length>1?'s':''} slipped.</b> No problem, let's fit ${missed.length>1?'them':'it'} into the rest of your day.</p><button class="btn" onclick="rescue()">Reshuffle</button></div>`:'';
  const h=new Date().getHours(),r=rec.review,el=document.getElementById('review');
@@ -847,7 +854,16 @@ const FB_CONFIG=null; // ← filled in with your Firebase project settings
 const FB={ok:false,uid:null,db:null,unsubs:[],err:''};
 const FAM={family:null,members:[],tasks:[]};
 const AVCOLORS=['#7C5CFF','#22D3EE','#34D399','#FBBF24','#F472B6','#FB7185','#60A5FA','#A78BFA','#2DD4BF','#FB923C'];
-let famTab='mine',pickColor=null;
+let famTab='mine',pickColor=null,sendType='task';
+const FTYPES={task:['General','clipboard','violet'],home:['Home','sparkles','teal'],shopping:['Shopping','cart','orange'],project:['Project','briefcase','blue']};
+const forMe=t=>t.to===FB.uid||(t.to==='*'&&t.from!==FB.uid);
+const nameOf=(uid,fb)=>{if(uid==='*')return 'Everyone';if(uid&&uid===FB.uid)return 'You';const a=(S.aliases||{})[uid];if(a)return a;const m=FAM.members.find(x=>x.id===uid);return (m&&m.name)||fb||'Someone'};
+function openMember(id){const m=FAM.members.find(x=>x.id===id);if(!m)return;
+ document.getElementById('memberBody').innerHTML=`<div style="display:flex;gap:14px;align-items:center;margin-bottom:6px">${av(m)}<div><b style="font-size:18px">${esc(nameOf(id))}</b><div class="meta">${(S.aliases||{})[id]?'Real name: '+esc(m.name)+' · ':''}${m.online?'Online now':'Seen '+ago(m.lastSeen)}</div></div></div>
+  <label>Nickname (only you see this)</label><input id="aliasIn" value="${esc((S.aliases||{})[id]||'')}" placeholder="e.g. Mama, Baba, Habibti…">
+  <div class="row"><button class="btn ghost" onclick="saveAlias('${id}')">Save nickname</button><button class="btn" onclick="closeSheets();openSend('${id}')">${ic('plus',16)}Send task</button></div>`;
+ document.getElementById('memberSheet').classList.add('on')}
+function saveAlias(id){S.aliases=S.aliases||{};const v=document.getElementById('aliasIn').value.trim();if(v)S.aliases[id]=v;else delete S.aliases[id];save();closeSheets();renderFamily();render();toast(v?'Nickname saved':'Nickname removed','user')}
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const av=(m,cls='')=>`<span class="av ${cls}" style="background:${m.color||'#7C5CFF'}">${esc(initials(m.name))}${m.online?'<i class="dot"></i>':''}</span>`;
 const ago=ts=>{if(!ts)return'';const d=(Date.now()-(ts.toMillis?ts.toMillis():ts))/6e4;return d<1?'just now':d<60?Math.round(d)+' min ago':d<1440?Math.round(d/60)+' h ago':Math.round(d/1440)+' d ago'};
@@ -869,8 +885,8 @@ function subscribeFamily(){
   const prev=new Map(FAM.tasks.map(t=>[t.id,t.status]));FAM.tasks=q.docs.map(d=>({id:d.id,...d.data()}));
   S.famSeen=S.famSeen||[];let changed=false;
   FAM.tasks.forEach(t=>{
-   if(t.to===FB.uid&&t.status==='open'&&!S.famSeen.includes(t.id)){S.famSeen.push(t.id);changed=true;toast('New task from '+t.fromName+': '+t.title,'users');bell();localNotify('New task from '+t.fromName,t.title)}
-   if(t.from===FB.uid&&t.status==='done'&&prev.get(t.id)==='open'){toast(t.toName+' finished: '+t.title,'check');chime();localNotify(t.toName+' finished a task','✓ '+t.title)}
+   if(forMe(t)&&t.status==='open'&&!S.famSeen.includes(t.id)){S.famSeen.push(t.id);changed=true;const lbl=t.type==='shopping'?'shopping list':'task';toast('New '+lbl+' from '+nameOf(t.from,t.fromName)+': '+t.title,FTYPES[t.type||'task'][1]);bell();localNotify('New '+lbl+' from '+nameOf(t.from,t.fromName)+(t.to==='*'?' (for everyone)':''),t.title+(t.items&&t.items.length?' · '+t.items.length+' items':''))}
+   if(t.from===FB.uid&&t.status==='done'&&prev.get(t.id)==='open'){const who=t.doneBy?nameOf(t.doneBy,t.doneByName):nameOf(t.to,t.toName);toast(who+' finished: '+t.title,'check');chime();localNotify(who+' finished a task','✓ '+t.title)}
   });
   if(changed){S.famSeen=S.famSeen.slice(-300);store.set(S)}
   renderFamily();if(document.getElementById('v-today').classList.contains('on'))render();
@@ -896,20 +912,28 @@ async function joinFamily(code){
 function saveProfile(){const el=document.getElementById('pfName');if(el){if(!el.value.trim()){toast('Write your name first','user');return false}S.name=el.value.trim()}S.color=pickColor||S.color||AVCOLORS[0];save();return true}
 async function updateProfile(){if(!saveProfile())return;if(S.famCode)await FB.db.collection('families').doc(S.famCode).collection('members').doc(FB.uid).set({name:S.name,color:S.color},{merge:true}).catch(()=>{});toast('Profile saved','user');render()}
 async function leaveFamily(){if(!S.famCode)return;const c=S.famCode;FB.unsubs.forEach(u=>u());FB.unsubs=[];try{await FB.db.collection('families').doc(c).collection('members').doc(FB.uid).delete()}catch(e){}S.famCode=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();renderFamily();render();toast('You left the family','users')}
-function openSend(toId){const others=FAM.members.filter(m=>m.id!==FB.uid);if(!others.length){toast('Invite your family first, then send tasks','users');return}
- document.getElementById('sTo').innerHTML=(others.length>1?'<option value="*">Everyone</option>':'')+others.map(m=>`<option value="${m.id}" ${m.id===toId?'selected':''}>${esc(m.name)}</option>`).join('');
- ['sTitle','sNote','sTime'].forEach(i=>document.getElementById(i).value='');document.getElementById('sPts').value=15;document.getElementById('sendSheet').classList.add('on')}
+function setSendType(k){sendType=k;document.querySelectorAll('#sType button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const sh=k==='shopping';
+ document.getElementById('sItemsBox').style.display=sh?'block':'none';document.getElementById('sTitleL').textContent=sh?'List name':'Task';
+ document.getElementById('sTitle').placeholder={task:'e.g. Call your aunt today',home:'e.g. Clean your room before dinner',shopping:'e.g. Groceries for the week',project:'e.g. Review the contract draft'}[k]}
+function openSend(toId,type){const others=FAM.members.filter(m=>m.id!==FB.uid);if(!others.length){toast('Invite your family first, then send tasks','users');return}
+ document.getElementById('sType').innerHTML=Object.entries(FTYPES).map(([k,[n,i]])=>`<button data-k="${k}" onclick="setSendType('${k}')">${ic(i,14)}${n}</button>`).join('');document.getElementById('sItems').value='';
+ document.getElementById('sTo').innerHTML=(others.length>1?'<option value="*">Everyone</option>':'')+others.map(m=>`<option value="${m.id}" ${m.id===toId?'selected':''}>${esc(nameOf(m.id))}</option>`).join('');
+ ['sTitle','sNote','sTime'].forEach(i=>document.getElementById(i).value='');document.getElementById('sPts').value=15;setSendType(type||'task');document.getElementById('sendSheet').classList.add('on')}
 async function sendTask(){
  const title=document.getElementById('sTitle').value.trim();if(!title){toast('Write the task','pen');return}
- const to=document.getElementById('sTo').value,targets=to==='*'?FAM.members.filter(m=>m.id!==FB.uid):FAM.members.filter(m=>m.id===to);
- const base={from:FB.uid,fromName:S.name,title,note:document.getElementById('sNote').value.trim(),time:document.getElementById('sTime').value||'',pts:Math.max(1,Math.min(100,+document.getElementById('sPts').value||15)),status:'open',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+ const to=document.getElementById('sTo').value,targets=to==='*'?[{id:'*',name:'Everyone'}]:FAM.members.filter(m=>m.id===to);
+ const items=sendType==='shopping'?document.getElementById('sItems').value.split('\n').map(x=>x.trim()).filter(Boolean).map(t=>({t,done:false})):[];
+ if(sendType==='shopping'&&!items.length){toast('Add at least one item','cart');return}
+ const base={from:FB.uid,fromName:S.name,title,note:document.getElementById('sNote').value.trim(),time:document.getElementById('sTime').value||'',pts:Math.max(1,Math.min(100,+document.getElementById('sPts').value||15)),type:sendType,items,status:'open',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
  const btn=document.getElementById('sBtn');btn.disabled=true;
  try{const col=FB.db.collection('families').doc(S.famCode).collection('tasks');await Promise.all(targets.map(m=>col.add({...base,to:m.id,toName:m.name})));
-  closeSheets();famTab='sent';toast('Task sent to '+(to==='*'?'everyone':targets[0].name),'check');chime();renderFamily()}catch(e){toast('Could not send: '+e.message,'alert')}
+  closeSheets();famTab='sent';toast('Task sent to '+(to==='*'?'everyone':nameOf(targets[0].id)),'check');chime();renderFamily()}catch(e){toast('Could not send: '+e.message,'alert')}
  btn.disabled=false}
 async function setFamTask(id,done){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;
- try{await FB.db.collection('families').doc(S.famCode).collection('tasks').doc(id).update(done?{status:'done',doneAt:firebase.firestore.FieldValue.serverTimestamp()}:{status:'open',doneAt:null});
-  if(done){S.famDone=(S.famDone||0)+1;addPts(t.pts||15,'Done for '+t.fromName,'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
+ try{await FB.db.collection('families').doc(S.famCode).collection('tasks').doc(id).update(done?{status:'done',doneAt:firebase.firestore.FieldValue.serverTimestamp(),doneBy:FB.uid,doneByName:S.name}:{status:'open',doneAt:null,doneBy:null,doneByName:null});
+  if(done){S.famDone=(S.famDone||0)+1;addPts(t.pts||15,'Done for '+nameOf(t.from,t.fromName),'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
+async function tickItem(id,i){const t=FAM.tasks.find(x=>x.id===id);if(!t||!t.items)return;const items=t.items.map((x,j)=>j===i?{...x,done:!x.done,by:!x.done?S.name:null,byUid:!x.done?FB.uid:null}:x);
+ try{await FB.db.collection('families').doc(S.famCode).collection('tasks').doc(id).update({items});if(items.every(x=>x.done)&&t.status==='open'){toast('Everything bought! Tap the check to finish','cart')}}catch(e){toast('No connection, try again','alert')}}
 async function delFamTask(id){try{await FB.db.collection('families').doc(S.famCode).collection('tasks').doc(id).delete()}catch(e){}}
 function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
 function shareInvite(){openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on My Day Route 🤍\n\nFamily code: ${S.famCode}\n\nDownload the app: https://github.com/Rawhy7/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
@@ -928,19 +952,21 @@ function renderFamily(){
    ${famTab==='join'?`<div class="card"><h3><span class="ico c-teal">${ic('lock',18)}</span><span class="sp">Join your family</span></h3><div class="sub">Ask whoever created the family for the code</div><input id="fCode" placeholder="ABCD-1234" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;text-align:center;font-size:18px"><button class="btn wide" style="margin-top:12px" onclick="joinFamily()">Join family</button></div>`
    :`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">Start your family group</span></h3><div class="sub">You'll get a code to share with your family</div><input id="fName" placeholder="e.g. Rawhy Family"><button class="btn wide" style="margin-top:12px" onclick="createFamily()">Create family</button></div>`}`;
   return}
- const mine=FAM.tasks.filter(t=>t.to===FB.uid),sent=FAM.tasks.filter(t=>t.from===FB.uid);
+ const mine=FAM.tasks.filter(forMe),sent=FAM.tasks.filter(t=>t.from===FB.uid);
  const openMine=mine.filter(t=>t.status==='open'),isSent=famTab==='sent',list=isSent?sent:mine;
  const row=t=>{const other=FAM.members.find(m=>m.id===(isSent?t.to:t.from))||{name:isSent?t.toName:t.fromName,color:'#555'};
-  return `<div class="ftask ${t.status==='done'?'done':''} ${!isSent&&t.status==='open'?'new':''}">${av(other,'sm')}<div style="flex:1;min-width:0"><span class="t">${esc(t.title)}</span>${t.note?`<div class="n">${esc(t.note)}</div>`:''}
-   <div class="meta" style="margin-top:6px">${isSent?'To '+esc(t.toName):'From '+esc(t.fromName)} · ${ago(t.createdAt)}${t.time?' · '+ic('clock',11)+fmt(t.time):''} · +${t.pts} pts
-   ${isSent?`<span class="status ${t.status==='done'?'ok':'wait'}">${t.status==='done'?'Done '+ago(t.doneAt):'Waiting'}</span>`:''}</div>
+  const ty=FTYPES[t.type||'task'],its=t.items||[],nd=its.filter(x=>x.done).length,canTick=!isSent||t.to==='*';
+  const itemsHtml=its.length?`<div class="items">${its.map((x,i)=>`<div class="li ${x.done?'done':''}"><button class="cb" ${canTick||isSent?`onclick="tickItem('${t.id}',${i})"`:''}>${x.done?ic('check',12,'',3):''}</button><span class="t" style="font-size:14px;font-weight:500">${esc(x.t)}</span>${x.done&&(x.byUid||x.by)?`<span style="font-size:10px;color:var(--mu)">${esc(x.byUid?nameOf(x.byUid,x.by):x.by)}</span>`:''}</div>`).join('')}</div><div class="pbar" style="height:5px;margin:8px 0 0"><i style="width:${its.length?nd/its.length*100:0}%"></i></div>`:'';
+  return `<div class="ftask ${t.status==='done'?'done':''} ${!isSent&&t.status==='open'?'new':''}"><span class="typeic ico c-${ty[2]}">${ic(ty[1],16)}</span><div style="flex:1;min-width:0"><span class="t">${esc(t.title)}</span>${t.note?`<div class="n">${esc(t.note)}</div>`:''}${itemsHtml}
+   <div class="meta" style="margin-top:6px">${av({...other,online:false},'sm').replace('class="av sm"','class="av sm" style="width:18px;height:18px;border-radius:6px;font-size:8px;background:'+(other.color||'#555')+'"')}${isSent?'To '+esc(nameOf(t.to,t.toName)):'From '+esc(nameOf(t.from,t.fromName))+(t.to==='*'?' · for everyone':'')} · ${ago(t.createdAt)}${its.length?' · '+nd+'/'+its.length+' bought':''}${t.time?' · '+ic('clock',11)+fmt(t.time):''} · +${t.pts} pts
+   ${isSent?`<span class="status ${t.status==='done'?'ok':'wait'}">${t.status==='done'?'Done'+(t.doneByName&&t.to==='*'?' by '+esc(nameOf(t.doneBy,t.doneByName)):'')+' '+ago(t.doneAt):'Waiting'}</span>`:''}${!isSent&&t.status==='done'&&t.to==='*'&&t.doneByName?`<span class="status ok">Done by ${esc(t.doneBy===FB.uid?'you':nameOf(t.doneBy,t.doneByName))}</span>`:''}</div>
    ${isSent?`<div style="display:flex;gap:8px;margin-top:8px">${t.status==='open'?`<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="tellWhatsApp('${t.id}')">Remind on WhatsApp</button>`:''}<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="delFamTask('${t.id}')">${ic('trash',13)}Delete</button></div>`:''}</div>
    ${!isSent?`<button class="check" style="${t.status==='done'?'background:var(--ok);border-color:var(--ok)':'border-color:var(--a1)'}" onclick="setFamTask('${t.id}',${t.status!=='done'})">${t.status==='done'?ic('check',18,'',3):''}</button>`:''}</div>`};
  el.innerHTML=`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
    <div style="display:flex;align-items:center;gap:10px;margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code</span><span class="code">${S.famCode}</span></div>
-   <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openSend('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(m.name||'').split(' ')[0])}</div>`).join('')}
+   <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}</div>`).join('')}
    <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
-  <button class="btn wide" style="margin-bottom:14px" onclick="openSend()">${ic('plus',18)}Send a task</button>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${Object.entries(FTYPES).map(([k,[n,i,c]])=>`<button class="card" style="margin:0;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700" onclick="openSend(null,'${k}')"><span class="ico c-${c}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(i,18)}</span>${n}</button>`).join('')}</div>
   <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${isSent?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button></div>
   ${list.length?list.map(row).join(''):`<div class="empty">${isSent?'Tasks you send will show here with their status.':'No tasks yet. When your family sends you something, it appears here instantly.'}</div>`}
   <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}"><label>Color</label>${colorPicker()}
