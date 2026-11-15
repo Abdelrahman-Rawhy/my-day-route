@@ -1,0 +1,21 @@
+{
+  "name": "my-day-route",
+  "version": "1.0.0",
+  "description": "My Day Route: daily route app with prayers, goals and rewards",
+  "main": "index.js",
+  "scripts": {
+    "sync": "cap sync android",
+    "open": "cap open android"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@fontsource/amiri": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.3.0"
+  }
+}

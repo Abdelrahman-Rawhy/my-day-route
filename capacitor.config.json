@@ -1,0 +1,14 @@
+{
+  "appId": "com.rawhy.mydayroute",
+  "appName": "My Day Route",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0A0D17"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#7C5CFF",
+      "smallIcon": "ic_stat_route"
+    }
+  }
+}
