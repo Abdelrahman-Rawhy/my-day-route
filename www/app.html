@@ -213,6 +213,23 @@ label{font-size:12px;color:var(--mu);display:block;margin:12px 0 6px;font-weight
 .celebrate h2{font-size:26px;font-weight:800;margin:22px 0 8px;letter-spacing:-.5px}.celebrate p{color:#C9D0E2;margin-bottom:22px;font-size:15px}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:80}
 .empty{color:var(--mu);text-align:center;padding:18px;font-size:13px}
+
+.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;flex:none;position:relative}
+.av.sm{width:30px;height:30px;border-radius:10px;font-size:12px}
+.av .dot{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--bg)}
+.members{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 2px}
+.members .m{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:var(--mu);font-weight:600;min-width:52px}
+.code{font-size:22px;font-weight:800;letter-spacing:2px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ftask{background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:12px;display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;animation:rise .35s}
+.ftask.new{border-color:rgba(124,92,255,.55);background:linear-gradient(100deg,rgba(124,92,255,.14),rgba(34,211,238,.05))}
+.ftask.done{opacity:.6}.ftask.done .t{text-decoration:line-through}
+.ftask .t{font-size:15px;font-weight:700;display:block}
+.ftask .n{font-size:13px;color:#C9D0E2;margin-top:3px;line-height:1.4}
+.status{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px}
+.status.wait{background:rgba(251,191,36,.14);color:var(--gold)}.status.ok{background:rgba(52,211,153,.15);color:var(--ok)}
+select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:var(--tx);border-radius:14px;padding:12px 14px;font-family:inherit;font-size:15px;outline:none;appearance:none}
+.colors{display:flex;gap:10px;flex-wrap:wrap}.colors button{width:36px;height:36px;border-radius:12px;border:2px solid transparent}.colors button.sel{border-color:#fff;transform:scale(1.08)}
+.tabs2{display:flex;gap:6px;margin-bottom:12px}.tabs2 button{flex:1;padding:10px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);font-weight:700;font-size:13px;color:var(--mu)}.tabs2 button.on{background:linear-gradient(135deg,rgba(124,92,255,.3),rgba(34,211,238,.14));color:#fff;border-color:rgba(124,92,255,.4)}
 </style>
 </head>
 <body>
@@ -281,10 +298,17 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:80}
   </div>
 </section>
 
+<!-- FAMILY -->
+<section class="view" id="v-family">
+  <div class="top"><div class="greet"><p>Tasks from the people you love</p><h1>Family</h1></div><div class="pill ptsPill2"></div></div>
+  <div id="famBody"></div>
+</section>
+
 <!-- AWARDS -->
 <section class="view" id="v-awards">
   <div class="top"><div class="greet"><p>Earn badges by finishing your route</p><h1>Awards</h1></div><div class="pill ptsPill2"></div></div>
   <button class="btn wide" style="margin-bottom:20px" onclick="openReport()" id="repBtn"></button>
+  <button class="btn ghost wide" style="margin:-8px 0 20px" onclick="go('prizes')" id="shopBtn"></button>
   <div class="sec"><h3>Last 7 days</h3></div>
   <div class="week" id="week"></div>
   <div class="sec"><h3>Badges</h3><span style="color:var(--mu);font-size:13px;font-weight:600" id="badgeCount"></span></div>
@@ -336,11 +360,23 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:80}
   <label>Project name</label><input id="pName"><label>Deadline / defense date</label><input id="pDate" type="date">
   <div class="row"><button class="btn" onclick="saveProj()">Save</button></div></div></div>
 <div class="sheet" id="reportSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your weekly report</h3><div id="reportBody"></div><div class="row"><button class="btn" onclick="closeSheets()">Keep going</button></div></div></div>
+<!-- Send task sheet -->
+<div class="sheet" id="sendSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Send a task</h3>
+  <label>To</label><select id="sTo"></select>
+  <label>Task</label><input id="sTitle" placeholder="e.g. Bring bread on the way home">
+  <label>Note (optional)</label><input id="sNote" placeholder="Details, address, amount…">
+  <label>Time (optional)</label><input id="sTime" type="time">
+  <label>Points reward</label><input id="sPts" type="number" min="1" max="100" value="15">
+  <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" id="sBtn" onclick="sendTask()">Send</button></div></div></div>
+<!-- City sheet -->
 <div class="sheet" id="citySheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your city</h3><div id="cityList"></div></div></div>
 
 <div class="toast" id="toast"></div>
 <div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button></div></div>
 
+<script src="lib/firebase-app-compat.js"></script>
+<script src="lib/firebase-auth-compat.js"></script>
+<script src="lib/firebase-firestore-compat.js"></script>
 <script>
 // ================= ICONS (stroke, Lucide-style) =================
 const P={
@@ -511,6 +547,7 @@ const BADGES=[
  {id:'proj100',icon:'graduation',name:'Graduate!',desc:'All project milestones',test:()=>projPct()>=100},
  {id:'family7',icon:'heart',name:'Family Hero',desc:'Good deed 7 days in a row',test:()=>runOf(k=>S.history[k]&&S.history[k].deed)>=7},
  {id:'review7',icon:'moon',name:'Grateful Heart',desc:'7 night reviews',test:()=>Object.values(S.history).filter(r=>r.review).length>=7},
+ {id:'famtask10',icon:'hands',name:'Family Helper',desc:'Finish 10 family tasks',test:()=>(S.famDone||0)>=10},
  {id:'top3',icon:'check',name:'Top 3 Done',desc:'All 3 work tasks in a day',test:()=>Object.values(S.history).some(r=>r.top&&r.top.filter(x=>x.t&&x.done).length===3)},
 ];
 
@@ -554,6 +591,8 @@ function render(){
 function renderToday2(list,rec,now){
  const dl=daysLeft(),pp=projPct();
  document.getElementById('projChip').innerHTML=`<div class="chip" onclick="go('goals')"><span class="ico c-violet" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('graduation',18)}</span><div class="t">${esc(S.project.name)} · ${pp}%<div class="mini-bar"><i style="width:${pp}%"></i></div></div><b>${dl===null?'Set deadline':dl>0?dl+' days left':dl===0?'Today!':'Passed'}</b>${ic('chevron',16)}</div>`;
+ const mine=FAM.tasks.filter(t=>t.to===FB.uid&&t.status==='open');
+ document.getElementById('projChip').innerHTML+=mine.length?`<div class="chip" onclick="go('family')" style="border-color:rgba(244,114,182,.35)"><span class="ico c-pink" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('users',18)}</span><div class="t">${mine.length} family task${mine.length>1?'s':''} for you<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${esc(mine[0].title)} · from ${esc(mine[0].fromName)}</div></div>${ic('chevron',16)}</div>`:'';
  const missed=list.filter(t=>!t.prayer&&!rec.done.includes(t.id)&&effTime(t)<now);
  document.getElementById('rescue').innerHTML=missed.length?`<div class="banner"><span class="ico">${ic('buoy',26)}</span><p><b>${missed.length} step${missed.length>1?'s':''} slipped.</b> No problem, let's fit ${missed.length>1?'them':'it'} into the rest of your day.</p><button class="btn" onclick="rescue()">Reshuffle</button></div>`:'';
  const h=new Date().getHours(),r=rec.review,el=document.getElementById('review');
@@ -573,7 +612,7 @@ function renderAwards(){
  document.getElementById('week').innerHTML=html;
  document.getElementById('badges').innerHTML=BADGES.map(b=>{const g=S.badges.includes(b.id);return `<div class="badge ${g?'got':''}"><div class="bi">${ic(g?b.icon:'lock',g?26:20)}</div><b>${b.name}</b><span>${b.desc}</span></div>`}).join('');
  document.getElementById('badgeCount').textContent=S.badges.length+' / '+BADGES.length;
- document.getElementById('repBtn').innerHTML=ic('chart',18)+'View weekly report';
+ document.getElementById('repBtn').innerHTML=ic('chart',18)+'View weekly report';document.getElementById('shopBtn').innerHTML=ic('gift',18)+'Prize shop · '+S.points+' points';
 }
 function renderPrizes(){
  document.getElementById('addPrize').innerHTML=ic('plus',16)+'Add';
@@ -803,13 +842,118 @@ function showUpdate(note){const b=document.createElement('div');b.className='ban
  b.innerHTML=`<span class="ico c-violet" style="width:38px;height:38px;border-radius:12px;display:grid;place-items:center">${ic('rocket',20,'draw')}</span><p><b>Update ready</b><br>${esc(note)}</p><button class="btn" onclick="location.href='index.html'">Restart</button>`;document.body.appendChild(b)}
 if(IS_NATIVE){setTimeout(checkUpdate,2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()})}
 
+// ================= FAMILY MODE (Firebase) =================
+const FB_CONFIG=null; // ← filled in with your Firebase project settings
+const FB={ok:false,uid:null,db:null,unsubs:[],err:''};
+const FAM={family:null,members:[],tasks:[]};
+const AVCOLORS=['#7C5CFF','#22D3EE','#34D399','#FBBF24','#F472B6','#FB7185','#60A5FA','#A78BFA','#2DD4BF','#FB923C'];
+let famTab='mine',pickColor=null;
+const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const av=(m,cls='')=>`<span class="av ${cls}" style="background:${m.color||'#7C5CFF'}">${esc(initials(m.name))}${m.online?'<i class="dot"></i>':''}</span>`;
+const ago=ts=>{if(!ts)return'';const d=(Date.now()-(ts.toMillis?ts.toMillis():ts))/6e4;return d<1?'just now':d<60?Math.round(d)+' min ago':d<1440?Math.round(d/60)+' h ago':Math.round(d/1440)+' d ago'};
+function famCode(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<8;i++)c+=a[Math.floor(Math.random()*a.length)];return c.slice(0,4)+'-'+c.slice(4)}
+async function fbInit(){
+ if(!FB_CONFIG||!window.firebase){renderFamily();return}
+ try{firebase.initializeApp(FB_CONFIG);FB.db=firebase.firestore();
+  try{FB.db.settings({experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}
+  try{await FB.db.enablePersistence()}catch(e){}
+  firebase.auth().onAuthStateChanged(u=>{if(u){FB.uid=u.uid;FB.ok=true;if(S.famCode)subscribeFamily();renderFamily();render()}});
+  await firebase.auth().signInAnonymously();
+ }catch(e){FB.err=e.message;renderFamily()}
+}
+function subscribeFamily(){
+ FB.unsubs.forEach(u=>u());FB.unsubs=[];const f=FB.db.collection('families').doc(S.famCode);
+ FB.unsubs.push(f.onSnapshot(d=>{FAM.family=d.exists?d.data():null;renderFamily()},e=>{FB.err=e.message;renderFamily()}));
+ FB.unsubs.push(f.collection('members').onSnapshot(q=>{FAM.members=q.docs.map(d=>({id:d.id,...d.data(),online:d.data().lastSeen&&Date.now()-d.data().lastSeen.toMillis()<10*6e4}));renderFamily()}));
+ FB.unsubs.push(f.collection('tasks').orderBy('createdAt','desc').limit(150).onSnapshot(q=>{
+  const prev=new Map(FAM.tasks.map(t=>[t.id,t.status]));FAM.tasks=q.docs.map(d=>({id:d.id,...d.data()}));
+  S.famSeen=S.famSeen||[];let changed=false;
+  FAM.tasks.forEach(t=>{
+   if(t.to===FB.uid&&t.status==='open'&&!S.famSeen.includes(t.id)){S.famSeen.push(t.id);changed=true;toast('New task from '+t.fromName+': '+t.title,'users');bell();localNotify('New task from '+t.fromName,t.title)}
+   if(t.from===FB.uid&&t.status==='done'&&prev.get(t.id)==='open'){toast(t.toName+' finished: '+t.title,'check');chime();localNotify(t.toName+' finished a task','✓ '+t.title)}
+  });
+  if(changed){S.famSeen=S.famSeen.slice(-300);store.set(S)}
+  renderFamily();if(document.getElementById('v-today').classList.contains('on'))render();
+ }));
+ heartbeat();
+}
+function heartbeat(){if(FB.ok&&S.famCode)FB.db.collection('families').doc(S.famCode).collection('members').doc(FB.uid).set({lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{})}
+setInterval(heartbeat,5*6e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden)heartbeat()});
+function localNotify(title,body){try{if(typeof LN!=='undefined'&&LN)LN.schedule({notifications:[{id:80000+Math.floor(Math.random()*9000),channelId:'route',title,body,schedule:{at:new Date(Date.now()+800)}}]})}catch(e){}}
+async function createFamily(){
+ const fam=document.getElementById('fName').value.trim()||'Our Family';if(!saveProfile())return;
+ const code=famCode();try{await FB.db.collection('families').doc(code).set({name:fam,owner:FB.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await joinFamily(code)}catch(e){toast('Could not create: '+e.message,'alert')}
+}
+async function joinFamily(code){
+ code=(code||document.getElementById('fCode').value).trim().toUpperCase().replace(/\s/g,'');if(code.length===8)code=code.slice(0,4)+'-'+code.slice(4);
+ if(!/^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code)){toast('Enter the 8-character family code','alert');return}
+ if(!saveProfile())return;
+ try{const d=await FB.db.collection('families').doc(code).get();if(!d.exists){toast('No family with this code','alert');return}
+  await FB.db.collection('families').doc(code).collection('members').doc(FB.uid).set({name:S.name,color:S.color,joinedAt:firebase.firestore.FieldValue.serverTimestamp(),lastSeen:firebase.firestore.FieldValue.serverTimestamp()});
+  S.famCode=code;S.famSeen=[];save();subscribeFamily();burst(80);toast('Welcome to '+d.data().name+'!','users');renderFamily()
+ }catch(e){toast('Could not join: '+e.message,'alert')}
+}
+function saveProfile(){const el=document.getElementById('pfName');if(el){if(!el.value.trim()){toast('Write your name first','user');return false}S.name=el.value.trim()}S.color=pickColor||S.color||AVCOLORS[0];save();return true}
+async function updateProfile(){if(!saveProfile())return;if(S.famCode)await FB.db.collection('families').doc(S.famCode).collection('members').doc(FB.uid).set({name:S.name,color:S.color},{merge:true}).catch(()=>{});toast('Profile saved','user');render()}
+async function leaveFamily(){if(!S.famCode)return;const c=S.famCode;FB.unsubs.forEach(u=>u());FB.unsubs=[];try{await FB.db.collection('families').doc(c).collection('members').doc(FB.uid).delete()}catch(e){}S.famCode=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();renderFamily();render();toast('You left the family','users')}
+function openSend(toId){const others=FAM.members.filter(m=>m.id!==FB.uid);if(!others.length){toast('Invite your family first, then send tasks','users');return}
+ document.getElementById('sTo').innerHTML=(others.length>1?'<option value="*">Everyone</option>':'')+others.map(m=>`<option value="${m.id}" ${m.id===toId?'selected':''}>${esc(m.name)}</option>`).join('');
+ ['sTitle','sNote','sTime'].forEach(i=>document.getElementById(i).value='');document.getElementById('sPts').value=15;document.getElementById('sendSheet').classList.add('on')}
+async function sendTask(){
+ const title=document.getElementById('sTitle').value.trim();if(!title){toast('Write the task','pen');return}
+ const to=document.getElementById('sTo').value,targets=to==='*'?FAM.members.filter(m=>m.id!==FB.uid):FAM.members.filter(m=>m.id===to);
+ const base={from:FB.uid,fromName:S.name,title,note:document.getElementById('sNote').value.trim(),time:document.getElementById('sTime').value||'',pts:Math.max(1,Math.min(100,+document.getElementById('sPts').value||15)),status:'open',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+ const btn=document.getElementById('sBtn');btn.disabled=true;
+ try{const col=FB.db.collection('families').doc(S.famCode).collection('tasks');await Promise.all(targets.map(m=>col.add({...base,to:m.id,toName:m.name})));
+  closeSheets();famTab='sent';toast('Task sent to '+(to==='*'?'everyone':targets[0].name),'check');chime();renderFamily()}catch(e){toast('Could not send: '+e.message,'alert')}
+ btn.disabled=false}
+async function setFamTask(id,done){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;
+ try{await FB.db.collection('families').doc(S.famCode).collection('tasks').doc(id).update(done?{status:'done',doneAt:firebase.firestore.FieldValue.serverTimestamp()}:{status:'open',doneAt:null});
+  if(done){S.famDone=(S.famDone||0)+1;addPts(t.pts||15,'Done for '+t.fromName,'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
+async function delFamTask(id){try{await FB.db.collection('families').doc(S.famCode).collection('tasks').doc(id).delete()}catch(e){}}
+function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
+function shareInvite(){openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on My Day Route 🤍\n\nFamily code: ${S.famCode}\n\nDownload the app: https://github.com/Rawhy7/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
+function copyCode(){try{navigator.clipboard.writeText(S.famCode).then(()=>toast('Code copied','check'),()=>toast(S.famCode,'users'))}catch(e){toast(S.famCode,'users')}}
+function tellWhatsApp(id){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;openExt('https://wa.me/?text='+encodeURIComponent(`📌 Task for you on My Day Route:\n${t.title}${t.note?'\n'+t.note:''}${t.time?'\n⏰ '+fmt(t.time):''}\n\nOpen the app to see it.`))}
+function colorPicker(){pickColor=pickColor||S.color||AVCOLORS[0];return `<div class="colors">${AVCOLORS.map(c=>`<button style="background:${c}" class="${c===pickColor?'sel':''}" onclick="pickColor='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));this.classList.add('sel')"></button>`).join('')}</div>`}
+function renderFamily(){
+ const el=document.getElementById('famBody');if(!el)return;
+ if(el.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;
+ if(!FB_CONFIG||!window.firebase){el.innerHTML=`<div class="card"><h3><span class="ico c-pink">${ic('users',18)}</span><span class="sp">Family mode</span></h3><div class="sub" style="margin-bottom:0">${IS_NATIVE?'Family mode is being set up. It will turn on by itself in the next update.':'Family mode works in the My Day Route phone app. Install the app to send and receive family tasks.'}</div></div>`;return}
+ if(!FB.ok){el.innerHTML=`<div class="card"><div class="sub" style="margin:0">${FB.err?'Connection problem: '+esc(FB.err):'Connecting…'}</div></div>`;return}
+ if(!S.famCode){
+  el.innerHTML=`<div class="card"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">Your profile</span></h3><div class="sub">How your family will see you</div>
+   <label>Your name</label><input id="pfName" value="${esc(S.name||'')}" placeholder="e.g. Ahmed"><label>Color</label>${colorPicker()}</div>
+   <div class="tabs2"><button class="${famTab!=='join'?'on':''}" onclick="famTab='create';renderFamily()">Create a family</button><button class="${famTab==='join'?'on':''}" onclick="famTab='join';renderFamily()">Join with code</button></div>
+   ${famTab==='join'?`<div class="card"><h3><span class="ico c-teal">${ic('lock',18)}</span><span class="sp">Join your family</span></h3><div class="sub">Ask whoever created the family for the code</div><input id="fCode" placeholder="ABCD-1234" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;text-align:center;font-size:18px"><button class="btn wide" style="margin-top:12px" onclick="joinFamily()">Join family</button></div>`
+   :`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">Start your family group</span></h3><div class="sub">You'll get a code to share with your family</div><input id="fName" placeholder="e.g. Rawhy Family"><button class="btn wide" style="margin-top:12px" onclick="createFamily()">Create family</button></div>`}`;
+  return}
+ const mine=FAM.tasks.filter(t=>t.to===FB.uid),sent=FAM.tasks.filter(t=>t.from===FB.uid);
+ const openMine=mine.filter(t=>t.status==='open'),isSent=famTab==='sent',list=isSent?sent:mine;
+ const row=t=>{const other=FAM.members.find(m=>m.id===(isSent?t.to:t.from))||{name:isSent?t.toName:t.fromName,color:'#555'};
+  return `<div class="ftask ${t.status==='done'?'done':''} ${!isSent&&t.status==='open'?'new':''}">${av(other,'sm')}<div style="flex:1;min-width:0"><span class="t">${esc(t.title)}</span>${t.note?`<div class="n">${esc(t.note)}</div>`:''}
+   <div class="meta" style="margin-top:6px">${isSent?'To '+esc(t.toName):'From '+esc(t.fromName)} · ${ago(t.createdAt)}${t.time?' · '+ic('clock',11)+fmt(t.time):''} · +${t.pts} pts
+   ${isSent?`<span class="status ${t.status==='done'?'ok':'wait'}">${t.status==='done'?'Done '+ago(t.doneAt):'Waiting'}</span>`:''}</div>
+   ${isSent?`<div style="display:flex;gap:8px;margin-top:8px">${t.status==='open'?`<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="tellWhatsApp('${t.id}')">Remind on WhatsApp</button>`:''}<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="delFamTask('${t.id}')">${ic('trash',13)}Delete</button></div>`:''}</div>
+   ${!isSent?`<button class="check" style="${t.status==='done'?'background:var(--ok);border-color:var(--ok)':'border-color:var(--a1)'}" onclick="setFamTask('${t.id}',${t.status!=='done'})">${t.status==='done'?ic('check',18,'',3):''}</button>`:''}</div>`};
+ el.innerHTML=`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
+   <div style="display:flex;align-items:center;gap:10px;margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code</span><span class="code">${S.famCode}</span></div>
+   <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openSend('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(m.name||'').split(' ')[0])}</div>`).join('')}
+   <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
+  <button class="btn wide" style="margin-bottom:14px" onclick="openSend()">${ic('plus',18)}Send a task</button>
+  <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${isSent?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button></div>
+  ${list.length?list.map(row).join(''):`<div class="empty">${isSent?'Tasks you send will show here with their status.':'No tasks yet. When your family sends you something, it appears here instantly.'}</div>`}
+  <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}"><label>Color</label>${colorPicker()}
+   <div class="row"><button class="btn red" onclick="leaveFamily()">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;
+}
+
 // ================= NAV & INIT =================
-const NAV=[['today','map','Today'],['goals','target','Goals'],['awards','trophy','Awards'],['prizes','gift','Prizes'],['settings','settings','Settings']];
+const NAV=[['today','map','Today'],['goals','target','Goals'],['family','users','Family'],['awards','trophy','Awards'],['settings','settings','Settings']];
 function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');
- const b=document.querySelector('.nav button[data-v="'+v+'"]');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw');scrollTo(0,0)}
+ const b=document.querySelector('.nav button[data-v="'+(v==='prizes'?'awards':v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render()}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 hydrateIcons();
-render();checkBadges();if(IS_NATIVE)scheduleNative();
+render();checkBadges();if(IS_NATIVE)scheduleNative();fbInit();
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(openReport,1200);
 </script>
 </body>
