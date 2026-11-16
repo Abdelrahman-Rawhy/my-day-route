@@ -2751,7 +2751,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=45;
+const APP_VERSION=46;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
@@ -3105,7 +3105,7 @@ document.querySelectorAll('.view:not(#v-settings) .top').forEach(top=>{if(top.qu
 
 // touch ripple: a soft circle expands where you touch a button
 (()=>{document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,.task,[onclick]');if(!el||el.closest('#qrStage'))return;
- const r=document.createElement('i');r.className='tch';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),520)},{passive:true,capture:true})})();
+ const r=document.createElement('i');r.className='tch';const z=parseFloat(document.body.style.zoom)||1;r.style.left=e.clientX/z+'px';r.style.top=e.clientY/z+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),520)},{passive:true,capture:true})})();
 // light haptic tick on every tap of a button-like control (respects the Vibration setting)
 (()=>{let last=0;document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,[onclick]');if(!el)return;const n=Date.now();if(n-last<70)return;last=n;if(!el.closest('#qrStage'))SFX('click');if(S.vib===false)return;
  try{const H=HAP();if(H)H.impact({style:'LIGHT'}).catch(()=>{});else if(navigator.vibrate)navigator.vibrate(8)}catch(_){}},true)})();
