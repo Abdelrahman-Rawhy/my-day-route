@@ -94,7 +94,7 @@ public class StepWidget extends AppWidgetProvider {
         int total = data.optInt("total");
         int done = Math.max(0, total - left.length);
         DateFormat tf = android.text.format.DateFormat.getTimeFormat(ctx);
-        RemoteViews v = new RemoteViews(ctx.getPackageName(), var.layout);
+        RemoteViews v = new RemoteViews(ctx.getPackageName(), RouteWidgetBase.layoutFor(data, var.layout));
 
         Intent open = new Intent(ctx, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -108,11 +108,11 @@ public class StepWidget extends AppWidgetProvider {
             JSONObject cur = left[0];
             long t = cur.optLong("t");
             boolean now = t <= System.currentTimeMillis();
-            RouteWidgetBase.text(v, var, R.id.w_s_label, now ? L(data, "now", "NOW") : L(data, "next", "NEXT") + " · " + tf.format(new Date(t)));
+            RouteWidgetBase.text(v, var, R.id.w_s_label, now ? L(data, "now", "NOW") : L(data, "next", "NEXT") + " · " + RouteWidgetBase.timeOf(cur, tf));
             RouteWidgetBase.text(v, var, R.id.w_s_name, cur.optString("n"));
             RouteWidgetBase.text(v, var, R.id.w_s_pts, "+" + cur.optInt("pts") + " " + L(data, "points", "points"));
             RouteWidgetBase.text(v, var, R.id.w_s_next, left.length > 1
-                ? L(data, "then", "Then") + ": " + left[1].optString("n") + " · " + tf.format(new Date(left[1].optLong("t")))
+                ? L(data, "then", "Then") + ": " + left[1].optString("n") + " · " + RouteWidgetBase.timeOf(left[1], tf)
                 : L(data, "last", "Last step of the day"));
             Intent check = new Intent(ctx, StepWidget.class);
             check.setAction(ACTION_CHECK);
@@ -132,7 +132,7 @@ public class StepWidget extends AppWidgetProvider {
                 if (k < left.length) {
                     v.setViewVisibility(ROWS[i][0], android.view.View.VISIBLE);
                     v.setTextViewText(ROWS[i][1], left[k].optString("n"));
-                    v.setTextViewText(ROWS[i][2], tf.format(new Date(left[k].optLong("t"))));
+                    v.setTextViewText(ROWS[i][2], RouteWidgetBase.timeOf(left[k], tf));
                 } else if (i == 0 && left.length <= 1) {
                     v.setViewVisibility(ROWS[i][0], android.view.View.VISIBLE);
                     v.setTextViewText(ROWS[i][1], left.length == 1 ? L(data, "last", "Last step of the day") : L(data, "rest", "MashaAllah, rest well"));

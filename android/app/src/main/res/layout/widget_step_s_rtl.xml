@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper android:layoutDirection="rtl" xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_flip" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:inAnimation="@anim/w_in" android:outAnimation="@anim/w_out">
+    <LinearLayout android:id="@+id/w_step_body" android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="horizontal" android:gravity="center_vertical" android:padding="8dp" android:background="@drawable/widget_bg">
+        <TextView android:id="@+id/w_s_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginStart="4dp" android:text="" android:textColor="#FFFFFFFF" android:textSize="14sp" android:textStyle="bold"
+            android:maxLines="2" android:ellipsize="end"/>
+        <TextView android:id="@+id/w_s_check" android:layout_width="42dp" android:layout_height="42dp" android:layout_marginStart="6dp"
+            android:gravity="center" android:text="✓" android:textColor="#FFFFFFFF" android:textSize="22sp" android:textStyle="bold"
+            android:background="@drawable/widget_check_btn"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal"
+        android:gravity="center" android:background="@drawable/widget_celebrate_bg">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎉 " android:textSize="20sp"/>
+        <TextView android:id="@+id/w_c_title" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="" android:textColor="#FFFFFFFF" android:textSize="15sp" android:textStyle="bold"/>
+    </LinearLayout>
+</ViewFlipper>

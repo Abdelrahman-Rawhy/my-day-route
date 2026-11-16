@@ -93,6 +93,31 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
         return s == null || s.length() == 0 ? fallback : s;
     }
 
+    private static final Map<Integer, Integer> RTL = new HashMap<>();
+    static {
+        RTL.put(R.layout.widget_step_s, R.layout.widget_step_s_rtl);
+        RTL.put(R.layout.widget_step, R.layout.widget_step_rtl);
+        RTL.put(R.layout.widget_step_l, R.layout.widget_step_l_rtl);
+        RTL.put(R.layout.widget_route_s, R.layout.widget_route_s_rtl);
+        RTL.put(R.layout.widget_route_w, R.layout.widget_route_w_rtl);
+        RTL.put(R.layout.widget_route, R.layout.widget_route_rtl);
+        RTL.put(R.layout.widget_prayer_s, R.layout.widget_prayer_s_rtl);
+        RTL.put(R.layout.widget_prayer, R.layout.widget_prayer_rtl);
+    }
+
+    /** Right-to-left copy of a layout when the app is in Arabic. */
+    static int layoutFor(JSONObject data, int layout) {
+        if (!data.optBoolean("rtl")) return layout;
+        Integer r = RTL.get(layout);
+        return r == null ? layout : r;
+    }
+
+    /** Time label sent by the app in its language (e.g. "7:00 ص"), else the phone's own format. */
+    static String timeOf(JSONObject o, DateFormat tf) {
+        String s = o.optString("tt", "");
+        return s.length() > 0 ? s : tf.format(new Date(o.optLong("t")));
+    }
+
     static void text(RemoteViews rv, Variant v, int id, CharSequence s) {
         if (v.has(id)) rv.setTextViewText(id, s);
     }
@@ -143,11 +168,11 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Builder b = v -> {
-            RemoteViews rv = new RemoteViews(pkg, v.layout);
+            RemoteViews rv = new RemoteViews(pkg, layoutFor(data, v.layout));
             if (prayer != null) {
                 long t = prayer.optLong("t");
                 text(rv, v, R.id.w_prayer_name, prayer.optString("n"));
-                text(rv, v, R.id.w_prayer_at, tf.format(new Date(t)));
+                text(rv, v, R.id.w_prayer_at, timeOf(prayer, tf));
                 setCountdown(rv, v, R.id.w_prayer_cd, t, now);
             } else {
                 text(rv, v, R.id.w_prayer_name, L(data, "openApp", "Open app"));
@@ -157,7 +182,7 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
                 if (step != null) {
                     long t = step.optLong("t");
                     text(rv, v, R.id.w_step_name, step.optString("n"));
-                    text(rv, v, R.id.w_step_at, tf.format(new Date(t)));
+                    text(rv, v, R.id.w_step_at, timeOf(step, tf));
                     setCountdown(rv, v, R.id.w_step_cd, t, now);
                 } else {
                     text(rv, v, R.id.w_step_name, L(data, "allDoneToday", "All done today"));
