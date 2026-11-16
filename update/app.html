@@ -801,6 +801,11 @@ html[dir=rtl] .tc-h .iconbtn:last-child svg,html:not([dir=rtl]) .tc-h .iconbtn:f
 .sheet.swiped.closing .panel{animation:none!important}
 .celebrate.closing,#viewer.closing{animation:ovOut .24s ease forwards!important}
 .qreader.closing{animation:qrOut .24s ease-in forwards!important}
+
+/* v62 breathing room inside setting cards */
+.sg-body>.setting,.setting{padding:16px 18px!important}
+.sg-body>.card{padding:18px!important}
+.setting .btn{flex:none}
 </style>
 </head>
 <body>
@@ -3056,7 +3061,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=61;
+const APP_VERSION=62;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}

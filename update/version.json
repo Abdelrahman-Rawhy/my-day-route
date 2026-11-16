@@ -1,1 +1,1 @@
-{"v": 61, "note": "Fixed the jump when you swipe a menu down to close it. The menu no longer pops back up for a moment before it disappears. A tiny finger movement while tapping no longer moves the menu.", "note_ar": "إصلاح القفزة عند سحب القائمة لتحت لإغلاقها. القائمة لم تعد ترجع لفوق لحظة قبل أن تختفي. والحركة البسيطة للإصبع أثناء اللمس لم تعد تحرّك القائمة."}
+{"v": 62, "note": "Settings: the buttons no longer touch the card edges. Every row has comfortable space on both sides.", "note_ar": "الإعدادات: الأزرار لم تعد ملتصقة بحافة الكارت. كل صف له مسافة مريحة من الجانبين."}
