@@ -548,6 +548,18 @@ html.light .kh-juz button.c{color:var(--a1)}
 .qreader .qr-no{display:flex;justify-content:center;gap:0;padding:4px 0 2px}.qhz,.qpn{font-family:Amiri,serif;color:#5b4416;border:1.5px solid #B08D4C;background:#F6EEDB;padding:1px 14px;font-size:14px}.qhz{border-radius:999px 0 0 999px;border-left:0}.qpn{border-radius:0 999px 999px 0}
 html[dir=rtl] .qhz{border-radius:0 999px 999px 0;border-left:1.5px solid #B08D4C;border-right:1.5px solid #B08D4C}html[dir=rtl] .qpn{border-radius:999px 0 0 999px;border-right:0}
 .qr-no .qpn:only-child{border-radius:999px;border:1.5px solid #B08D4C}
+
+/* reader bottom bar v35 */
+.qreader .qr-bot{left:50%;right:auto;width:min(94%,420px);transform:translate(-50%,10px);bottom:calc(max(env(safe-area-inset-bottom),10px) + 2px);display:flex;gap:4px;padding:5px;margin:0;border-radius:18px;background:#F3E6CF;border:1px solid rgba(169,135,90,.35);box-shadow:0 10px 30px rgba(80,55,20,.25),0 -1px 0 rgba(255,255,255,.6) inset;z-index:5}
+.qreader.chrome-on .qr-bot{transform:translate(-50%,0)}
+.qreader .qr-bot .qb{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;min-height:46px;padding:0 8px;border:0;border-radius:14px;background:transparent;color:#6b4e1a;font:600 15px/1 inherit;font-family:inherit}
+.qreader .qr-bot .qb.save{background:#A9875A;color:#fff;flex:1.25}
+.qreader .qr-bot .qb:active{background:rgba(169,135,90,.2)}.qreader .qr-bot .qb.save:active{background:#8f7049}
+.qreader .qr-bot .qb svg{flex:none}
+.qreader .qr-bot .qb.prev i{display:inline-flex;transform:scaleX(-1)}
+html[dir=rtl] .qreader .qr-bot .qb.prev i{transform:none}html[dir=rtl] .qreader .qr-bot .qb.next i{display:inline-flex;transform:scaleX(-1)}
+.qreader .qr-bot .qb.next i{display:inline-flex}
+.qreader.chrome-on .qhz,.qreader.chrome-on .qpn{opacity:0}
 </style>
 </head>
 <body>
@@ -1616,7 +1628,7 @@ async function openPage(p,hl){try{await quranData()}catch(e){toast(T('Could not 
  qPages();qrCur=Math.max(1,Math.min(604,p||1));let R=document.getElementById('qReader');
  if(!R){R=document.createElement('div');R.id='qReader';R.className='qreader';R.innerHTML=`<div class="qr-top"><button class="iconbtn" onclick="closeReader()" aria-label="back">${ic('x',16)}</button><div class="qr-t"><b id="qrSurah"></b><i id="qrJuz"></i></div><button class="iconbtn" onclick="qrFont(-1)">A−</button><button class="iconbtn" onclick="qrFont(1)">A+</button></div>
   <div class="qr-stage" id="qrStage"><div class="qr-page" id="qrPage"><div class="qr-inner" id="qrInner"></div><div class="qr-no" id="qrNo"></div></div></div>
-  <div class="qr-bot"><button class="btn ghost" onclick="qrTurn(-1)">${T('Previous')}</button><button class="btn ghost" onclick="qrSaveHere()">${ic('book',15)}${T('Save page')}</button><button class="btn ghost" onclick="qrTurn(1)">${T('Next')}</button></div>`;
+  <div class="qr-bot"><button class="qb prev" onclick="qrTurn(-1)"><i>${ic('chevron',16)}</i>${T('Previous')}</button><button class="qb save" onclick="qrSaveHere()">${ic('book',16)}${T('Save page')}</button><button class="qb next" onclick="qrTurn(1)">${T('Next')}<i>${ic('chevron',16)}</i></button></div>`;
   document.body.appendChild(R);qrSwipe(document.getElementById('qrStage'))}
  R.classList.add('on');document.body.classList.add('reading');drawPage(hl);trNode&&trNode(R)}
 function closeReader(){const R=document.getElementById('qReader');if(R)R.classList.remove('on');document.body.classList.remove('reading');if(fTab==='mushaf')renderFaith()}
@@ -1653,7 +1665,7 @@ function qrSwipe(el){let x0=0,y0=0,t0=0,lp=null,moved=false,lpf=0;
  el.addEventListener('touchmove',e=>{const t=e.touches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>10||Math.abs(dy)>10){moved=true;clearTimeout(lp)}if(Math.abs(dx)>Math.abs(dy)){const pg=document.getElementById('qrPage');pg.style.transition='none';pg.style.transform=`translateX(${dx*.35}px)`}},{passive:true});
  el.addEventListener('touchend',e=>{clearTimeout(lp);const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;const pg=document.getElementById('qrPage');
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.3){qrTurn(dx>0?1:-1)}else{pg.style.transition='transform .2s';pg.style.transform=''}},{passive:true});
- el.addEventListener('click',e=>{if(lpf){lpf=0;return}if(e.target.closest('button'))return;const w=el.clientWidth,x=e.clientX-el.getBoundingClientRect().left;if(x<w*.2)qrTurn(1);else if(x>w*.8)qrTurn(-1);else document.getElementById('qReader').classList.toggle('chrome-on')})}
+ el.addEventListener('click',e=>{if(lpf){lpf=0;return}if(e.target.closest('button'))return;const w=el.clientWidth,x=e.clientX-el.getBoundingClientRect().left;if(x<w*.2)qrTurn(1);else if(x>w*.8)qrTurn(-1);else{const R=document.getElementById('qReader');clearTimeout(window._qct);if(R.classList.toggle('chrome-on'))window._qct=setTimeout(()=>R.classList.remove('chrome-on'),5000)}})}
 function qrSaveHere(){const L=qPages()[qrCur],[s,a]=L[0];qSave(s,a)}
 function openSurah(n,a){quranData().then(()=>openPage(pageOf(n,a||1),a>1?[n,a]:null)).catch(()=>{})}
 function qContinue(){quranData().then(()=>{const P=qPos();openPage(P.lp||pageOf(P.s,P.a))}).catch(()=>toast(T('Could not load the Quran. Connect to the internet once, then it works offline.'),'alert'))}
@@ -2607,7 +2619,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=34;
+const APP_VERSION=35;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
