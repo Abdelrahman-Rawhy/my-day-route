@@ -104,6 +104,12 @@ svg.i{display:block;flex:none}
 .qain{display:flex;gap:8px}.qain input{flex:1}.mic{width:48px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:var(--a1);display:grid;place-items:center}.mic.rec{background:var(--red);color:#fff;animation:pulse 1s infinite}
 .node{cursor:pointer}
 @keyframes pulse{50%{opacity:.6}}
+.fab{position:fixed;right:18px;bottom:104px;width:58px;height:58px;border-radius:20px;background:linear-gradient(135deg,#FB7185,#F472B6);color:#fff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(244,114,182,.45);z-index:40;border:0}
+.recb{width:120px;height:120px;border-radius:50%;margin:16px auto 6px;display:grid;place-items:center;background:var(--red);color:#fff;border:0;box-shadow:0 0 0 0 rgba(251,113,133,.6);animation:recp 1.4s infinite}@keyframes recp{70%{box-shadow:0 0 0 26px rgba(251,113,133,0)}100%{box-shadow:0 0 0 0 rgba(251,113,133,0)}}
+.rect{text-align:center;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}.wave{display:flex;gap:3px;align-items:center;justify-content:center;height:40px;margin:6px 0}.wave i{width:4px;border-radius:2px;background:var(--red);height:6px;transition:height .1s}
+.idea{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}.idea .t{flex:1;font-size:14px;line-height:1.45}.idea .m{font-size:11px;color:var(--mu);margin-top:4px;display:flex;gap:8px;align-items:center}.idea.done{opacity:.6}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.acts button{padding:12px 8px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:inherit;font-weight:700;font-size:13px;display:flex;gap:8px;align-items:center;justify-content:center}
+.pick{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:40vh;overflow:auto}
 .fbar{display:flex;gap:8px;margin:0 0 12px}.fbar button{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--tx,#fff)}.fbar button .ico{width:32px;height:32px;border-radius:11px;display:grid;place-items:center}
 .occ{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(52,211,153,.14),rgba(34,211,238,.08));border:1px solid rgba(52,211,153,.3);border-radius:18px;padding:12px 14px;margin-bottom:10px}.occ .ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none}.occ b{display:block;font-size:14px}.occ p{margin:2px 0 0;font-size:12px;color:var(--mu)}.occ .btn{padding:8px 12px;font-size:12px;white-space:nowrap}
 .ram{background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(251,191,36,.12));border:1px solid rgba(251,191,36,.35);border-radius:22px;padding:16px;margin-bottom:12px}.ram .big{font-size:30px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}.ram .tg{display:flex;gap:8px;margin-top:12px}.ram .tg button{flex:1;padding:10px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:inherit;font-weight:700;font-size:12px;display:flex;gap:6px;align-items:center;justify-content:center}.ram .tg button.on{background:var(--ok);border-color:var(--ok);color:#06281c}
@@ -404,9 +410,18 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 
 <!-- JOURNAL -->
 <section class="view" id="v-journal">
-  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="iconbtn" onclick="openSearchJ()" data-i="target" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
+  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="iconbtn" onclick="openIdeas()" data-i="lightbulb" data-s="17"></button><button class="iconbtn" onclick="openSearchJ()" data-i="target" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
   <div id="jBody"></div>
 </section>
+
+<!-- IDEAS -->
+<section class="view" id="v-ideas">
+  <div class="top"><div class="greet"><p>Empty your mind · sort it later</p><h1>Brain dump</h1></div><button class="iconbtn" onclick="history.length&&go(ideaBack||'today')" data-i="x" data-s="17"></button></div>
+  <div id="ideasBody"></div>
+</section>
+<div class="sheet" id="recSheet" onclick="if(event.target===this)stopRec()"><div class="panel" id="recPanel"></div></div>
+<div class="sheet" id="ideaSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="ideaPanel"></div></div>
+<button class="fab" id="micFab" onclick="startRec()" aria-label="Voice note"></button>
 
 <!-- REVIEW -->
 <section class="view" id="v-review">
@@ -706,7 +721,7 @@ function runOf(fn){let n=0;const d=new Date();if(!fn(keyOf(d)))d.setDate(d.getDa
 const streak=()=>runOf(k=>pctOf(k)>=100);
 const level=()=>Math.floor(S.earned/250)+1;
 const BADGES=[
- {id:'first',icon:'sprout',name:'First Step',desc:'Complete any step',test:()=>S.earned>0},
+ {id:'first',icon:'sprout',name:'First Step',desc:'Complete any step',test:()=>Object.values(S.history).some(r=>r.done&&r.done.length)},
  {id:'fajr',icon:'sunrise',name:'Early Riser',desc:'Pray Fajr on time',test:()=>S._fajr},
  {id:'half',icon:'zap',name:'Halfway Hero',desc:'Finish 50% of a day',test:()=>pctOf(today())>=50},
  {id:'perfect',icon:'trophy',name:'Perfect Day',desc:'Finish every step',test:()=>Object.keys(S.history).some(k=>pctOf(k)>=100)},
@@ -1102,13 +1117,13 @@ function parseQuick(raw){let s=' '+raw.replace(/[٠-٩]/g,c=>AR_D[c])+' ',time=n
  if(!days&&!date){const now=new Date().toTimeString().slice(0,5);const d=new Date();if(time<=now&&!rel)d.setDate(d.getDate()+1);date=keyOf(d)}
  const icon=(QA_ICONS.find(([re])=>re.test(raw))||[0,'target'])[1];
  return{name,time,days,date,icon}}
-function openQuick(){closeSheets();qaRep=null;const i=document.getElementById('qaIn');i.value='';document.getElementById('qaMic').innerHTML=ic('mic',20);qaPreview();document.getElementById('qaSheet').classList.add('on');setTimeout(()=>i.focus(),150)}
+function openQuick(){closeSheets();window._qaFromIdea=null;qaRep=null;const i=document.getElementById('qaIn');i.value='';document.getElementById('qaMic').innerHTML=ic('mic',20);qaPreview();document.getElementById('qaSheet').classList.add('on');setTimeout(()=>i.focus(),150)}
 function qaPreview(){const v=document.getElementById('qaIn').value.trim(),P=v?parseQuick(v):null;
  document.getElementById('qaPrev').innerHTML=P?`<span class="pv">${ic(P.icon,14)}<b>${esc(P.name||'…')}</b></span><span class="pv">${ic('clock',14)}${fmt(P.time)}</span><span class="pv">${ic('rotate',14)}${daysTxt({days:qaRep||P.days,date:qaRep?null:P.date})}</span>`:'';
  const cur=qaRep||(P&&P.days)||[];drawDays('qaRep',()=>qaRep||(P&&P.days)||[],v=>{qaRep=v.length?v:null;qaPreview()})}
 function saveQuick(){const v=document.getElementById('qaIn').value.trim();if(!v){toast('Type what you want to add','pen');return}const P=parseQuick(v);if(!P.name){toast('Add a name for the step','pen');return}
  const days=qaRep||P.days,t={id:uid(),name:P.name,time:P.time,pts:10,icon:P.icon,prayer:null};if(days&&days.length&&days.length<7)t.days=days;else if(!days)t.date=P.date;
- S.tasks.push(t);save();closeSheets();render();burst(30);toast((onDay(t)?'Added to today: ':'Scheduled: ')+t.name+' · '+fmt(t.time),t.icon)}
+ S.tasks.push(t);if(window._qaFromIdea){const iid=ideaId;ideaId=window._qaFromIdea;ideaDone('task: '+t.name);ideaId=iid;window._qaFromIdea=null}save();closeSheets();render();burst(30);toast((onDay(t)?'Added to today: ':'Scheduled: ')+t.name+' · '+fmt(t.time),t.icon)}
 let qaRec=null;
 function qaVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.getElementById('qaMic');
  if(qaRec){try{qaRec.stop()}catch(e){}return}
@@ -1240,6 +1255,84 @@ async function playPrayerSound(preview){const m=S.psound||'bell';if(m==='off')re
  bellSynth()}
 setInterval(()=>{if(document.hidden)return;const now=Date.now();for(const p of prayerSchedule(1)){if(p.t<=now&&now-p.t<90000){const key=today()+p.k;if(S._lastAdhan!==key){S._lastAdhan=key;store.set(S);playPrayerSound();toast('Time for '+p.n+' prayer · Hayya ala salah','mosque')}}}},20000);
 
+// ================= BRAIN DUMP: voice notes → task / project / note / journal =================
+S.ideas=S.ideas||[];let ideaBack='today',rec_=null,recChunks=[],recT0=0,recTimer=null,recSR=null,recStream=null,recAn=null,recIdea=null;
+function openIdeas(){ideaBack=(document.querySelector('.view.on')||{}).id?.slice(2)||'today';if(ideaBack==='ideas')ideaBack='today';go('ideas')}
+const mmss=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function renderIdeas(){const el=document.getElementById('ideasBody');if(!el)return;const open=S.ideas.filter(i=>!i.done).sort((a,b)=>b.at-a.at),done=S.ideas.filter(i=>i.done).sort((a,b)=>b.at-a.at);
+ const row=i=>`<div class="idea ${i.done?'done':''}" onclick="openIdea('${i.id}')"><span class="ico ${i.aud&&i.aud.length?'c-pink':'c-amber'}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none">${ic(i.aud&&i.aud.length?'mic':'lightbulb',17)}</span><div style="flex:1;min-width:0"><div class="t">${i.text?esc(i.text.length>140?i.text.slice(0,140)+'…':i.text):'<span style="color:var(--mu)">Voice note · tap to add text</span>'}</div><div class="m">${ago(i.at)}${i.dur?' · '+ic('mic',11)+mmss(i.dur):''}${i.to?' · → '+esc(i.to):''}</div></div>${ic('chevron',16)}</div>`;
+ el.innerHTML=`<button class="btn wide" onclick="startRec()" style="margin-bottom:16px;background:linear-gradient(135deg,#FB7185,#F472B6)">${ic('mic',18)}Record an idea</button>
+ <div class="sec"><h3>${ic('lightbulb',18)}To sort · ${open.length}</h3></div>${open.map(row).join('')||'<div class="empty">Nothing here. Tap the mic and say whatever is on your mind.</div>'}
+ ${done.length?`<div class="sec" style="margin-top:16px"><h3>${ic('check',18)}Sorted · ${done.length}</h3></div>${done.slice(0,30).map(row).join('')}`:''}`}
+function addIdeaText(){const i=document.getElementById('ideaTxt'),v=i.value.trim();if(!v)return;S.ideas.push({id:uid(),at:Date.now(),text:v,aud:[]});i.value='';addPts(2,'Idea captured','lightbulb');renderIdeas()}
+const SB=()=>IS_NATIVE?(CAP.Plugins&&CAP.Plugins.SpeechBridge)||(CAP.registerPlugin&&(window._sbp=window._sbp||CAP.registerPlugin('SpeechBridge'))):null;
+let recText='',sbL=null;
+function recLangBtns(){return `<div class="daychips" style="max-width:260px;margin:10px auto 0"><button class="${(S.vLang||'ar-EG')==='ar-EG'?'on':''}" onclick="setVLang('ar-EG')">عربي</button><button class="${S.vLang==='en-US'?'on':''}" onclick="setVLang('en-US')">English</button><button class="${S.vAudio===false?'':'on'}" onclick="S.vAudio=S.vAudio===false;save();this.classList.toggle('on');toast(S.vAudio===false?'Next notes: text only (best transcription)':'Next notes: keep the audio too','mic')">🔊 Audio</button></div>`}
+function setVLang(l){S.vLang=l;save();document.getElementById('recLang').innerHTML=recLangBtns();if(rec_||recSR!==null||window._sbOn){stopSTT();startSTT()}}
+function showRecText(t,err){recText=t;const e=document.getElementById('recTxt');if(!e)return;e.textContent=t||'';e.style.display=t||err?'block':'none';if(err&&!t){e.textContent=err;e.style.color='var(--mu)'}else e.style.color=''}
+async function startSTT(){const lang=S.vLang||'ar-EG';const base=recText?recText+' ':'';
+ const N=SB();if(N){try{window._sbOn=true;if(sbL){sbL.remove&&sbL.remove();sbL=null}sbL=await N.addListener('partial',d=>{if(d.error&&!d.text){showRecText(base,'Live text isn’t available while recording on this phone. Turn off 🔊 Audio for text-only notes.');window._sbOn=false;return}showRecText((base+(d.text||'')).trim())});await N.start({lang})}catch(e){window._sbOn=false}return}
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){showRecText('','Live text needs Chrome. Your voice is still saved.');return}
+ try{const r=recSR=new SR();r.lang=lang;r.continuous=true;r.interimResults=true;let keep=base;
+  r.onresult=e=>{let fin='',tmp='';for(const x of e.results){if(x.isFinal)fin+=x[0].transcript+' ';else tmp+=x[0].transcript}showRecText((keep+fin+tmp).trim())};
+  r.onend=()=>{if(recSR===r&&(rec_||window._recTextOnly)){keep=recText?recText+' ':'';try{r.start()}catch(e){}}};r.start()}catch(e){recSR=null}}
+async function stopSTT(){const N=SB();if(N&&window._sbOn){window._sbOn=false;try{const r=await N.stop();if(r&&r.text&&!recText)showRecText(r.text)}catch(e){}if(sbL){sbL.remove&&sbL.remove();sbL=null}}const r=recSR;recSR=null;try{r&&r.stop()}catch(e){}}
+async function startRec(){if(rec_||window._recTextOnly)return;closeSheets();recText='';
+ const media=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+ if(!media){toast('Microphone not available here','mic');return}
+ try{recStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){toast('Allow the microphone to record ideas','mic');return}
+ const keepAudio=S.vAudio!==false&&typeof MediaRecorder!=='undefined';
+ document.getElementById('recPanel').innerHTML=`<h3 style="text-align:center">Listening…</h3><div class="sub" style="text-align:center;margin:0">Say anything: ideas, worries, to-dos. Sort them later.</div>
+  <div class="rect" id="recTm">0:00</div><div class="wave" id="recWave">${'<i></i>'.repeat(24)}</div>
+  <button class="recb" onclick="stopRec()">${ic('check',44,'',2.4)}</button><div style="text-align:center;font-size:12px;color:var(--mu)">Tap to save</div>
+  <div id="recLang">${recLangBtns()}</div>
+  <div id="recTxt" style="display:none;margin-top:12px;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:12px;font-size:14px;line-height:1.5;max-height:26vh;overflow:auto" dir="auto"></div>
+  <button class="btn ghost wide" style="margin-top:10px" onclick="cancelRec()">${ic('trash',15)}Discard</button>`;
+ document.getElementById('recSheet').classList.add('on');
+ try{const AC=window.AudioContext||window.webkitAudioContext;actx=actx||new AC();const src=actx.createMediaStreamSource(recStream);recAn=actx.createAnalyser();recAn.fftSize=64;src.connect(recAn)}catch(e){recAn=null}
+ recT0=Date.now();buzz(false);
+ if(keepAudio){const mt=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
+  rec_=new MediaRecorder(recStream,mt?{mimeType:mt}:undefined);recChunks=[];rec_.ondataavailable=e=>{if(e.data&&e.data.size)recChunks.push(e.data)};rec_.onstop=finishRec;rec_.start(1000)}
+ else{// text only: free the mic for the recognizer, keep the analyser off
+  try{recStream.getTracks().forEach(t=>t.stop())}catch(e){}recAn=null;window._recTextOnly=true;rec_=null;recChunks=[]}
+ recTimer=setInterval(()=>{const s=(Date.now()-recT0)/1000,e=document.getElementById('recTm');if(e)e.textContent=mmss(s);if(s>900)stopRec();
+  const w=document.querySelectorAll('#recWave i');if(recAn){const a=new Uint8Array(recAn.frequencyBinCount);recAn.getByteFrequencyData(a);w.forEach((b,i)=>b.style.height=(6+(a[i+2]||0)/255*34)+'px')}else w.forEach(b=>b.style.height=(6+Math.random()*16)+'px')},120);
+ startSTT()}
+function stopRec(){if(window._recTextOnly){window._recTextOnly=false;finishRec();return}if(!rec_)return;try{rec_.stop()}catch(e){finishRec()}}
+function cancelRec(){if(window._recTextOnly){window._recTextOnly=false;window._recCancel=true;finishRec();return}if(!rec_)return;rec_._cancel=true;stopRec()}
+async function finishRec(){const r=rec_,dur=Math.round((Date.now()-recT0)/1000);const cancel=(r&&r._cancel)||window._recCancel;window._recCancel=false;rec_=null;clearInterval(recTimer);
+ await stopSTT();const txt=recText;try{recStream.getTracks().forEach(t=>t.stop())}catch(e){}closeSheets();if(cancel){toast('Discarded','trash');return}
+ const blob=new Blob(recChunks||[],{type:(r&&r.mimeType)||'audio/webm'});const id=uid(),aid=uid();recChunks=[];
+ if(blob.size){try{await kvSet('aud:'+aid,blob)}catch(e){}}
+ if(!blob.size&&!txt.trim()){toast('Nothing was captured','mic');return}
+ const it={id,at:Date.now(),text:txt.trim(),aud:blob.size?[aid]:[],dur};S.ideas.push(it);buzz(true);addPts(2,'Idea captured','mic');
+ if(document.getElementById('v-ideas').classList.contains('on'))renderIdeas();openIdea(id)}
+let ideaId=null,ideaMode=null;
+async function openIdea(id,mode){ideaId=id;ideaMode=mode||null;const it=S.ideas.find(x=>x.id===id);if(!it)return;closeSheets();
+ const auds=[];for(const a of it.aud||[]){try{const b=await kvGet('aud:'+a);if(b)auds.push(URL.createObjectURL(b))}catch(e){}}
+ let extra='';
+ if(ideaMode==='project'){const P=S.goals.filter(g=>g.type==='project'&&!g.archived);extra=`<label>Add as a step to which project?</label><div class="pick">${P.map(g=>`<button class="edit-row" onclick="ideaToProject('${g.id}')"><span class="ico c-${gColor(g)}">${ic(gIcon(g),18)}</span><b style="flex:1">${esc(g.title)}</b><span style="font-size:12px;color:var(--mu)">${gProg(g)}%</span></button>`).join('')}<button class="edit-row" onclick="ideaNewProject()"><span class="ico c-violet">${ic('plus',18)}</span><b style="flex:1">New project from this idea</b></button></div>`}
+ else if(ideaMode==='note'){const O=S.ideas.filter(x=>x.id!==id&&!x.done).sort((a,b)=>b.at-a.at);extra=`<label>Merge into which note?</label><div class="pick">${O.map(x=>`<button class="edit-row" onclick="ideaMerge('${x.id}')"><span class="ico c-amber">${ic(x.aud&&x.aud.length?'mic':'lightbulb',18)}</span><span style="flex:1;font-size:13px">${esc((x.text||'Voice note').slice(0,70))}</span></button>`).join('')||'<div class="sub">No other open notes yet.</div>'}</div>`}
+ document.getElementById('ideaPanel').innerHTML=`<h3>${ic('lightbulb',20)} Idea <span style="font-size:12px;color:var(--mu);font-weight:500">· ${ago(it.at)}${it.to?' · → '+esc(it.to):''}</span></h3>
+ ${auds.map(u=>`<audio controls src="${u}" style="width:100%;margin-top:8px"></audio>`).join('')}
+ <label>Transcript <span style="font-weight:500">(edit if needed)</span></label><textarea id="ideaTxtE" rows="4" placeholder="What was the idea?" onblur="saveIdeaText()">${esc(it.text||'')}</textarea>
+ ${extra||`<div class="acts"><button onclick="ideaToTask()">${ic('map',16)}Make it a task</button><button onclick="saveIdeaText();openIdea('${id}','project')">${ic('clipboard',16)}Add to project</button><button onclick="saveIdeaText();openIdea('${id}','note')">${ic('rotate',16)}Move to note</button><button onclick="ideaToJournal()">${ic('book',16)}Save to journal</button></div>`}
+ <div class="row"><button class="btn ghost" onclick="delIdea()">${ic('trash',15)}Delete</button><button class="btn" onclick="saveIdeaText();${extra?`openIdea('${id}')`:`closeSheets();if(document.getElementById('v-ideas').classList.contains('on'))renderIdeas()`}">${extra?'Back':'Done'}</button></div>`;
+ document.getElementById('ideaSheet').classList.add('on')}
+function saveIdeaText(){const it=S.ideas.find(x=>x.id===ideaId),el=document.getElementById('ideaTxtE');if(!it||!el)return;const v=el.value.trim();if(v!==it.text){it.text=v;save()}}
+function ideaDone(to){const it=S.ideas.find(x=>x.id===ideaId);if(!it)return;it.done=true;it.to=to;save();if(document.getElementById('v-ideas').classList.contains('on'))renderIdeas()}
+function ideaToTask(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);if(!it)return;if(!it.text){toast('Add the text first so the task has a name','pen');document.getElementById('ideaTxtE').focus();return}
+ const iid=ideaId;openQuick();document.getElementById('qaIn').value=it.text.split('\n')[0].slice(0,120);qaPreview();window._qaFromIdea=iid}
+function ideaToProject(gid){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId),g=S.goals.find(x=>x.id===gid);if(!it||!g)return;if(!it.text){toast('Add the text first','pen');return}
+ g.steps=g.steps||[];g.steps.push({id:uid(),name:it.text.split('\n')[0].slice(0,120),done:false,note:it.text.includes('\n')?it.text:undefined});g.done=false;ideaDone('project: '+g.title);closeSheets();toast('Added to '+g.title,'clipboard')}
+function ideaNewProject(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);if(!it||!it.text){toast('Add the text first','pen');return}const lines=it.text.split('\n').map(x=>x.trim()).filter(Boolean);
+ const g={id:uid(),type:'project',title:lines[0].slice(0,60),area:'work',icon:'lightbulb',deadline:'',created:Date.now(),steps:lines.slice(1).map(n=>({id:uid(),name:n,done:false}))};S.goals.push(g);ideaDone('project: '+g.title);closeSheets();addPts(5,'New project: '+g.title,'clipboard')}
+function ideaMerge(tid){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId),t=S.ideas.find(x=>x.id===tid);if(!it||!t)return;
+ t.text=[t.text,it.text].filter(Boolean).join('\n');t.aud=[...(t.aud||[]),...(it.aud||[])];t.dur=(t.dur||0)+(it.dur||0);S.ideas=S.ideas.filter(x=>x.id!==it.id);save();toast('Merged into the note','rotate');openIdea(t.id)}
+function ideaToJournal(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);if(!it)return;const iid=ideaId;window._jPend=iid;
+ openJEditor(null).then(()=>{const t=document.getElementById('jText');if(t&&window._jFromIdea===iid){t.value=it.text||'';document.getElementById('jTitle').value='Idea · '+new Date(it.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})}})}
+async function delIdea(){const it=S.ideas.find(x=>x.id===ideaId);if(!it||!confirm('Delete this idea'+(it.aud&&it.aud.length?' and its recording':'')+'?'))return;for(const a of it.aud||[]){try{const d=await miscDB();d.transaction('kv','readwrite').objectStore('kv').delete('aud:'+a)}catch(e){}}S.ideas=S.ideas.filter(x=>x.id!==it.id);save();closeSheets();renderIdeas()}
+
 // ================= FEEDBACK =================
 let tt;function toast(m,icon='sparkles'){const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
 function celebrate(icon,title,sub){document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on')}
@@ -1338,7 +1431,7 @@ async function addJMedia(files){for(const f of files){try{
   else if(f.type.startsWith('video/')){if(f.size>150*1024*1024){toast('Video too large (max 150 MB)','alert');continue}jPendingMedia.push({id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:'video',mime:f.type,blob:f,thumb:await videoThumb(f),isNew:true})}
  }catch(e){toast('Could not add one file','alert')}}renderJMediaEdit()}
 function renderJMediaEdit(){document.getElementById('jMediaEdit').innerHTML=jPendingMedia.map((m,i)=>`<div class="th" style="background-image:url('${m.thumb||''}')">${m.type==='video'?`<span class="vid">${ic('play',20,'',2)}</span>`:''}<button class="iconbtn" style="position:absolute;top:4px;right:4px;width:26px;height:26px;background:rgba(0,0,0,.6);color:#fff" onclick="jPendingMedia.splice(${i},1);renderJMediaEdit()">${ic('x',13)}</button></div>`).join('')}
-async function openJEditor(id){if(jLocked()&&!JKEY){askPin('unlock',()=>openJEditor(id));return}
+async function openJEditor(id){if(!(jLocked()&&!JKEY)){window._jFromIdea=window._jPend||null;window._jPend=null}if(jLocked()&&!JKEY){askPin('unlock',()=>openJEditor(id));return}
  const e=id?(jCache||[]).find(x=>x.id===id):null;jEdit=e?e.id:null;jMood=e?e.mood:3;jPendingMedia=[];
  if(e)for(const mid of e.media||[]){const m=await unpackMedia(await idbGet('media',mid));if(m)jPendingMedia.push(m)}
  document.getElementById('jEditTitle').textContent=e?'Edit entry':'New entry';document.getElementById('jDate').value=e?e.date:today();
@@ -1352,7 +1445,7 @@ async function saveJEntry(){const text=document.getElementById('jText').value.tr
   for(const mid of (old&&old.media)||[])if(!keep.has(mid)){await idbDel('media',mid);urlCache.delete('t'+mid);urlCache.delete('b'+mid)}
   for(const m of jPendingMedia)if(m.isNew){const {isNew,...rest}=m;await idbPut('media',await packMedia(rest))}
   const e={id:jEdit||'j'+Date.now().toString(36),date:document.getElementById('jDate').value||today(),at:old?old.at:Date.now(),mood:jMood,title,text,media:jPendingMedia.map(m=>m.id)};
-  await idbPut('entries',await packEntry(e));const first=!old;closeSheets();await loadEntries();
+  await idbPut('entries',await packEntry(e));const first=!old;closeSheets();if(window._jFromIdea){const k=ideaId;ideaId=window._jFromIdea;ideaDone('journal');ideaId=k;window._jFromIdea=null}await loadEntries();
   if(first)addPts(10,'Journal saved','book');else toast('Entry updated','book');renderJournal();checkBadges()
  }catch(err){toast('Could not save: '+err.message,'alert')}btn.disabled=false;btn.textContent='Save'}
 async function openJView(id){const e=(jCache||[]).find(x=>x.id===id);if(!e)return;
@@ -1975,9 +2068,9 @@ let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);wT=setTimeo
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['goals','target','Goals'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];
 function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');
- const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards',faith:'today'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings();if(v==='faith')renderFaith();else stopCompass()}
+ const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards',faith:'today',ideas:'journal'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings();if(v==='faith')renderFaith();else stopCompass();if(v==='ideas')renderIdeas();const fb=document.getElementById('micFab');if(fb)fb.style.display=['today','journal','ideas','goals'].includes(v)?'grid':'none'}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
-hydrateIcons();
+hydrateIcons();{const f=document.getElementById('micFab');if(f)f.innerHTML=ic('mic',26)}
 applyWidgetChecks();render();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
