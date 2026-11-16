@@ -443,6 +443,29 @@ button:active,.btn:active,.chip:active,.gcard:active,.jcard:active,.chatrow:acti
 .ask-num{display:flex;gap:10px;align-items:center;margin-top:10px}.ask-num .btn{width:56px;height:56px;padding:0;font-size:24px;flex:none}.ask-num input{flex:1;text-align:center;font-size:26px;font-weight:800;height:56px}
 input.dthide{display:none!important}.dtbox{width:100%;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:var(--tx);border-radius:14px;padding:12px 14px;font-size:15px;font-weight:600;text-align:start;min-height:46px}.dtbox svg{color:var(--a2);flex:none}.dtbox .ph{color:var(--mu);font-weight:500}
 html.glass .dtbox{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14)}html.light .dtbox{background:#F4F5FA}html.glass.light .dtbox{background:rgba(255,255,255,.6);border-color:rgba(22,26,60,.10)}
+/* ===== performance & smooth motion ===== */
+.aurora i{filter:none!important;opacity:1!important;animation:float 24s ease-in-out infinite;will-change:transform}
+.aurora i:nth-child(1){background:radial-gradient(circle,rgba(124,92,255,.42),rgba(124,92,255,0) 68%)!important}
+.aurora i:nth-child(2){background:radial-gradient(circle,rgba(34,211,238,.26),rgba(34,211,238,0) 68%)!important}
+.aurora i:nth-child(3){background:radial-gradient(circle,rgba(244,114,182,.2),rgba(244,114,182,0) 68%)!important}
+.aurora i:nth-child(4){background:radial-gradient(circle,rgba(251,191,36,.14),rgba(251,191,36,0) 68%)!important}
+.aurora i:nth-child(5){background:radial-gradient(circle,rgba(52,211,153,.13),rgba(52,211,153,0) 68%)!important}
+html.glass .aurora i:nth-child(1){background:radial-gradient(circle,rgba(124,92,255,.62),rgba(124,92,255,0) 68%)!important}
+html.glass .aurora i:nth-child(2){background:radial-gradient(circle,rgba(34,211,238,.42),rgba(34,211,238,0) 68%)!important}
+html.glass .aurora i:nth-child(3){background:radial-gradient(circle,rgba(244,114,182,.34),rgba(244,114,182,0) 68%)!important}
+html.light .aurora i{opacity:.45!important}
+body.sheet-open .aurora i{animation-play-state:paused}
+html.glass .card,html.glass .hero,.pill{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.sheet{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:background .2s}
+html.glass .sheet .panel{-webkit-backdrop-filter:blur(16px)!important;backdrop-filter:blur(16px)!important;background:linear-gradient(180deg,rgba(36,40,66,.9),rgba(16,19,34,.95))!important}
+html.glass.light .sheet .panel{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(246,247,255,.97))!important}
+.sheet .panel{will-change:transform;animation:sheetUp .28s cubic-bezier(.2,.9,.3,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet.on{animation:fadeIn .2s ease}@keyframes fadeIn{from{background:transparent}}
+.sheet.closing{animation:fadeOut .2s ease forwards;pointer-events:none}@keyframes fadeOut{to{background:transparent}}
+.sheet.closing .panel{animation:sheetDown .2s ease-in forwards}.sheet.swiped.closing .panel{animation:none}@keyframes sheetDown{to{transform:translateY(105%)}}
+.view.on{animation:viewIn .22s ease}@keyframes viewIn{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.celebrate{transition:opacity .2s}
 </style>
 </head>
 <body>
@@ -2372,7 +2395,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=25;
+const APP_VERSION=26;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
@@ -2693,7 +2716,7 @@ let setFrom='today';function go(v){{const cur=document.querySelector('.view.on')
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 // ---- phone back button: close what is open, then go to Today, then press twice to leave ----
 const APPP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.App)||null):null;let backAt=0;
-function handleBack(){const cel=document.getElementById('celebrate');if(cel&&cel.classList.contains('on')){cel.classList.remove('on');return}const vw=document.getElementById('viewer');if(vw&&vw.classList.contains('on')&&typeof closeViewer==='function'){closeViewer();return}const open=[...document.querySelectorAll('.sheet.on')];
+function handleBack(){document.querySelectorAll('.sheet.closing').forEach(x=>x.classList.remove('closing','on'));const cel=document.getElementById('celebrate');if(cel&&cel.classList.contains('on')){cel.classList.remove('on');return}const vw=document.getElementById('viewer');if(vw&&vw.classList.contains('on')&&typeof closeViewer==='function'){closeViewer();return}const open=[...document.querySelectorAll('.sheet.on:not(.closing)')];
  if(document.getElementById('pickSheet').classList.contains('on')){closePick();return}
  if(document.getElementById('dtSheet').classList.contains('on')){closeDT();return}if(document.getElementById('askSheet').classList.contains('on')){closeAsk();return}
  if(open.length){const top=open[open.length-1];if(top.id==='recSheet'&&typeof stopRec==='function')stopRec();else if(top.id==='scanSheet')stopScan();else closeSheets();return}
@@ -2702,7 +2725,7 @@ function handleBack(){const cel=document.getElementById('celebrate');if(cel&&cel
  backAt=Date.now();toast(T('Press back again to leave'),'x')}
 if(APPP&&APPP.addListener){try{APPP.addListener('backButton',handleBack)}catch(e){}}
 // lock the page behind an open sheet so the sheet itself scrolls
-new MutationObserver(()=>document.body.classList.toggle('sheet-open',!!document.querySelector('.sheet.on'))).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>document.body.classList.toggle('sheet-open',!!document.querySelector('.sheet.on:not(.closing)'))).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
 
 // ---- swipe a sheet down from its top to close it ----
 (()=>{let P=null,y0=0,dy=0,t0=0,ok=false;
@@ -2714,7 +2737,7 @@ new MutationObserver(()=>document.body.classList.toggle('sheet-open',!!document.
   if(dy<=0){P.style.transform='';P.classList.remove('drag');return}
   e.preventDefault();P.classList.add('drag');P.style.transform=`translateY(${dy}px)`},{passive:false});
  document.addEventListener('touchend',()=>{if(!P)return;const p=P;P=null;p.classList.remove('drag');const v=dy/Math.max(1,Date.now()-t0);
-  if(ok&&(dy>110||(dy>40&&v>.6))){p.classList.add('snap');p.style.transform='translateY(110%)';setTimeout(()=>{p.classList.remove('snap');p.style.transform='';const sh=p.closest('.sheet');
+  if(ok&&(dy>110||(dy>40&&v>.6))){p.classList.add('snap');p.style.transform='translateY(110%)';setTimeout(()=>{p.classList.remove('snap');const sh=p.closest('.sheet');sh.classList.add('swiped');setTimeout(()=>{p.style.transform='';sh.classList.remove('swiped')},260);
     if(sh.id==='pickSheet')closePick();else if(sh.id==='dtSheet')closeDT();else if(sh.id==='recSheet'&&typeof stopRec==='function')stopRec();else if(sh.id==='scanSheet')stopScan();else if(sh.onclick)sh.onclick({target:sh});else sh.classList.remove('on')},200)}
   else if(dy>0){p.classList.add('snap');p.style.transform='';setTimeout(()=>p.classList.remove('snap'),230)}dy=0},{passive:true})})();
 
@@ -2735,6 +2758,12 @@ function dtEnhance(root){(root.querySelectorAll?root:document).querySelectorAll(
  inp.classList.add('dthide');inp.insertAdjacentElement('afterend',b);const upd=()=>{b.querySelector('span').innerHTML=dtLabel(inp)};inp.addEventListener('change',upd);inp.addEventListener('input',upd);inp._dtUpd=upd})}
 {const D=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');Object.defineProperty(HTMLInputElement.prototype,'value',{get(){return D.get.call(this)},set(v){D.set.call(this,v);if(this._dtUpd)try{this._dtUpd()}catch(e){}},configurable:true})}
 dtEnhance(document);new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(n=>{if(n.nodeType===1)dtEnhance(n.matches&&n.matches('input')?n.parentElement:n)})}).observe(document.body,{childList:true,subtree:true});
+
+// smooth close: sheets slide down before they hide
+{const R=DOMTokenList.prototype.remove,A=DOMTokenList.prototype.add;const own=new WeakMap();
+ DOMTokenList.prototype.remove=function(...c){const el=own.get(this);if(el&&c.length===1&&c[0]==='on'&&this.contains('on')&&!this.contains('closing')&&!document.hidden){A.call(this,'closing');clearTimeout(el._ct);el._ct=setTimeout(()=>{R.call(this,'on','closing')},190);return}return R.apply(this,c)};
+ DOMTokenList.prototype.add=function(...c){const el=own.get(this);if(el&&c.includes('on')){clearTimeout(el._ct);R.call(this,'closing')}return A.apply(this,c)};
+ document.querySelectorAll('.sheet').forEach(sh=>own.set(sh.classList,sh))}
 applyTheme();hydrateIcons();{const f=document.getElementById('micFab');if(f)f.innerHTML=ic('mic',26)}
 applyWidgetChecks();render();applyLang();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
