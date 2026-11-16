@@ -575,6 +575,10 @@ html[dir=rtl] .qr-pbar i{inset:0 0 0 auto;background:linear-gradient(270deg,#c9a
 .qr-prog.pulse .qr-pbar{animation:qpp .7s ease}
 @keyframes qpp{0%{box-shadow:0 0 0 0 rgba(169,135,90,.6)}100%{box-shadow:0 0 0 8px rgba(169,135,90,0)}}
 .qreader .qfbtn{font-family:inherit;font-weight:800;font-size:14px}
+
+/* v38 hidden toast must not peek under the status bar */
+.toast:not(.on){transform:translate(-50%,calc(-100% - env(safe-area-inset-top) - 40px));opacity:0;visibility:hidden;box-shadow:none;transition:transform .35s,opacity .2s,visibility 0s .35s}
+.toast.on{opacity:1;visibility:visible}
 </style>
 </head>
 <body>
@@ -2644,7 +2648,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=37;
+const APP_VERSION=38;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
