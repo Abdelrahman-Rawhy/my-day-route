@@ -503,6 +503,14 @@ html.light .qreader{background:#efe9da}html.light .qr-t b{color:#3a2c10}
 .adk-box.fadl{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.35)}.adk-box.fadl .adk-lbl{background:rgba(251,191,36,.18);color:var(--gold)}
 .adk-box.tdb{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.30)}.adk-box.tdb .adk-lbl{background:rgba(34,211,238,.16);color:var(--a2)}
 html.light .adk-box.fadl{background:#FFF7E0}html.light .adk-box.tdb{background:#E8FAFD}
+/* ===== UX polish: compact Today top, consistent empty states ===== */
+#v-today .fbar{gap:6px;overflow-x:auto;scrollbar-width:none}#v-today .fbar::-webkit-scrollbar{display:none}
+#v-today .fbar button{flex:1 0 auto;flex-direction:row;justify-content:center;gap:6px;padding:8px 10px;border-radius:99px;font-size:12px;min-height:40px}
+#v-today .fbar button .ico{width:24px;height:24px;border-radius:8px}
+#v-today .occ{padding:8px 10px 8px 12px;border-radius:16px;gap:10px}#v-today .occ .ico{width:32px;height:32px;border-radius:10px}#v-today .occ b{font-size:13px}#v-today .occ p{font-size:11px;margin:0}#v-today .occ .btn{padding:7px 12px}
+#v-today #projChip .chip{padding:10px 12px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--mu);text-align:center;padding:26px 18px;font-size:14px;line-height:1.7;font-weight:500;border:1px dashed var(--bd2);border-radius:20px;background:var(--s1);margin:6px 0 12px}
+.empty::before{content:"";width:52px;height:52px;border-radius:16px;background:rgba(124,92,255,.14) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%237C5CFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.9 5.8L20 10l-5 3.6L16.8 20 12 16.4 7.2 20 9 13.6 4 10l6.1-1.2z'/%3E%3C/svg%3E") center/26px no-repeat}
 </style>
 </head>
 <body>
@@ -1443,7 +1451,7 @@ function renderFaithBar(){const el=document.getElementById('faithBar');if(!el)re
  else if(h>=17){const tm=new Date();tm.setDate(tm.getDate()+1);const ot=occasions(tm).find(x=>x.fast);if(ot&&!ramadanOn())html+=`<div class="occ"><span class="ico c-indigo">${ic('moon',20)}</span><div style="flex:1"><b>Tomorrow: ${ot.t}</b><p>${ot.sub} · intend tonight and eat suhoor</p></div></div>`}
  if(rec.fast&&!ramadanOn()){const mg=atTime(now,PT.maghrib);if(now<mg)html+=`<div class="occ" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)"><span class="ico c-amber">${ic('sunset',20)}</span><div style="flex:1"><b>Iftar in <span id="ramCd" data-at="${mg.getTime()}">${hms(mg-now)}</span></b><p>at ${clock12(mg)} · Allahumma laka sumtu</p></div></div>`}
  const t=S.tz||{},kh=S.kh||{page:0};
- html+=`<div class="fbar"><button onclick="go('faith');fTab='tasbih';renderFaith()"><span class="ico c-violet">${ic('beads',17)}</span>Tasbih${rec.tasbih?' · '+rec.tasbih:''}</button><button onclick="go('faith');fTab='quran';renderFaith()"><span class="ico c-green">${ic('book',17)}</span>Khatma · ${Math.round(kh.page/6.04)}%</button><button onclick="go('faith');fTab='qibla';renderFaith()"><span class="ico c-amber">${ic('pin',17)}</span>Qibla</button><button onclick="openAdhkar()"><span class="ico c-blue">${ic('sunrise',17)}</span>Adhkar</button></div>`;
+ html+=`<div class="fbar"><button onclick="openAdhkar()"><span class="ico c-blue">${ic('sunrise',17)}</span>Adhkar</button><button onclick="go('faith');fTab='tasbih';renderFaith()"><span class="ico c-violet">${ic('beads',17)}</span>Tasbih${rec.tasbih?' · '+rec.tasbih:''}</button><button onclick="qContinue()"><span class="ico c-green">${ic('book',17)}</span>${T('Mushaf')} · ${Math.round(kh.page/6.04)}%</button><button onclick="go('faith');fTab='qibla';renderFaith()"><span class="ico c-amber">${ic('pin',17)}</span>Qibla</button></div>`;
  el.innerHTML=html}
 function ramFasts(){const hj=hijri();if(!hj||hj.m!==9)return Object.values(S.history).filter(r=>r.fast).length;let n=0;for(let i=0;i<hj.d;i++){const d=new Date();d.setDate(d.getDate()-i);const r=S.history[keyOf(d)];if(r&&r.fast)n++}return n}
 setInterval(()=>{const e=document.getElementById('ramCd');if(!e||document.hidden)return;const ms=+e.dataset.at-Date.now();if(ms<=0){render();return}e.textContent=hms(ms)},1000);
@@ -1598,6 +1606,7 @@ function qrSwipe(el){let x0=0,y0=0,t0=0,lp=null,moved=false;
  el.addEventListener('click',e=>{if(e.target.closest('.qa'))return;const w=el.clientWidth,x=e.clientX-el.getBoundingClientRect().left;if(x<w*.22)qrTurn(1);else if(x>w*.78)qrTurn(-1)})}
 function qrSaveHere(){const L=qPages()[qrCur],[s,a]=L[0];qSave(s,a)}
 function openSurah(n,a){quranData().then(()=>openPage(pageOf(n,a||1),a>1?[n,a]:null)).catch(()=>{})}
+function qContinue(){quranData().then(()=>{const P=qPos();openPage(P.lp||pageOf(P.s,P.a))}).catch(()=>toast(T('Could not load the Quran. Connect to the internet once, then it works offline.'),'alert'))}
 function openJuz(j){if(!QD)return;for(let i=0;i<114;i++){const k=QD.c[i][4].indexOf(j);if(k>=0){openPage(QD.c[i][3][k]);return}}}
 function qFont(d){const P=qPos();P.fs=Math.max(18,Math.min(44,(P.fs||26)+d));save();const m=document.querySelector('.mushaf');if(m)m.style.fontSize=P.fs+'px'}
 function ayahMenu(n,a){const pg=QD.c[n-1][3][a-1],P=document.getElementById('askPanel');
@@ -2533,7 +2542,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=31;
+const APP_VERSION=32;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
