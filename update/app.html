@@ -2878,7 +2878,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=55;
+const APP_VERSION=56;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 function verLabel(){const ar=S.lang==='ar',v=Math.max(APP_VERSION,+localStorage.getItem('appV')||0);return (ar?'الإصدار ':'Version ')+(ar?arNum(APP_VERSION):APP_VERSION)+(v>APP_VERSION?(ar?' · التحديث '+arNum(v)+' جاهز':' · update '+v+' ready'):'')}
 async function showWhatsNew(){const ar=S.lang==='ar';let n=localStorage.getItem('lastNote')||'';try{const j=await (await fetch(UPD+'version.json?t='+Date.now(),{cache:'no-store'})).json();n=(ar&&j.note_ar)||j.note||n;localStorage.setItem('lastNote',n)}catch(e){}
@@ -3247,7 +3247,7 @@ document.querySelectorAll('.view:not(#v-settings) .top').forEach(top=>{if(top.qu
 
 // hide the mic button while scrolling down so it never covers the list
 (()=>{let ly=scrollY,t;addEventListener('scroll',()=>{const f=document.getElementById('micFab');if(!f)return;const y=scrollY,dy=y-ly;ly=y;
- if(dy>6&&y>80)f.classList.add('hid');else if(dy<-6||y<80)f.classList.remove('hid');clearTimeout(t);t=setTimeout(()=>{if(innerHeight+scrollY<document.body.scrollHeight*(parseFloat(document.body.style.zoom)||1)-140)f.classList.remove('hid')},1200)},{passive:true})})();
+ if(dy>4&&y>60)f.classList.add('hid');else if(dy<-12||y<60)f.classList.remove('hid');},{passive:true})})();
 // touch ripple: a soft circle expands where you touch a button
 (()=>{document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,.task,[onclick]');if(!el||el.closest('#qrStage'))return;
  const r=document.createElement('i');r.className='tch';const z=parseFloat(document.body.style.zoom)||1;r.style.left=e.clientX/z+'px';r.style.top=e.clientY/z+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),520)},{passive:true,capture:true})})();
