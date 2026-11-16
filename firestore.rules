@@ -18,6 +18,18 @@ service cloud.firestore {
         allow create, update, delete: if signedIn() && request.auth.uid == uid;
       }
 
+      // Chats: 'group' for the whole family, or 'uidA__uidB' for a private chat (only those two can open it).
+      match /chats/{c} {
+        function inChat() { return isMember(f) && (c == 'group' || c.split('__').hasAny([request.auth.uid])); }
+        allow read, write: if inChat();
+        match /messages/{m} {
+          allow read: if inChat();
+          allow create: if inChat() && request.resource.data.from == request.auth.uid;
+          allow update: if inChat() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['r']);
+          allow delete: if inChat() && resource.data.from == request.auth.uid;
+        }
+      }
+
       match /tasks/{t} {
         allow read: if isMember(f);
         allow create: if isMember(f) && request.resource.data.from == request.auth.uid;

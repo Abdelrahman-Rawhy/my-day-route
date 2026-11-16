@@ -233,6 +233,40 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:80}
 select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:var(--tx);border-radius:14px;padding:12px 14px;font-family:inherit;font-size:15px;outline:none;appearance:none}
 .colors{display:flex;gap:10px;flex-wrap:wrap}.colors button{width:36px;height:36px;border-radius:12px;border:2px solid transparent}.colors button.sel{border-color:#fff;transform:scale(1.08)}
 .tabs2{display:flex;gap:6px;margin-bottom:12px}.tabs2 button{flex:1;padding:10px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);font-weight:700;font-size:13px;color:var(--mu)}.tabs2 button.on{background:linear-gradient(135deg,rgba(124,92,255,.3),rgba(34,211,238,.14));color:#fff;border-color:rgba(124,92,255,.4)}
+
+.chatrow{display:flex;gap:12px;align-items:center;padding:12px;border-radius:20px;background:var(--s1);border:1px solid var(--bd);margin-bottom:8px;cursor:pointer}
+.chatrow .info b{font-size:15px}.chatrow .prev{font-size:13px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.chatrow .side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:11px;color:var(--mu)}
+.badge-n{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--grad);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.navdot{position:absolute;top:2px;right:calc(50% - 20px);min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--red);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center}
+.nav button{position:relative}
+#chatScreen{position:fixed;inset:0;z-index:45;background:var(--bg);display:none;flex-direction:column;max-width:560px;margin:0 auto}
+#chatScreen.on{display:flex;animation:rise .25s}
+.chead{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;background:rgba(20,24,38,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.chead b{font-size:16px;display:block}.chead .meta{margin-top:1px}
+.cmsgs{flex:1;overflow-y:auto;padding:12px 12px 6px;background:radial-gradient(600px 400px at 80% 0%,rgba(124,92,255,.08),transparent),radial-gradient(500px 400px at 0% 100%,rgba(34,211,238,.06),transparent)}
+.dsep{text-align:center;margin:12px 0}.dsep span{background:rgba(255,255,255,.07);color:var(--mu);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px}
+.mrow{display:flex;margin:2px 0;gap:8px;align-items:flex-end}.mrow.me{justify-content:flex-end}
+.bub{max-width:78%;padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.4;position:relative;word-wrap:break-word;white-space:pre-wrap;cursor:pointer;animation:pop .25s}
+.mrow.them .bub{background:#1C2236;border-bottom-left-radius:6px}
+.mrow.me .bub{background:linear-gradient(135deg,#6D4EF5,#2BB8E0);border-bottom-right-radius:6px;color:#fff}
+.mrow.cont.them .bub{border-top-left-radius:6px}.mrow.cont.me .bub{border-top-right-radius:6px}
+.bub .who{font-size:12px;font-weight:800;margin-bottom:2px}
+.bub .tm{font-size:10.5px;opacity:.65;float:right;margin:6px 0 -2px 10px;display:flex;gap:3px;align-items:center}
+.bub.big{background:none!important;font-size:44px;line-height:1.15;padding:2px 4px}.bub.big .tm{color:var(--mu);opacity:1}
+.reacts{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}.reacts span{background:rgba(0,0,0,.25);border-radius:99px;padding:1px 7px;font-size:13px}
+.mrow.them .reacts span{background:rgba(255,255,255,.08)}
+.ccomp{display:flex;gap:8px;align-items:flex-end;padding:8px 10px calc(env(safe-area-inset-bottom) + 8px);background:rgba(20,24,38,.95);border-top:1px solid var(--bd)}
+.ccomp textarea{flex:1;max-height:120px;min-height:44px;padding:11px 14px;border-radius:22px;font-size:15px;line-height:1.35}
+.cbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--mu);background:var(--s2)}
+.cbtn.send{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(124,92,255,.35)}
+.epanel{display:none;height:240px;overflow-y:auto;background:#121626;border-top:1px solid var(--bd);padding:8px}
+.epanel.on{display:block}
+.epanel .eg{display:grid;grid-template-columns:repeat(8,1fr)}.epanel button{font-size:26px;padding:6px 0;border-radius:10px}.epanel button:active{background:var(--s2)}
+.epanel h5{font-size:11px;color:var(--mu);margin:8px 4px 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.rbar{position:fixed;z-index:60;background:rgba(28,33,52,.97);border:1px solid var(--bd2);border-radius:20px;padding:8px;box-shadow:0 14px 34px rgba(0,0,0,.5);animation:pop .2s;left:50%;transform:translateX(-50%);width:max-content;max-width:92vw}
+.rbar .em{display:flex;gap:4px}.rbar .em button{font-size:26px;width:42px;height:42px;border-radius:12px}.rbar .em button.on{background:rgba(124,92,255,.3)}
+.rbar .acts{display:flex;gap:6px;margin-top:6px;border-top:1px solid var(--bd);padding-top:6px}.rbar .acts button{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;display:flex;gap:6px;justify-content:center;align-items:center;background:var(--s2)}
 </style>
 </head>
 <body>
@@ -274,7 +308,8 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   </div>
   <div class="card">
     <h3><span class="ico c-teal" data-i="clock"></span><span class="sp">Focus timer</span></h3>
-    <div class="sub">25 min focus · 5 min break · +5 points per session</div>
+    <div class="sub" id="tSub">25 min focus · 5 min break · +5 points per session</div>
+    <div id="tAdjust"></div>
     <div class="seg" id="catSeg"></div>
     <div class="tring">
       <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/></svg>
@@ -378,6 +413,13 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <!-- City sheet -->
 <div class="sheet" id="citySheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your city</h3><div id="cityList"></div></div></div>
 
+<div id="chatScreen">
+  <div class="chead"><button class="iconbtn" onclick="closeChat()" style="transform:rotate(180deg)" id="chatBack"></button><span id="chatAv"></span><div style="flex:1;min-width:0"><b id="chatName"></b><div class="meta" id="chatSub"></div></div><span id="chatLock"></span></div>
+  <div class="cmsgs" id="cmsgs"></div>
+  <div class="epanel" id="epanel"></div>
+  <div class="ccomp"><button class="cbtn" id="emojiBtn" onclick="toggleEmoji()"></button><textarea id="cinput" rows="1" placeholder="Message" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea><button class="cbtn send" id="sendBtn" onclick="sendMsg()"></button></div>
+</div>
+<div id="rbar"></div>
 <div class="toast" id="toast"></div>
 <div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button></div></div>
 
@@ -643,7 +685,7 @@ function renderGoals(){
  document.getElementById('projPct').textContent=pp+'% complete · '+Pj.milestones.filter(m=>m.done).length+' of '+Pj.milestones.length+' milestones';
  document.getElementById('milestones').innerHTML=Pj.milestones.map(m=>`<div class="li ${m.done?'done':''}"><button class="cb" onclick="togMs('${m.id}')">${m.done?ic('check',14,'',3):''}</button><span class="t">${esc(m.name)}</span><button class="x" onclick="delMs('${m.id}')">${ic('x',15)}</button></div>`).join('');
  document.getElementById('catSeg').innerHTML=[['project','graduation','Project'],['work','briefcase','Work'],['study','book','Study']].map(([c,i,n])=>`<button data-c="${c}" class="${S.timer.cat===c?'on':''}" onclick="setCat('${c}')">${ic(i,15)}${n}</button>`).join('');
- document.getElementById('tReset').innerHTML=ic('rotate',16)+'Reset';
+ document.getElementById('tReset').innerHTML=ic('rotate',16)+'Reset';document.getElementById('tAdjust').innerHTML=timerAdjustHtml();document.getElementById('tSub').textContent=(S.focusMin||25)+' min focus · '+(S.breakMin||5)+' min break · +'+sessPts()+' points per session';
  drawTimer();
  const rec=dayRec(),f=rec.focus||{};
  document.getElementById('tToday').textContent=`Today: ${rec.sessions||0} sessions · ${(((f.project||0)+(f.work||0)+(f.study||0))/60).toFixed(1)} h focused`;
@@ -671,20 +713,29 @@ function togFam(id){const f=S.family.find(x=>x.id===id);f.done=!f.done;save();if
 function delFam(id){S.family=S.family.filter(x=>x.id!==id);save();render()}
 
 // ================= FOCUS TIMER =================
-const FOCUS=25*60,BREAK=5*60;
+const FOCUS_S=()=>Math.min(120,Math.max(5,S.focusMin||25))*60,BREAK_S=()=>Math.min(30,Math.max(1,S.breakMin||5))*60;
+const sessPts=()=>Math.max(5,Math.round((S.focusMin||25)/25*5));
+function adjTimer(kind,d){if(S.timer.running){toast('Pause the timer to change it','clock');return}
+ if(kind==='f')S.focusMin=Math.min(120,Math.max(5,(S.focusMin||25)+d));else S.breakMin=Math.min(30,Math.max(1,(S.breakMin||5)+d));
+ if(S.timer.mode==='focus')S.timer.left=FOCUS_S();else S.timer.left=BREAK_S();save();renderGoals()}
+function presetTimer(f,b){if(S.timer.running){toast('Pause the timer to change it','clock');return}S.focusMin=f;S.breakMin=b;S.timer.mode='focus';S.timer.left=FOCUS_S();save();renderGoals()}
+function timerAdjustHtml(){const f=S.focusMin||25,b=S.breakMin||5,st='padding:0;width:34px;height:34px;border-radius:11px';
+ const step=(k,v,unit,dm,dp)=>`<div style="flex:1;background:rgba(0,0,0,.22);border-radius:16px;padding:8px 10px;display:flex;align-items:center;gap:8px"><div style="flex:1"><div style="font-size:11px;color:var(--mu);font-weight:600">${unit}</div><b style="font-size:17px;white-space:nowrap">${v}<span style="font-size:12px;color:var(--mu);font-weight:600"> min</span></b></div><button class="btn ghost" style="${st}" onclick="adjTimer('${k}',${dm})">−</button><button class="btn ghost" style="${st}" onclick="adjTimer('${k}',${dp})">+</button></div>`;
+ return `<div style="display:flex;gap:8px;margin-bottom:8px">${step('f',f,'Focus',f>30?-10:-5,f>=30?10:5)}${step('b',b,'Break',b>5?-5:-1,b>=5?5:1)}</div>
+ <div style="display:flex;gap:6px;margin-bottom:10px">${[[25,5],[50,10],[90,20],[120,30]].map(([x,y])=>`<button class="btn ghost" style="flex:1;padding:7px 2px;font-size:12px;${f===x&&b===y?'border-color:var(--a1);background:rgba(124,92,255,.2)':''}" onclick="presetTimer(${x},${y})">${x}/${y}</button>`).join('')}</div>`}
 function timeLeft(){const T=S.timer;return T.running?Math.max(0,Math.round((T.endAt-Date.now())/1000)):T.left}
-function drawTimer(){const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS:BREAK;
+function drawTimer(){const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS_S():BREAK_S();
  document.getElementById('tClock').textContent=String(Math.floor(l/60)).padStart(2,'0')+':'+String(l%60).padStart(2,'0');
  document.getElementById('tArc').style.strokeDashoffset=552.9*(1-l/tot);
  document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?'Focusing on '+T.cat:'Ready to focus'):(T.running?'Break time':'Break ready');
  document.getElementById('tBtn').innerHTML=T.running?ic('pause',16,'',2.4)+'Pause':ic('play',16,'',2.2)+'Start'}
 function setCat(c){S.timer.cat=c;save();renderGoals()}
 function startPause(){const T=S.timer;if(T.running){T.left=timeLeft();T.running=false}else{T.endAt=Date.now()+T.left*1000;T.running=true;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}save();drawTimer()}
-function resetTimer(){S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS;save();drawTimer()}
+function resetTimer(){S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS_S();save();drawTimer()}
 function timerTick(){const T=S.timer;if(!T.running)return;if(timeLeft()>0){if(document.getElementById('v-goals').classList.contains('on'))drawTimer();return}
- if(T.mode==='focus'){const r=dayRec();r.focus=r.focus||{};r.focus[T.cat]=(r.focus[T.cat]||0)+25;r.sessions=(r.sessions||0)+1;S.totalSessions++;
-  T.mode='break';T.left=BREAK;T.endAt=Date.now()+BREAK*1000;bell();notify('Focus session done','Take a 5-minute break.');addPts(5,'Focus session complete! Break time','lightbulb')}
- else{T.mode='focus';T.running=false;T.left=FOCUS;bell();notify('Break over','Ready for another focus session?');toast('Break over. Ready for the next session?','clock');save();render()}}
+ if(T.mode==='focus'){const r=dayRec();r.focus=r.focus||{};r.focus[T.cat]=(r.focus[T.cat]||0)+(S.focusMin||25);r.sessions=(r.sessions||0)+1;S.totalSessions++;
+  T.mode='break';T.left=BREAK_S();T.endAt=Date.now()+BREAK_S()*1000;bell();notify('Focus session done','Take a '+(S.breakMin||5)+'-minute break.');addPts(sessPts(),'Focus session complete! Break time','lightbulb')}
+ else{T.mode='focus';T.running=false;T.left=FOCUS_S();bell();notify('Break over','Ready for another focus session?');toast('Break over. Ready for the next session?','clock');save();render()}}
 setInterval(()=>timerTick(),1000);
 function notify(t,b){try{if(Notification.permission==='granted')new Notification(t,{body:b})}catch(e){}}
 
@@ -820,7 +871,7 @@ async function doSchedule(){
  }catch(e){console.log('schedule error',e)}
 }
 async function allowExact(){try{await LN.changeExactNotificationSetting();setTimeout(scheduleNative,1500)}catch(e){}}
-async function timerNotif(){if(!LN)return;try{await LN.cancel({notifications:[{id:99999}]});const T=S.timer;if(T.running&&S.notif&&(await ensurePerm()))await LN.schedule({notifications:[{id:99999,channelId:'route',title:T.mode==='focus'?'Focus session done!':'Break over',body:T.mode==='focus'?'+5 points. Take a 5-minute break.':'Ready for another focus session?',schedule:{at:new Date(T.endAt),allowWhileIdle:true}}]})}catch(e){}}
+async function timerNotif(){if(!LN)return;try{await LN.cancel({notifications:[{id:99999}]});const T=S.timer;if(T.running&&S.notif&&(await ensurePerm()))await LN.schedule({notifications:[{id:99999,channelId:'route',title:T.mode==='focus'?'Focus session done!':'Break over',body:T.mode==='focus'?'+'+sessPts()+' points. Take a '+(S.breakMin||5)+'-minute break.':'Ready for another focus session?',schedule:{at:new Date(T.endAt),allowWhileIdle:true}}]})}catch(e){}}
 if(IS_NATIVE){
  if(S.notifNativeInit!==true){S.notif=true;S.notifNativeInit=true;store.set(S)}
  const _save=save;save=function(){_save();scheduleNative()};
@@ -867,7 +918,7 @@ const SV=()=>firebase.firestore.FieldValue.serverTimestamp();
 const CODE_RE=/^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/;
 function famCode(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Array(12);crypto.getRandomValues(r);let c='';for(let i=0;i<12;i++)c+=a[r[i]%a.length];return c.slice(0,4)+'-'+c.slice(4,8)+'-'+c.slice(8)}
 function normCode(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return c.length===12?c.slice(0,4)+'-'+c.slice(4,8)+'-'+c.slice(8):c}
-const enc8=new TextEncoder(),dec8=new TextDecoder();
+const enc8=typeof TextEncoder!=='undefined'?new TextEncoder():null,dec8=typeof TextDecoder!=='undefined'?new TextDecoder():null;
 const b64=u=>{let s='';u=new Uint8Array(u);for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
 const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function famIdOf(code){const h=await crypto.subtle.digest('SHA-256',enc8.encode('mdr-id:'+code));return [...new Uint8Array(h)].slice(0,16).map(x=>x.toString(16).padStart(2,'0')).join('')}
@@ -879,7 +930,7 @@ async function open_(s,key=FKEY){if(!s)return{};if(decCache.has(s))return decCac
 const famRef=()=>FB.db.collection('families').doc(S.famId);
 
 async function fbInit(){
- if(!FB_CONFIG||!window.firebase||!(window.crypto&&crypto.subtle)){renderFamily();return}
+ if(!FB_CONFIG||!window.firebase||!(window.crypto&&crypto.subtle)||!enc8){renderFamily();return}
  try{firebase.initializeApp(FB_CONFIG);FB.db=firebase.firestore();
   try{FB.db.settings({experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}
   try{await FB.db.enablePersistence()}catch(e){}
@@ -891,7 +942,7 @@ function subscribeFamily(){
  FB.unsubs.forEach(u=>u());FB.unsubs=[];const f=famRef();
  FB.unsubs.push(f.onSnapshot(async d=>{try{FAM.family=d.exists?await open_(d.data().e):null}catch(e){FAM.family={name:'Family'}}renderFamily()},e=>{FB.err=e.message;renderFamily()}));
  FB.unsubs.push(f.collection('members').onSnapshot(async q=>{
-  FAM.members=(await Promise.all(q.docs.map(async d=>{const r=d.data();let p={};try{p=await open_(r.e)}catch(e){}return{id:d.id,...p,lastSeen:r.lastSeen,online:r.lastSeen&&r.lastSeen.toMillis&&Date.now()-r.lastSeen.toMillis()<10*6e4}})));renderFamily()}));
+  FAM.members=(await Promise.all(q.docs.map(async d=>{const r=d.data();let p={};try{p=await open_(r.e)}catch(e){}return{id:d.id,...p,lastSeen:r.lastSeen,online:r.lastSeen&&r.lastSeen.toMillis&&Date.now()-r.lastSeen.toMillis()<10*6e4}})));const meM=FAM.members.find(m=>m.id===FB.uid);if(meM&&!meM.pub)publishMe();syncChatSubs();renderFamily()}));
  FB.unsubs.push(f.collection('tasks').orderBy('createdAt','desc').limit(150).onSnapshot(async q=>{
   const prev=new Map(FAM.tasks.map(t=>[t.id,t.status]));
   FAM.tasks=(await Promise.all(q.docs.map(async d=>{const r=d.data();let p={};try{p=await open_(r.e)}catch(e){p={title:'(unreadable)'}}return{id:d.id,...p,from:r.from,to:r.to,status:r.status,pts:r.pts,createdAt:r.createdAt,doneAt:r.doneAt,doneBy:r.doneBy,_e:r.e}})));
@@ -920,13 +971,13 @@ async function joinFamily(code){
  try{const id=await famIdOf(code),key=await famKeyOf(code);const d=await FB.db.collection('families').doc(id).get();if(!d.exists){toast('No family with this code','alert');return}
   let info;try{info=await open_(d.data().e,key)}catch(e){toast('Wrong family code','alert');return}
   FKEY=key;S.famId=id;S.famCode=code;
-  await famRef().collection('members').doc(FB.uid).set({e:await seal({name:S.name,color:S.color}),joinedAt:SV(),lastSeen:SV()});
+  await famRef().collection('members').doc(FB.uid).set({e:await seal({name:S.name,color:S.color,pub:(await myEcdh()).pub}),joinedAt:SV(),lastSeen:SV()});
   S.famSeen=[];save();subscribeFamily();burst(80);toast('Welcome to '+info.name+'!','users');renderFamily()
  }catch(e){toast('Could not join: '+e.message,'alert')}
 }
 function saveProfile(){const el=document.getElementById('pfName');if(el){if(!el.value.trim()){toast('Write your name first','user');return false}S.name=el.value.trim()}S.color=pickColor||S.color||AVCOLORS[0];save();return true}
-async function updateProfile(){if(!saveProfile())return;if(S.famId)await famRef().collection('members').doc(FB.uid).set({e:await seal({name:S.name,color:S.color})},{merge:true}).catch(()=>{});toast('Profile saved','user');render()}
-async function leaveFamily(){if(!S.famId)return;FB.unsubs.forEach(u=>u());FB.unsubs=[];try{await famRef().collection('members').doc(FB.uid).delete()}catch(e){}S.famCode=null;S.famId=null;FKEY=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();renderFamily();render();toast('You left the family','users')}
+async function updateProfile(){if(!saveProfile())return;if(S.famId)await publishMe();toast('Profile saved','user');render()}
+async function leaveFamily(){if(!S.famId)return;FB.unsubs.forEach(u=>u());FB.unsubs=[];Object.keys(CHATS).forEach(c=>{CHATS[c].unsub.forEach(u=>u());delete CHATS[c]});dmKeys.clear();try{await famRef().collection('members').doc(FB.uid).delete()}catch(e){}S.famCode=null;S.famId=null;FKEY=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();renderFamily();render();toast('You left the family','users')}
 function setSendType(k){sendType=k;document.querySelectorAll('#sType button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const sh=k==='shopping';
  document.getElementById('sItemsBox').style.display=sh?'block':'none';document.getElementById('sTitleL').textContent=sh?'List name':'Task';
  document.getElementById('sTitle').placeholder={task:'e.g. Call your aunt today',home:'e.g. Clean your room before dinner',shopping:'e.g. Groceries for the week',project:'e.g. Review the contract draft'}[k]}
@@ -955,13 +1006,91 @@ async function delFamTask(id){try{await famRef().collection('tasks').doc(id).del
 function openMember(id){const m=FAM.members.find(x=>x.id===id);if(!m)return;
  document.getElementById('memberBody').innerHTML=`<div style="display:flex;gap:14px;align-items:center;margin-bottom:6px">${av(m)}<div><b style="font-size:18px">${esc(nameOf(id))}</b><div class="meta">${(S.aliases||{})[id]?'Real name: '+esc(m.name)+' · ':''}${m.online?'Online now':'Seen '+ago(m.lastSeen)}</div></div></div>
   <label>Nickname (only you see this)</label><input id="aliasIn" value="${esc((S.aliases||{})[id]||'')}" placeholder="e.g. Mama, Baba, Habibti…">
-  <div class="row"><button class="btn ghost" onclick="saveAlias('${id}')">Save nickname</button><button class="btn" onclick="closeSheets();openSend('${id}')">${ic('plus',16)}Send task</button></div>`;
+  <div class="row"><button class="btn ghost" onclick="saveAlias('${id}')">Save nickname</button><button class="btn ghost" onclick="closeSheets();openChat(chatIdWith('${id}'))">${ic('heart',16)}Message</button><button class="btn" onclick="closeSheets();openSend('${id}')">${ic('plus',16)}Task</button></div>`;
  document.getElementById('memberSheet').classList.add('on')}
 function saveAlias(id){S.aliases=S.aliases||{};const v=document.getElementById('aliasIn').value.trim();if(v)S.aliases[id]=v;else delete S.aliases[id];save();closeSheets();renderFamily();render();toast(v?'Nickname saved':'Nickname removed','user')}
 function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
 function shareInvite(){openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on My Day Route 🤍\n\nFamily code: ${S.famCode}\n(Keep it private: it is the key that unlocks our family's tasks.)\n\nDownload the app: https://github.com/Rawhy7/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
 function copyCode(){try{navigator.clipboard.writeText(S.famCode).then(()=>toast('Code copied','check'),()=>toast(S.famCode,'users'))}catch(e){toast(S.famCode,'users')}}
 function tellWhatsApp(id){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;openExt('https://wa.me/?text='+encodeURIComponent(`📌 New task for you on My Day Route.\nOpen the app to see it.`))}
+// ---- CHAT (group + private, end-to-end encrypted) ----
+let famView='tasks',curChat=null;const CHATS={};const dmKeys=new Map();
+const EMOJI={Smileys:'😀😃😄😁😆😅🤣😂🙂😉😊😇🥰😍🤩😘😋😜🤪🤗🤭🤫🤔😐😏😒🙄😬😌😔😴🥱😷🤒🥳😎🤓🧐😕😟😮😲🥺😢😭😤😠😡🤯😳🥵🥶😱😨😰😓🤥🙃',
+ Hearts:'❤️🧡💛💚💙💜🤍🖤🤎💔❣️💕💞💓💗💖💘💝💟',
+ Hands:'👍👎👌✌️🤞🤟🤘🤙👋🙌👏🤲🙏🤝💪✍️👊✊🫶☝️👆👇👉👈',
+ People:'👨‍👩‍👧‍👦👪👨‍👩‍👦👩‍👧👨‍👧👵👴👶👦👧🧕🧔👨‍🎓👩‍🎓👨‍⚖️👩‍💼🧑‍🍳',
+ Islamic:'🕌🤲📿📖🌙⭐✨🕋🌅🌄☪️',
+ Things:'🎉🎊🎁🎂🍰☕🍵🍞🥛🍅🍚🍗🥗🍉🍎🛒🏠🚗📱💻📚✏️📌⏰✅❌⚡🔥💯🌟🌸🌹🌴☀️🌧️'};
+const REACTS=['❤️','😂','👍','😮','😢','🙏'];
+const chatIdWith=uid=>uid==='group'?'group':[FB.uid,uid].sort().join('__');
+const otherOf=cid=>cid==='group'?'group':cid.split('__').find(x=>x!==FB.uid);
+async function myEcdh(){if(S.ecdh&&S.ecdh.pub)return S.ecdh;const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+ S.ecdh={pub:await crypto.subtle.exportKey('jwk',kp.publicKey),priv:await crypto.subtle.exportKey('jwk',kp.privateKey)};store.set(S);return S.ecdh}
+async function keyFor(cid){if(cid==='group')return FKEY;if(dmKeys.has(cid))return dmKeys.get(cid);const o=FAM.members.find(m=>m.id===otherOf(cid));if(!o||!o.pub)return null;
+ const me=await myEcdh();const priv=await crypto.subtle.importKey('jwk',me.priv,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);const pub=await crypto.subtle.importKey('jwk',o.pub,{name:'ECDH',namedCurve:'P-256'},false,[]);
+ const k=await crypto.subtle.deriveKey({name:'ECDH',public:pub},priv,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);dmKeys.set(cid,k);return k}
+async function sealK(key,obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc8.encode(JSON.stringify(obj)));const out=new Uint8Array(12+ct.byteLength);out.set(iv);out.set(new Uint8Array(ct),12);return b64(out)}
+async function publishMe(){if(!S.famId)return;const me=await myEcdh();await famRef().collection('members').doc(FB.uid).set({e:await seal({name:S.name,color:S.color,pub:me.pub})},{merge:true}).catch(()=>{})}
+function syncChatSubs(){if(!S.famId)return;const want=['group',...FAM.members.filter(m=>m.id!==FB.uid).map(m=>chatIdWith(m.id))];
+ Object.keys(CHATS).forEach(c=>{if(!want.includes(c)){CHATS[c].unsub.forEach(u=>u());delete CHATS[c]}});
+ want.forEach(cid=>{if(CHATS[cid])return;const ref=famRef().collection('chats').doc(cid);const C=CHATS[cid]={msgs:[],reads:{},unsub:[],loaded:false};
+  C.unsub.push(ref.onSnapshot(d=>{C.reads=(d.exists&&d.data().reads)||{};if(curChat===cid)renderChat()},()=>{}));
+  C.unsub.push(ref.collection('messages').orderBy('at','desc').limit(120).onSnapshot(async q=>{
+   const key=await keyFor(cid);const before=new Set(C.msgs.map(m=>m.id));
+   C.msgs=(await Promise.all(q.docs.map(async d=>{const r=d.data();let t='🔒 Encrypted message';if(key){try{t=(await open_(r.e,key)).t}catch(e){}}
+    const re={};if(key&&r.r)for(const u in r.r){try{re[u]=(await open_(r.r[u],key)).e}catch(e){}}return{id:d.id,from:r.from,at:r.at,t,re}}))).reverse();
+   if(C.loaded){C.msgs.filter(m=>!before.has(m.id)&&m.from!==FB.uid).forEach(m=>{if(curChat!==cid||document.hidden){const who=nameOf(m.from);const title=cid==='group'?who+' · '+(FAM.family?FAM.family.name:'Family'):who;toast(title+': '+m.t.slice(0,60),'users');localNotify(title,m.t.slice(0,120))}})}
+   C.loaded=true;if(curChat===cid){renderChat();if(unreadOf(cid))markRead(cid)}renderNavBadge();if(famView==='chats')renderFamily()}));
+ })}
+const msMs=m=>m.at&&m.at.toMillis?m.at.toMillis():Date.now();
+function unreadOf(cid){const C=CHATS[cid];if(!C)return 0;const last=(S.chatRead||{})[cid]||0;return C.msgs.filter(m=>m.from!==FB.uid&&msMs(m)>last).length}
+function renderNavBadge(){const n=Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)+FAM.tasks.filter(t=>FB.uid&&forMe(t)&&t.status==='open'&&!(S.famSeenOpen||[]).includes(t.id)).length*0;
+ const b=document.querySelector('.nav button[data-v="family"]');if(!b)return;let d=b.querySelector('.navdot');if(n){if(!d){d=document.createElement('i');d.className='navdot';b.appendChild(d)}d.textContent=n>99?'99+':n}else if(d)d.remove()}
+function markRead(cid){S.chatRead=S.chatRead||{};S.chatRead[cid]=Date.now();store.set(S);renderNavBadge();famRef().collection('chats').doc(cid).set({reads:{[FB.uid]:SV()}},{merge:true}).catch(()=>{})}
+function chatListHtml(){
+ const rows=[{cid:'group',name:FAM.family?FAM.family.name:'Family group',m:{name:FAM.family?FAM.family.name:'F',color:'#7C5CFF'},group:true},...FAM.members.filter(m=>m.id!==FB.uid).map(m=>({cid:chatIdWith(m.id),name:nameOf(m.id),m}))];
+ return rows.map(r=>{const C=CHATS[r.cid]||{msgs:[]},last=C.msgs[C.msgs.length-1],u=unreadOf(r.cid);
+  return `<div class="chatrow" onclick="openChat('${r.cid}')">${r.group?`<span class="av" style="background:var(--grad)">${ic('users',20)}</span>`:av(r.m)}<div class="info" style="flex:1;min-width:0"><b>${esc(r.name)}</b><div class="prev">${last?(last.from===FB.uid?'You: ':r.group?esc(nameOf(last.from).split(' ')[0])+': ':'')+esc(last.t):(r.group?'Say salam to the whole family 👋':'Start a private chat')}</div></div>
+   <div class="side">${last?fmtClock(msMs(last)):''}${u?`<span class="badge-n">${u}</span>`:''}</div></div>`}).join('')+`<div class="meta" style="justify-content:center;margin-top:10px;flex-wrap:nowrap">${ic('lock',12)}<span>End-to-end encrypted · private chats have their own key</span></div>`}
+const fmtClock=ms=>{const d=new Date(ms),n=new Date();return d.toDateString()===n.toDateString()?d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):d.toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+function openChat(cid){curChat=cid;const g=cid==='group',o=g?null:FAM.members.find(m=>m.id===otherOf(cid));
+ document.getElementById('chatBack').innerHTML=ic('chevron',18);document.getElementById('emojiBtn').innerHTML=ic('heart',20);document.getElementById('sendBtn').innerHTML=ic('plane',19);
+ document.getElementById('chatLock').innerHTML=`<span style="color:var(--ok)">${ic('lock',16)}</span>`;
+ document.getElementById('chatAv').innerHTML=g?`<span class="av" style="background:var(--grad)">${ic('users',20)}</span>`:av(o||{name:'?'});
+ document.getElementById('chatName').textContent=g?(FAM.family?FAM.family.name:'Family'):nameOf(o&&o.id);
+ document.getElementById('chatSub').textContent=g?FAM.members.length+' members · '+FAM.members.filter(m=>m.online).length+' online':(o&&o.online?'online':'last seen '+ago(o&&o.lastSeen));
+ if(!document.getElementById('chatScreen').classList.contains('on'))try{history.pushState({chat:1},'')}catch(e){}document.getElementById('chatScreen').classList.add('on');document.getElementById('epanel').classList.remove('on');renderChat(true);markRead(cid);
+ if(!g&&o&&!o.pub)toast(nameOf(o.id)+' needs to open the app once to enable private chat','lock')}
+function closeChat(fromPop){if(!fromPop&&history.state&&history.state.chat){history.back();return}curChat=null;document.getElementById('chatScreen').classList.remove('on');closeRbar();renderFamily()}
+function renderChat(scroll){const C=CHATS[curChat];if(!C)return;const box=document.getElementById('cmsgs'),atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+ const g=curChat==='group';let h='',lastDay='',prev=null;
+ const otherRead=g?0:((C.reads[otherOf(curChat)]||{}).toMillis?C.reads[otherOf(curChat)].toMillis():0);
+ C.msgs.forEach(m=>{const ms=msMs(m),day=new Date(ms).toDateString();if(day!==lastDay){h+=`<div class="dsep"><span>${day===new Date().toDateString()?'Today':new Date(ms).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</span></div>`;lastDay=day;prev=null}
+  const me=m.from===FB.uid,cont=prev&&prev.from===m.from&&ms-msMs(prev)<5*6e4,mem=FAM.members.find(x=>x.id===m.from)||{name:'?',color:'#555'};
+  const big=/^(\p{Extended_Pictographic}|\p{Emoji_Component}|‍|️|\s){1,12}$/u.test(m.t)&&[...m.t.replace(/\s/g,'')].length<=8&&/\p{Extended_Pictographic}/u.test(m.t);
+  const counts={};Object.values(m.re||{}).forEach(e=>counts[e]=(counts[e]||0)+1);
+  const ticks=me?(g?ic('check',12,'',2.4):(otherRead>=ms?`<span style="color:#A5F3FC;display:flex">${ic('check',12,'',2.4)}${ic('check',12,'',2.4)}</span>`:ic('check',12,'',2.4))):'';
+  h+=`<div class="mrow ${me?'me':'them'} ${cont?'cont':''}">${!me&&g?(cont?'<span style="width:30px;flex:none"></span>':av(mem,'sm')):''}<div class="bub ${big?'big':''}" onclick="openRbar(event,'${m.id}')">${!me&&g&&!cont?`<div class="who" style="color:${mem.color}">${esc(nameOf(m.from))}</div>`:''}${esc(m.t)}<span class="tm">${new Date(ms).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}${ticks}</span>${Object.keys(counts).length?`<div class="reacts">${Object.entries(counts).map(([e,n])=>`<span>${e}${n>1?' '+n:''}</span>`).join('')}</div>`:''}</div></div>`;prev=m});
+ box.innerHTML=h||`<div class="empty" style="margin-top:40px">${ic('lock',22)}<br>No messages yet.<br>Everything you send here is end-to-end encrypted.</div>`;
+ if(scroll||atBottom)box.scrollTop=box.scrollHeight}
+async function sendMsg(){const inp=document.getElementById('cinput'),t=inp.value.trim();if(!t||!curChat)return;const cid=curChat,key=await keyFor(cid);if(!key){toast('Private chat not ready yet: '+nameOf(otherOf(cid))+' must open the app once','lock');return}
+ inp.value='';inp.style.height='auto';inp.focus();
+ try{await famRef().collection('chats').doc(cid).collection('messages').add({from:FB.uid,at:SV(),e:await sealK(key,{t:t.slice(0,4000)})});tone([880,1175],.06)}catch(e){toast('Not sent, check connection','alert');inp.value=t}}
+function toggleEmoji(){const p=document.getElementById('epanel');if(!p.innerHTML)p.innerHTML=Object.entries(EMOJI).map(([k,v])=>`<h5>${k}</h5><div class="eg">${[...new Intl.Segmenter().segment(v)].map(x=>`<button onclick="addEmoji('${x.segment}')">${x.segment}</button>`).join('')}</div>`).join('');p.classList.toggle('on');if(p.classList.contains('on'))document.getElementById('cinput').blur()}
+function addEmoji(e){const i=document.getElementById('cinput');i.value+=e;i.dispatchEvent(new Event('input'))}
+function openRbar(ev,mid){ev.stopPropagation();const C=CHATS[curChat],m=C&&C.msgs.find(x=>x.id===mid);if(!m)return;const mine=(m.re||{})[FB.uid];
+ const r=document.getElementById('rbar');r.className='rbar';r.style.top=Math.max(70,Math.min(ev.clientY-110,innerHeight-200))+'px';
+ r.innerHTML=`<div class="em">${REACTS.map(e=>`<button class="${mine===e?'on':''}" onclick="react('${mid}','${e}')">${e}</button>`).join('')}</div><div class="acts"><button onclick="copyMsg('${mid}')">${ic('clipboard',14)}Copy</button>${m.from===FB.uid?`<button onclick="delMsg('${mid}')" style="color:var(--red)">${ic('trash',14)}Delete</button>`:''}</div>`;
+ setTimeout(()=>document.addEventListener('click',closeRbar,{once:true}),10)}
+function closeRbar(){const r=document.getElementById('rbar');r.className='';r.innerHTML=''}
+async function react(mid,e){closeRbar();const cid=curChat,C=CHATS[cid],m=C.msgs.find(x=>x.id===mid),key=await keyFor(cid);if(!m||!key)return;
+ const ref=famRef().collection('chats').doc(cid).collection('messages').doc(mid);
+ try{await ref.update({['r.'+FB.uid]:(m.re||{})[FB.uid]===e?firebase.firestore.FieldValue.delete():await sealK(key,{e})})}catch(err){}}
+function copyMsg(mid){const m=CHATS[curChat].msgs.find(x=>x.id===mid);closeRbar();try{navigator.clipboard.writeText(m.t).then(()=>toast('Copied','clipboard'))}catch(e){}}
+async function delMsg(mid){closeRbar();try{await famRef().collection('chats').doc(curChat).collection('messages').doc(mid).delete()}catch(e){}}
+addEventListener('popstate',()=>{if(curChat)closeChat(true)});
+document.getElementById('cinput')&&document.getElementById('cinput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!IS_NATIVE){e.preventDefault();sendMsg()}});
+
 function colorPicker(){pickColor=pickColor||S.color||AVCOLORS[0];return `<div class="colors">${AVCOLORS.map(c=>`<button style="background:${c}" class="${c===pickColor?'sel':''}" onclick="pickColor='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));this.classList.add('sel')"></button>`).join('')}</div>`}
 function renderFamily(){
  const el=document.getElementById('famBody');if(!el)return;
@@ -986,12 +1115,13 @@ function renderFamily(){
    ${isSent?`<div style="display:flex;gap:8px;margin-top:8px">${t.status==='open'?`<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="tellWhatsApp('${t.id}')">Remind on WhatsApp</button>`:''}<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="delFamTask('${t.id}')">${ic('trash',13)}Delete</button></div>`:''}</div>
    ${!isSent?`<button class="check" style="${t.status==='done'?'background:var(--ok);border-color:var(--ok)':'border-color:var(--a1)'}" onclick="setFamTask('${t.id}',${t.status!=='done'})">${t.status==='done'?ic('check',18,'',3):''}</button>`:''}</div>`};
  el.innerHTML=`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
-   <div style="margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code · keep it private</span><div class="code" style="font-size:19px">${S.famCode}</div><div class="meta" style="margin-top:4px">${ic('lock',12)}End-to-end encrypted: only family members can read tasks</div></div>
+   <div style="margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code · keep it private</span><div class="code" style="font-size:19px">${S.famCode}</div><div class="meta" style="margin-top:4px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted: only your family can read tasks and messages</span></div></div>
    <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}</div>`).join('')}
    <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${Object.entries(FTYPES).map(([k,[n,i,c]])=>`<button class="card" style="margin:0;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700" onclick="openSend(null,'${k}')"><span class="ico c-${c}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(i,18)}</span>${n}</button>`).join('')}</div>
+  <div class="tabs2"><button class="${famView==='tasks'?'on':''}" onclick="famView='tasks';renderFamily()">${'Tasks'}${FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length?' ('+FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length+')':''}</button><button class="${famView==='chats'?'on':''}" onclick="famView='chats';renderFamily()">Chats${Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)?' ('+Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)+')':''}</button></div>
+  ${famView==='chats'?chatListHtml():`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${Object.entries(FTYPES).map(([k,[n,i,c]])=>`<button class="card" style="margin:0;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700" onclick="openSend(null,'${k}')"><span class="ico c-${c}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(i,18)}</span>${n}</button>`).join('')}</div>
   <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${isSent?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button></div>
-  ${list.length?list.map(row).join(''):`<div class="empty">${isSent?'Tasks you send will show here with their status.':'No tasks yet. When your family sends you something, it appears here instantly.'}</div>`}
+  ${list.length?list.map(row).join(''):`<div class="empty">${isSent?'Tasks you send will show here with their status.':'No tasks yet. When your family sends you something, it appears here instantly.'}</div>`}`}
   <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}"><label>Color</label>${colorPicker()}
    <div class="row"><button class="btn red" onclick="leaveFamily()">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;
 }
