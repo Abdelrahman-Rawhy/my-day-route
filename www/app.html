@@ -3335,7 +3335,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=67;
+const APP_VERSION=68;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3439,14 +3439,14 @@ async function joinFamily(code){
  if(!saveProfile())return;
  try{const id=await famIdOf(code),key=await famKeyOf(code);const d=await FB.db.collection('families').doc(id).get();if(!d.exists){toast('No family with this code','alert');return}
   let info;try{info=await open_(d.data().e,key)}catch(e){toast('Wrong family code','alert');return}
-  FKEY=key;S.famId=id;S.famCode=code;
+  if(S.famId&&S.famId!==id)famStop();FKEY=key;S.famId=id;S.famCode=code;famAddMode=false;famRemember(id,code,info.name);
   await famRef().collection('members').doc(FB.uid).set({e:await seal({name:S.name,color:S.color,pub:(await myEcdh()).pub}),joinedAt:SV(),lastSeen:SV()});
-  S.famSeen=[];save();subscribeFamily();burst(80);toast('Welcome to '+info.name+'!','users');renderFamily()
+  S.famSeen=(S.famSeenBy||{})[id]||[];save();subscribeFamily();burst(80);toast('Welcome to '+info.name+'!','users');renderFamily();render()
  }catch(e){toast('Could not join: '+e.message,'alert')}
 }
 function saveProfile(){const el=document.getElementById('pfName');if(el){if(!el.value.trim()){toast('Write your name first','user');return false}S.name=el.value.trim()}S.color=pickColor||S.color||AVCOLORS[0];save();return true}
 async function updateProfile(){if(!saveProfile())return;if(S.famId)await publishMe();toast('Profile saved','user');render()}
-async function leaveFamily(){if(!S.famId)return;FB.unsubs.forEach(u=>u());FB.unsubs=[];Object.keys(CHATS).forEach(c=>{CHATS[c].unsub.forEach(u=>u());delete CHATS[c]});dmKeys.clear();try{await famRef().collection('members').doc(FB.uid).delete()}catch(e){}S.famCode=null;S.famId=null;FKEY=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();renderFamily();render();toast('You left the family','users')}
+async function leaveFamily(){if(!S.famId)return;FB.unsubs.forEach(u=>u());FB.unsubs=[];Object.keys(CHATS).forEach(c=>{CHATS[c].unsub.forEach(u=>u());delete CHATS[c]});dmKeys.clear();try{await famRef().collection('members').doc(FB.uid).delete()}catch(e){}S.fams=(S.fams||[]).filter(f=>f.id!==S.famId);S.famCode=null;S.famId=null;FKEY=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();toast('You left the family','users');if(S.fams.length){famSwitch(S.fams[0].id)}else{renderFamily();render()}}
 function setSendType(k){sendType=k;document.querySelectorAll('#sType button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const sh=k==='shopping';
  document.getElementById('sItemsBox').style.display=sh?'block':'none';document.getElementById('sTitleL').textContent=sh?'List name':'Task';
  document.getElementById('sTitle').placeholder=T({task:'e.g. Call your aunt today',home:'e.g. Clean your room before dinner',shopping:'e.g. Groceries for the week',project:'e.g. Review the contract draft'}[k])}
@@ -3596,14 +3596,28 @@ addEventListener('popstate',()=>{if(curChat)closeChat(true)});
 document.getElementById('cinput')&&document.getElementById('cinput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!IS_NATIVE){e.preventDefault();sendMsg()}});
 
 function colorPicker(){pickColor=pickColor||S.color||AVCOLORS[0];return `<div class="colors">${AVCOLORS.map(c=>`<button style="background:${c}" class="${c===pickColor?'sel':''}" onclick="pickColor='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));this.classList.add('sel')"></button>`).join('')}</div>`}
+
+// ---- multiple family groups: remember every family, one is active at a time
+let famAddMode=false;
+function famRemember(id,code,name){S.fams=S.fams||[];const f=S.fams.find(x=>x.id===id);if(f){f.code=code;if(name)f.name=name}else S.fams.push({id,code,name:name||'Family'});save()}
+function famStop(){try{FB.unsubs.forEach(u=>u())}catch(e){}FB.unsubs=[];try{Object.keys(CHATS).forEach(c=>{CHATS[c].unsub.forEach(u=>u());delete CHATS[c]})}catch(e){}try{dmKeys.clear()}catch(e){}
+ if(S.famId){S.famSeenBy=S.famSeenBy||{};S.famSeenBy[S.famId]=(S.famSeen||[]).slice(-300)}FAM.family=null;FAM.members=[];FAM.tasks=[]}
+async function famSwitch(id){const f=(S.fams||[]).find(x=>x.id===id);if(!f)return;if(id===S.famId&&!famAddMode){renderFamily();return}
+ famStop();famAddMode=false;S.famId=f.id;S.famCode=f.code;S.famSeen=(S.famSeenBy||{})[f.id]||[];save();try{FKEY=await famKeyOf(f.code);subscribeFamily();publishMe&&publishMe();setTimeout(()=>publishLeague&&publishLeague(true),1500)}catch(e){toast('Could not open this family','alert')}renderFamily();render();toast((S.lang==='ar'?'دلوقتي في: ':'Now in: ')+f.name,'users')}
+function famMenu(){const ar=S.lang==='ar',it=(S.fams||[]).map(f=>({k:f.id,label:f.name,sub:f.code,icon:'users',c:'pink',on:f.id===S.famId&&!famAddMode}));
+ it.push({k:'+',label:ar?'انضم لعائلة تانية أو أنشئ واحدة':'Join or create another family',icon:'plus',c:'green'});
+ openMenu(ar?'جروبات العائلة':'Family groups',it,k=>{if(k==='+'){famAddMode=true;famTab='join';renderFamily()}else famSwitch(k)})}
+function famSwitcherHtml(){const ar=S.lang==='ar',cur=(S.fams||[]).find(f=>f.id===S.famId),n=(S.fams||[]).length;if(!S.famId)return'';
+ return `<button class="fsel" onclick="famMenu()"><span class="ico c-pink">${ic('users',20)}</span><span class="fs-t"><small>${ar?'الجروب الحالي':'Current group'}${n>1?(ar?' – عندك '+(n===2?'جروبين':arNum(n)+' جروبات'):' – '+n+' groups'):''}</small><b>${esc(famAddMode?(ar?'إضافة عائلة':'Add a family'):(FAM.family&&FAM.family.name)||(cur&&cur.name)||'Family')}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>`}
 function renderFamily(){
  const el=document.getElementById('famBody');if(!el)return;
  if(el.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;
  const dr=dayRec(),deedHtml=`<div class="deed" style="margin-bottom:14px"><span class="ico c-pink">${ic('hands',20)}</span><div style="flex:1"><div style="font-size:11px;color:var(--mu);font-weight:700;letter-spacing:.3px">TODAY'S GOOD DEED · +10</div><b style="display:block;margin-top:2px">${esc(deedOfDay())}</b></div><button class="btn" ${dr.deed?'disabled':''} onclick="doDeed()">${dr.deed?ic('check',16,'',2.6):'Done'}</button></div>`;
  if(!FB_CONFIG||!window.firebase){el.innerHTML=deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('users',18)}</span><span class="sp">Family mode</span></h3><div class="sub" style="margin-bottom:0">${IS_NATIVE?'Family mode is being set up. It will turn on by itself in the next update.':'Family mode works in the My Day Route phone app. Install the app to send and receive family tasks.'}</div></div>`;return}
  if(!FB.ok){el.innerHTML=deedHtml+`<div class="card"><div class="sub" style="margin:0">${FB.err?'Connection problem: '+esc(FB.err):'Connecting…'}</div></div>`;return}
- if(!S.famCode||!S.famId){
-  el.innerHTML=deedHtml+`<div class="card"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">Your profile</span></h3><div class="sub">How your family will see you</div>
+ if(S.famId&&!(S.fams||[]).some(f=>f.id===S.famId))famRemember(S.famId,S.famCode,FAM.family&&FAM.family.name);
+ if(!S.famCode||!S.famId||famAddMode){
+  el.innerHTML=famSwitcherHtml()+(famAddMode?`<button class="btn ghost wide" style="margin-bottom:14px" onclick="famAddMode=false;renderFamily()">${ic('x',16)}${S.lang==='ar'?'رجوع للعائلة الحالية':'Back to current family'}</button>`:'')+deedHtml+`<div class="card"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">Your profile</span></h3><div class="sub">How your family will see you</div>
    <label>Your name</label><input id="pfName" value="${esc(S.name||'')}" placeholder="e.g. Ahmed"><label>Color</label>${colorPicker()}</div>
    <div class="tabs2"><button class="${famTab!=='join'?'on':''}" onclick="famTab='create';renderFamily()">Create a family</button><button class="${famTab==='join'?'on':''}" onclick="famTab='join';renderFamily()">Join with code</button></div>
    ${famTab==='join'?`<div class="card"><h3><span class="ico c-teal">${ic('lock',18)}</span><span class="sp">Join your family</span></h3><div class="sub">Ask whoever created the family for the code</div><input id="fCode" placeholder="ABCD-EFGH-JKMN" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;text-align:center;font-size:18px"><button class="btn wide" style="margin-top:12px" onclick="joinFamily()">Join family</button><button class="btn ghost wide" style="margin-top:8px" onclick="openScan()">${ic('scan',16)}Scan QR code</button></div>`
@@ -3619,7 +3633,8 @@ function renderFamily(){
    ${isSent?`<span class="status ${t.status==='done'?'ok':'wait'}">${t.status==='done'?'Done'+(t.doneByName&&t.to==='*'?' by '+esc(nameOf(t.doneBy,t.doneByName)):'')+' '+ago(t.doneAt):'Waiting'}</span>`:''}${!isSent&&t.status==='done'&&t.to==='*'&&t.doneByName?`<span class="status ok">Done by ${esc(t.doneBy===FB.uid?'you':nameOf(t.doneBy,t.doneByName))}</span>`:''}</div>
    ${isSent?`<div style="display:flex;gap:8px;margin-top:8px">${t.status==='open'?`<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="tellWhatsApp('${t.id}')">Remind on WhatsApp</button>`:''}<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="delFamTask('${t.id}')">${ic('trash',13)}Delete</button></div>`:''}</div>
    ${!isSent?`<button class="check" style="${t.status==='done'?'background:var(--ok);border-color:var(--ok)':'border-color:var(--a1)'}" onclick="setFamTask('${t.id}',${t.status!=='done'})">${t.status==='done'?ic('check',18,'',3):''}</button>`:''}</div>`};
- el.innerHTML=deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="showFamQR()" aria-label="Show QR">${ic('qr',16)}</button><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
+ if(FAM.family&&FAM.family.name){const cf=(S.fams||[]).find(f=>f.id===S.famId);if(cf&&cf.name!==FAM.family.name){cf.name=FAM.family.name;save()}}
+ el.innerHTML=famSwitcherHtml()+deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="showFamQR()" aria-label="Show QR">${ic('qr',16)}</button><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
    <div style="margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code · keep it private</span><div class="code" style="font-size:19px" onclick="showFamQR()">${S.famCode} <span style="vertical-align:middle;opacity:.7">${ic('qr',16)}</span></div><div class="meta" style="margin-top:4px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted: only your family can read tasks and messages</span></div></div>
    <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}</div>`).join('')}
    <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
