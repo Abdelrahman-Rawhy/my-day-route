@@ -368,6 +368,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 .step.arrive .body{animation:arrive .8s cubic-bezier(.2,1,.3,1) .35s both}
 .qrbox{background:#fff;border-radius:22px;padding:16px;width:min(260px,72vw);margin:6px auto 12px;box-shadow:0 10px 40px rgba(0,0,0,.25)}.qrbox canvas{display:block;width:100%;height:auto;image-rendering:pixelated}
 .scanv{position:relative;border-radius:22px;overflow:hidden;background:#000;aspect-ratio:1;width:min(300px,80vw);margin:6px auto 12px}.scanv video{width:100%;height:100%;object-fit:cover}.scanv .fr{position:absolute;inset:16%;border:3px solid rgba(255,255,255,.85);border-radius:18px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}.scanv .ln{position:absolute;left:18%;right:18%;height:2px;background:var(--a1);top:20%;animation:scanln 2s ease-in-out infinite alternate}@keyframes scanln{to{top:80%}}
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}input,textarea,select,[contenteditable],[contenteditable] *,.selok,.selok *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 </style>
 </head>
 <body>
@@ -1595,7 +1596,7 @@ try{matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{i
   tm=setTimeout(()=>{window._lpFired=true;setTimeout(()=>window._lpFired=false,700);buzz(false);const id=st.dataset.id;cancel();openOpts(id)},480)});
  R.addEventListener('pointermove',e=>{if(tm&&(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10))cancel()});
  ['pointerup','pointercancel','pointerleave'].forEach(ev=>R.addEventListener(ev,()=>{if(tm)cancel()}));
- R.addEventListener('contextmenu',e=>{if(e.target.closest('.step'))e.preventDefault()});
+ document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea,[contenteditable],.selok'))e.preventDefault()});document.addEventListener('selectionchange',()=>{const a=document.activeElement;if(a&&a.matches&&a.matches('input,textarea,[contenteditable]'))return;const g=window.getSelection();if(g&&!g.isCollapsed){const n=g.anchorNode&&(g.anchorNode.nodeType===1?g.anchorNode:g.anchorNode.parentElement);if(!(n&&n.closest&&n.closest('.selok')))g.removeAllRanges()}});
  R.addEventListener('click',e=>{if(window._lpFired&&e.target.closest('.step')){e.stopPropagation();e.preventDefault()}},true)})();
 const addMin=(hm,n)=>{const [h,m]=hm.split(':').map(Number);let t=Math.min(23*60+55,h*60+m+n);return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
 function openOpts(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;if(t.prayer)return openPrayerOpts(id);const rec=dayRec(),d=rec.done.includes(id),k=taskIcon(t),now=new Date().toTimeString().slice(0,5);
@@ -2109,7 +2110,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=3;
+const APP_VERSION=4;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
