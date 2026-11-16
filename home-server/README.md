@@ -2,7 +2,14 @@
 
 Keep encrypted backups of My Day Route (journal, photos, **videos**, history) on a computer at home. Unlimited space, free, and nothing leaves your house.
 
-## 1. Start it
+## Ubuntu (recommended for an old PC)
+Copy this folder to the PC, open a terminal inside it and run:
+```
+sudo bash install-ubuntu.sh
+```
+It asks for a username and password, starts the server automatically on every boot, keeps the PC awake, and can install Tailscale so you can reach it from anywhere. At the end it prints the address to type in the app.
+
+## 1. Start it (Windows / Mac, manual)
 - **Windows:** install Python from python.org (tick *Add Python to PATH*), then double-click `Start-Windows.bat`.
 - **Mac / Linux / Raspberry Pi:** run `./start-mac-linux.sh`.
 
