@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.RemoteViews;
@@ -18,6 +19,13 @@ import org.json.JSONObject;
 
 /** "Current step" widget: shows the step you should do now, with a check button that celebrates and moves on. */
 public class StepWidget extends AppWidgetProvider {
+    private static final RouteWidgetBase.Variant[] VARIANTS = {
+        new RouteWidgetBase.Variant(R.layout.widget_step_s, 40f, 40f,
+            R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title),
+        new RouteWidgetBase.Variant(R.layout.widget_step, 200f, 90f,
+            R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title,
+            R.id.w_s_label, R.id.w_s_progress, R.id.w_s_pts, R.id.w_s_next, R.id.w_c_name, R.id.w_c_next),
+    };
     public static final String PENDING = "pending";
     public static final String ACTION_CHECK = "com.rawhy.mydayroute.STEP_CHECK";
     public static final String EXTRA_ID = "stepId";
@@ -68,27 +76,32 @@ public class StepWidget extends AppWidgetProvider {
     }
 
     private RemoteViews build(Context ctx, int widgetId, boolean celebrate, String doneName, int donePts) {
+        AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
+        return RouteWidgetBase.responsive(VARIANTS, v -> buildVariant(ctx, v, widgetId, celebrate, doneName, donePts), mgr, widgetId);
+    }
+
+    private RemoteViews buildVariant(Context ctx, RouteWidgetBase.Variant var, int widgetId, boolean celebrate, String doneName, int donePts) {
         JSONObject data = readData(ctx);
         JSONObject[] left = remaining(ctx, data);
         int total = data.optInt("total");
         int done = Math.max(0, total - left.length);
         DateFormat tf = android.text.format.DateFormat.getTimeFormat(ctx);
-        RemoteViews v = new RemoteViews(ctx.getPackageName(), R.layout.widget_step);
+        RemoteViews v = new RemoteViews(ctx.getPackageName(), var.layout);
 
         Intent open = new Intent(ctx, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         v.setOnClickPendingIntent(R.id.w_step_body, PendingIntent.getActivity(ctx, 1, open,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
-        v.setTextViewText(R.id.w_s_progress, done + "/" + total);
+        RouteWidgetBase.text(v, var, R.id.w_s_progress, done + "/" + total);
         if (left.length > 0) {
             JSONObject cur = left[0];
             long t = cur.optLong("t");
             boolean now = t <= System.currentTimeMillis();
-            v.setTextViewText(R.id.w_s_label, now ? "NOW" : "NEXT · " + tf.format(new Date(t)));
-            v.setTextViewText(R.id.w_s_name, cur.optString("n"));
-            v.setTextViewText(R.id.w_s_pts, "+" + cur.optInt("pts") + " points");
-            v.setTextViewText(R.id.w_s_next, left.length > 1
+            RouteWidgetBase.text(v, var, R.id.w_s_label, now ? "NOW" : "NEXT · " + tf.format(new Date(t)));
+            RouteWidgetBase.text(v, var, R.id.w_s_name, cur.optString("n"));
+            RouteWidgetBase.text(v, var, R.id.w_s_pts, "+" + cur.optInt("pts") + " points");
+            RouteWidgetBase.text(v, var, R.id.w_s_next, left.length > 1
                 ? "Then: " + left[1].optString("n") + " · " + tf.format(new Date(left[1].optLong("t")))
                 : "Last step of the day");
             Intent check = new Intent(ctx, StepWidget.class);
@@ -98,15 +111,15 @@ public class StepWidget extends AppWidgetProvider {
             v.setOnClickPendingIntent(R.id.w_s_check, PendingIntent.getBroadcast(ctx, 1000 + widgetId, check,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
         } else {
-            v.setTextViewText(R.id.w_s_label, total > 0 ? "ALL DONE" : "MY DAY ROUTE");
-            v.setTextViewText(R.id.w_s_name, total > 0 ? "Route complete!" : "Open the app");
-            v.setTextViewText(R.id.w_s_pts, total > 0 ? "MashaAllah, rest well" : "to load today's steps");
-            v.setTextViewText(R.id.w_s_next, "");
+            RouteWidgetBase.text(v, var, R.id.w_s_label, total > 0 ? "ALL DONE" : "MY DAY ROUTE");
+            RouteWidgetBase.text(v, var, R.id.w_s_name, total > 0 ? "Route complete!" : "Open the app");
+            RouteWidgetBase.text(v, var, R.id.w_s_pts, total > 0 ? "MashaAllah, rest well" : "to load today's steps");
+            RouteWidgetBase.text(v, var, R.id.w_s_next, "");
         }
         if (celebrate) {
-            v.setTextViewText(R.id.w_c_title, "Done! +" + donePts);
-            v.setTextViewText(R.id.w_c_name, doneName);
-            v.setTextViewText(R.id.w_c_next, left.length > 0 ? "Next: " + left[0].optString("n") : "Route complete! 🏆");
+            RouteWidgetBase.text(v, var, R.id.w_c_title, "Done! +" + donePts);
+            RouteWidgetBase.text(v, var, R.id.w_c_name, doneName);
+            RouteWidgetBase.text(v, var, R.id.w_c_next, left.length > 0 ? "Next: " + left[0].optString("n") : "Route complete! 🏆");
         }
         v.setDisplayedChild(R.id.w_flip, celebrate ? 1 : 0);
         return v;
@@ -115,6 +128,11 @@ public class StepWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         for (int id : ids) mgr.updateAppWidget(id, build(ctx, id, false, "", 0));
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context ctx, AppWidgetManager mgr, int widgetId, Bundle newOptions) {
+        mgr.updateAppWidget(widgetId, build(ctx, widgetId, false, "", 0));
     }
 
     @Override

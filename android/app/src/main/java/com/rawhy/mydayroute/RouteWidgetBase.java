@@ -8,21 +8,49 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.SizeF;
 import android.widget.RemoteViews;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/** Shared logic for the My Day Route widgets: live countdowns with Chronometer, rolled forward by an alarm. */
+/** Shared logic for the My Day Route widgets: size-responsive layouts and live countdowns. */
 public abstract class RouteWidgetBase extends AppWidgetProvider {
     public static final String PREFS = "mdr_widget";
     public static final String KEY = "data";
 
-    protected abstract int layoutId();
+    /** One layout for one size range. Sizes are minimums in dp. */
+    public static class Variant {
+        final int layout;
+        final float w;
+        final float h;
+        final Set<Integer> ids = new HashSet<>();
 
-    protected abstract boolean showSteps();
+        Variant(int layout, float w, float h, int... viewIds) {
+            this.layout = layout;
+            this.w = w;
+            this.h = h;
+            for (int id : viewIds) ids.add(id);
+        }
+
+        boolean has(int id) {
+            return ids.contains(id);
+        }
+    }
+
+    public interface Builder {
+        RemoteViews build(Variant v);
+    }
+
+    /** Ordered from smallest to largest. */
+    protected abstract Variant[] variants();
 
     public static void refreshAll(Context ctx) {
         Class<?>[] classes = { RouteWidget.class, PrayerWidget.class, StepWidget.class };
@@ -38,8 +66,28 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
         }
     }
 
-    private static JSONObject firstAfter(JSONArray arr, long now) {
-        return firstAfter(arr, now, null);
+    /** Android 12+: give the launcher every layout and let it pick by size. Older: pick from the current size. */
+    public static RemoteViews responsive(Variant[] vs, Builder b, AppWidgetManager mgr, int widgetId) {
+        if (Build.VERSION.SDK_INT >= 31) {
+            Map<SizeF, RemoteViews> map = new HashMap<>();
+            for (Variant v : vs) map.put(new SizeF(v.w, v.h), b.build(v));
+            return new RemoteViews(map);
+        }
+        Variant best = vs[vs.length - 1];
+        Bundle o = mgr.getAppWidgetOptions(widgetId);
+        if (o != null) {
+            int w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+            int h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+            if (w > 0 && h > 0) {
+                best = vs[0];
+                for (Variant v : vs) if (w >= v.w && h >= v.h) best = v;
+            }
+        }
+        return b.build(best);
+    }
+
+    static void text(RemoteViews rv, Variant v, int id, CharSequence s) {
+        if (v.has(id)) rv.setTextViewText(id, s);
     }
 
     private static JSONObject firstAfter(JSONArray arr, long now, String skipIds) {
@@ -54,64 +102,72 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
         return null;
     }
 
-    private static void setCountdown(RemoteViews v, int viewId, long target, long now) {
+    private static void setCountdown(RemoteViews rv, Variant v, int viewId, long target, long now) {
+        if (!v.has(viewId)) return;
         long base = SystemClock.elapsedRealtime() + (target - now);
-        v.setChronometer(viewId, base, null, true);
-        if (Build.VERSION.SDK_INT >= 24) {
-            v.setChronometerCountDown(viewId, true);
-        }
+        rv.setChronometer(viewId, base, null, true);
+        if (Build.VERSION.SDK_INT >= 24) rv.setChronometerCountDown(viewId, true);
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context ctx, AppWidgetManager mgr, int widgetId, Bundle newOptions) {
+        onUpdate(ctx, mgr, new int[] { widgetId });
     }
 
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
-        long now = System.currentTimeMillis();
-        JSONObject data;
+        final long now = System.currentTimeMillis();
+        JSONObject parsed;
         try {
-            data = new JSONObject(ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "{}"));
+            parsed = new JSONObject(ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "{}"));
         } catch (Exception e) {
-            data = new JSONObject();
+            parsed = new JSONObject();
         }
-        JSONObject prayer = firstAfter(data.optJSONArray("prayers"), now);
+        final JSONObject data = parsed;
         String pending = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(StepWidget.PENDING, "[]");
-        JSONObject step = firstAfter(data.optJSONArray("steps"), now, pending);
-        DateFormat tf = android.text.format.DateFormat.getTimeFormat(ctx);
-        long nextEvent = Long.MAX_VALUE;
+        final JSONObject prayer = firstAfter(data.optJSONArray("prayers"), now, null);
+        final JSONObject step = firstAfter(data.optJSONArray("steps"), now, pending);
+        final DateFormat tf = android.text.format.DateFormat.getTimeFormat(ctx);
+        final String pkg = ctx.getPackageName();
 
         Intent open = new Intent(ctx, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent openPi = PendingIntent.getActivity(ctx, 0, open,
+        final PendingIntent openPi = PendingIntent.getActivity(ctx, 0, open,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        for (int id : ids) {
-            RemoteViews v = new RemoteViews(ctx.getPackageName(), layoutId());
+        Builder b = v -> {
+            RemoteViews rv = new RemoteViews(pkg, v.layout);
             if (prayer != null) {
                 long t = prayer.optLong("t");
-                v.setTextViewText(R.id.w_prayer_name, prayer.optString("n"));
-                v.setTextViewText(R.id.w_prayer_at, tf.format(new Date(t)));
-                setCountdown(v, R.id.w_prayer_cd, t, now);
-                nextEvent = Math.min(nextEvent, t);
+                text(rv, v, R.id.w_prayer_name, prayer.optString("n"));
+                text(rv, v, R.id.w_prayer_at, tf.format(new Date(t)));
+                setCountdown(rv, v, R.id.w_prayer_cd, t, now);
             } else {
-                v.setTextViewText(R.id.w_prayer_name, "Open the app");
-                v.setTextViewText(R.id.w_prayer_at, "to load prayer times");
+                text(rv, v, R.id.w_prayer_name, "Open app");
+                text(rv, v, R.id.w_prayer_at, "to load prayer times");
             }
-            if (showSteps()) {
+            if (v.has(R.id.w_step_name)) {
                 if (step != null) {
                     long t = step.optLong("t");
-                    v.setTextViewText(R.id.w_step_name, step.optString("n"));
-                    v.setTextViewText(R.id.w_step_at, tf.format(new Date(t)));
-                    setCountdown(v, R.id.w_step_cd, t, now);
-                    nextEvent = Math.min(nextEvent, t);
+                    text(rv, v, R.id.w_step_name, step.optString("n"));
+                    text(rv, v, R.id.w_step_at, tf.format(new Date(t)));
+                    setCountdown(rv, v, R.id.w_step_cd, t, now);
                 } else {
-                    v.setTextViewText(R.id.w_step_name, "All done today");
-                    v.setTextViewText(R.id.w_step_at, "");
-                    v.setChronometer(R.id.w_step_cd, SystemClock.elapsedRealtime(), "🎉", false);
+                    text(rv, v, R.id.w_step_name, "All done today");
+                    text(rv, v, R.id.w_step_at, "");
+                    if (v.has(R.id.w_step_cd)) rv.setChronometer(R.id.w_step_cd, SystemClock.elapsedRealtime(), "🎉", false);
                 }
-                v.setTextViewText(R.id.w_progress,
-                    data.optInt("done") + "/" + data.optInt("total") + " steps · " + data.optInt("pct") + "%");
             }
-            v.setOnClickPendingIntent(R.id.w_root, openPi);
-            mgr.updateAppWidget(id, v);
-        }
+            text(rv, v, R.id.w_progress,
+                data.optInt("done") + "/" + data.optInt("total") + " steps · " + data.optInt("pct") + "%");
+            rv.setOnClickPendingIntent(R.id.w_root, openPi);
+            return rv;
+        };
+        for (int id : ids) mgr.updateAppWidget(id, responsive(variants(), b, mgr, id));
+
+        long nextEvent = Long.MAX_VALUE;
+        if (prayer != null) nextEvent = Math.min(nextEvent, prayer.optLong("t"));
+        if (step != null) nextEvent = Math.min(nextEvent, step.optLong("t"));
         scheduleNext(ctx, ids, nextEvent == Long.MAX_VALUE ? now + 30 * 60 * 1000L : nextEvent + 1500L);
     }
 
