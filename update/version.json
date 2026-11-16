@@ -1,1 +1,1 @@
-{"v": 60, "note": "Menus now slide all the way down before they disappear, with no last-moment jump.", "note_ar": "القوائم أصبحت تنزل للآخر قبل أن تختفي، بدون قفزة في آخر لحظة."}
+{"v": 61, "note": "Fixed the jump when you swipe a menu down to close it. The menu no longer pops back up for a moment before it disappears. A tiny finger movement while tapping no longer moves the menu.", "note_ar": "إصلاح القفزة عند سحب القائمة لتحت لإغلاقها. القائمة لم تعد ترجع لفوق لحظة قبل أن تختفي. والحركة البسيطة للإصبع أثناء اللمس لم تعد تحرّك القائمة."}

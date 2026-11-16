@@ -792,6 +792,9 @@ html[dir=rtl] .tc-h .iconbtn:last-child svg,html:not([dir=rtl]) .tc-h .iconbtn:f
 #tdTodayN:empty{display:none}#tdTodayN{font-size:11px;padding:1px 7px;border-radius:99px;background:#ef4444;color:#fff;margin-inline-start:4px}
 .celebrate.on:not(.closing){animation:ovIn .22s ease}@keyframes ovIn{from{opacity:0}}
 
+.sheet .panel.opened{animation:none!important}
+.sheet.closing .panel.opened{animation:sheetDown .24s cubic-bezier(.4,0,.9,.6) forwards!important}
+.sheet.swiped .panel,.sheet.swiped.closing .panel.opened{animation:none!important;transition:none!important}
 /* v60 close animation finishes before the sheet is hidden */
 .sheet.closing{animation:fadeOut .24s ease forwards!important}
 .sheet.closing .panel{animation:sheetDown .24s cubic-bezier(.4,0,.9,.6) forwards!important}
@@ -3053,7 +3056,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=60;
+const APP_VERSION=61;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3403,6 +3406,7 @@ if(APPP&&APPP.addListener){try{APPP.addListener('backButton',handleBack)}catch(e
 // lock the page behind an open sheet so the sheet itself scrolls
 new MutationObserver(()=>document.body.classList.toggle('sheet-open',!!document.querySelector('.sheet.on:not(.closing)'))).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
 
+document.addEventListener('animationend',e=>{if(e.animationName==='sheetUp'&&e.target.classList&&e.target.classList.contains('panel'))e.target.classList.add('opened')});
 // ---- swipe a sheet down from its top to close it ----
 (()=>{let P=null,y0=0,dy=0,t0=0,ok=false;
  document.addEventListener('touchstart',e=>{const p=e.target.closest&&e.target.closest('.sheet.on .panel');if(!p||e.touches.length>1){P=null;return}
@@ -3410,10 +3414,10 @@ new MutationObserver(()=>document.body.classList.toggle('sheet-open',!!document.
   P=p;y0=e.touches[0].clientY;dy=0;t0=Date.now();ok=p.scrollTop<=0},{passive:true});
  document.addEventListener('touchmove',e=>{if(!P)return;const y=e.touches[0].clientY;dy=y-y0;
   if(!ok){if(P.scrollTop<=0&&dy>0){ok=true;y0=y;dy=0}else return}
-  if(dy<=0){P.style.transform='';P.classList.remove('drag');return}
-  e.preventDefault();P.classList.add('drag');P.style.transform=`translateY(${dy}px)`},{passive:false});
+  if(dy<=8){P.style.transform='';P.classList.remove('drag');return}
+  e.preventDefault();P.classList.add('drag','opened');P.style.transform=`translateY(${dy-8}px)`},{passive:false});
  document.addEventListener('touchend',()=>{if(!P)return;const p=P;P=null;p.classList.remove('drag');const v=dy/Math.max(1,Date.now()-t0);
-  if(ok&&(dy>110||(dy>40&&v>.6))){p.classList.add('snap');p.style.transform='translateY(110%)';setTimeout(()=>{p.classList.remove('snap');const sh=p.closest('.sheet');sh.classList.add('swiped');setTimeout(()=>{p.style.transform='';sh.classList.remove('swiped')},260);
+  if(ok&&(dy>110||(dy>40&&v>.6))){p.classList.add('snap');p.style.transform='translateY(110%)';setTimeout(()=>{p.classList.remove('snap');const sh=p.closest('.sheet');sh.classList.add('swiped');const fin=()=>{if(sh.classList.contains('on')){setTimeout(fin,60);return}p.style.transform='';sh.classList.remove('swiped')};setTimeout(fin,120);
     if(sh.id==='pickSheet')closePick();else if(sh.id==='dtSheet')closeDT();else if(sh.id==='recSheet'&&typeof stopRec==='function')stopRec();else if(sh.id==='scanSheet')stopScan();else if(sh.onclick)sh.onclick({target:sh});else sh.classList.remove('on')},200)}
   else if(dy>0){p.classList.add('snap');p.style.transform='';setTimeout(()=>p.classList.remove('snap'),230)}dy=0},{passive:true})})();
 
@@ -3446,7 +3450,7 @@ dtEnhance(document);new MutationObserver(ms=>{for(const m of ms)m.addedNodes.for
 // smooth close: sheets slide down before they hide
 {const R=DOMTokenList.prototype.remove,A=DOMTokenList.prototype.add;const own=new WeakMap();
  DOMTokenList.prototype.remove=function(...c){const el=own.get(this);if(el&&c.length===1&&c[0]==='on'&&this.contains('on')&&!this.contains('closing')&&!document.hidden){SFX('down');A.call(this,'closing');clearTimeout(el._ct);el._ct=setTimeout(()=>{R.call(this,'on','closing')},270);return}return R.apply(this,c)};
- DOMTokenList.prototype.add=function(...c){const el=own.get(this);if(el&&c.includes('on')){if(!this.contains('on')||this.contains('closing'))SFX('up');clearTimeout(el._ct);R.call(this,'closing')}return A.apply(this,c)};
+ DOMTokenList.prototype.add=function(...c){const el=own.get(this);if(el&&c.includes('on')){if(!this.contains('on')){const pn=el.querySelector&&el.querySelector('.panel');if(pn)pn.classList.remove('opened')}if(!this.contains('on')||this.contains('closing'))SFX('up');clearTimeout(el._ct);R.call(this,'closing')}return A.apply(this,c)};
  document.querySelectorAll('.sheet,#celebrate,#viewer').forEach(sh=>own.set(sh.classList,sh));window._smoothReg=el=>{if(el)own.set(el.classList,el)}}
 applyTheme();hydrateIcons();{const f=document.getElementById('micFab');if(f)f.innerHTML=ic('mic',26)}
 applyWidgetChecks();render();applyLang();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
