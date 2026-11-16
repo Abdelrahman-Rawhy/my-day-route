@@ -2227,14 +2227,14 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=12;
+const APP_VERSION=13;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
  try{const j=await (await fetch(UPD+'version.json?t='+Date.now(),{cache:'no-store'})).json();
   const have=Math.max(APP_VERSION,+localStorage.getItem('appV')||0);
   if(j.v>have){const h=await (await fetch(UPD+'app.html?t='+Date.now(),{cache:'no-store'})).text();
-   if(h.includes('APP_VERSION='+j.v+';')){localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v));showUpdate(j.note||'New features are ready.')}}
+   if(h.includes('APP_VERSION='+j.v+';')){localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v));showUpdate((S.lang==='ar'&&j.note_ar)||j.note||'New features are ready.')}}
  }catch(e){}
 }
 function showUpdate(note){const b=document.createElement('div');b.className='banner';b.style.cssText='position:fixed;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 96px);z-index:40;max-width:532px;margin:0 auto;background:rgba(28,33,52,.96);border-color:rgba(124,92,255,.5)';
