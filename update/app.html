@@ -1269,8 +1269,10 @@ function openBackup(){const H=S.home||{};document.getElementById('backupBody').i
  <label>Server address</label><input id="hsUrl" value="${esc(H.url||'')}" placeholder="http://192.168.1.20:8765/" autocapitalize="off">
  <div style="display:flex;gap:8px"><div style="flex:1"><label>Username</label><input id="hsUser" value="${esc(H.user||'')}" autocapitalize="off"></div><div style="flex:1"><label>Password</label><input id="hsPass" type="password" value="${esc(H.pass||'')}"></div></div>
  <label>Backup password (encrypts the files)</label><input id="hsKeyPw" type="password" placeholder="${H.key?'Saved · type to change':'At least 6 characters'}">
- <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="hsAuto" style="width:auto" ${H.auto!==false?'checked':''}> Back up automatically every day on Wi-Fi</label>
+ <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="hsAuto" style="width:auto" ${H.auto!==false?'checked':''}> Back up automatically every day</label>
  <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="hsVid" style="width:auto" ${H.vids!==false?'checked':''}> Include videos</label>
+ <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="hsMob" style="width:auto" ${H.mobile?'checked':''} onchange="document.getElementById('hsMobVidRow').style.display=this.checked?'flex':'none'"> Also back up on mobile data</label>
+ <label id="hsMobVidRow" style="display:${H.mobile?'flex':'none'};gap:8px;align-items:center;margin:6px 0 0 26px"><input type="checkbox" id="hsMobVid" style="width:auto" ${H.mobileVids?'checked':''}> Include videos on mobile data (uses a lot of data)</label>
  <div class="row"><button class="btn ghost" onclick="saveHome(true)">Test & save</button><button class="btn" onclick="homeBackupNow()" id="hsBtn">${ic('lock',15)}Back up now</button></div>
  <div class="meta" style="margin-top:10px" id="hsStatus">${H.last?'Last backup: '+ago(H.last)+(H.lastSize?' · '+fmtSize(H.lastSize):''):'No backup yet'}</div>
  <div class="sec" style="margin-top:18px"><h3 style="font-size:15px">Restore from home server</h3><button class="link" onclick="listHome()">Show backups</button></div><div id="hsList"></div>
@@ -1302,15 +1304,15 @@ async function dav(method,name,body,headers={}){const H=S.home;const hdr={Author
  if(CHTTP){const x=await CHTTP.request({url:davBase()+(name||''),method,headers:hdr,data:body==null?undefined:body,responseType:'text',connectTimeout:15000,readTimeout:600000});r={status:x.status,text:async()=>typeof x.data==='string'?x.data:JSON.stringify(x.data)}}
  else r=await fetch(davBase()+(name||''),{method,headers:hdr,body});if(r.status===401)throw new Error('Wrong username or password');if(r.status>=400&&!(method==='MKCOL'&&r.status===405))throw new Error('Server answered '+r.status);return r}
 async function saveHome(test){const H=S.home||{};H.url=document.getElementById('hsUrl').value.trim();H.user=document.getElementById('hsUser').value.trim();H.pass=document.getElementById('hsPass').value;
- H.auto=document.getElementById('hsAuto').checked;H.vids=document.getElementById('hsVid').checked;const kp=document.getElementById('hsKeyPw').value;
+ H.auto=document.getElementById('hsAuto').checked;H.vids=document.getElementById('hsVid').checked;H.mobile=document.getElementById('hsMob').checked;H.mobileVids=H.mobile&&document.getElementById('hsMobVid').checked;const kp=document.getElementById('hsKeyPw').value;
  if(kp){if(kp.length<6){toast('Backup password: at least 6 characters','lock');return false}H.salt=b64(crypto.getRandomValues(new Uint8Array(16)));H.key=await rawKey(await bkKey(kp,H.salt))}
  if(!H.url){toast('Enter the server address','alert');return false}if(!H.key){toast('Choose a backup password','lock');return false}
  S.home=H;store.set(S);if(!test)return true;const st=document.getElementById('hsStatus');st.textContent='Testing…';
  try{await dav('PROPFIND','',null,{Depth:'0'});st.textContent='Connected ✓ Settings saved';toast('Home server connected','check');return true}catch(e){st.textContent='Could not connect: '+e.message;toast('Could not reach the server','alert');return false}}
-async function homeBackupNow(silent){const H=S.home;if(!silent){if(!await saveHome(false))return}else if(!H||!H.key)return;
+async function homeBackupNow(silent,vidsOverride){const H=S.home;if(!silent){if(!await saveHome(false))return}else if(!H||!H.key)return;
  if(!IS_NATIVE&&!silent){toast('Home server backup works in the phone app','alert');return}
  const btn=document.getElementById('hsBtn'),st=document.getElementById('hsStatus');if(btn)btn.disabled=true;
- try{const key=await impKey(H.key);let out='';for await(const line of backupLines(key,H.salt,H.vids!==false,n=>{if(st)st.textContent='Packing media '+n+'…'}))out+=line;
+ try{const key=await impKey(H.key);let out='';for await(const line of backupLines(key,H.salt,vidsOverride!==undefined?vidsOverride:H.vids!==false,n=>{if(st)st.textContent='Packing media '+n+'…'}))out+=line;
   if(st)st.textContent='Uploading '+fmtSize(out.length)+'…';
   const name='MyDayRoute-'+today()+'.mdr';await dav('PUT',name,out,{'Content-Type':'application/octet-stream'});
   H.last=Date.now();H.lastSize=out.length;store.set(S);if(st)st.textContent='Backed up ✓ '+fmtSize(out.length);if(!silent)toast('Saved to your home server','check');
@@ -1327,7 +1329,8 @@ async function restoreHome(name,btn){if(!btn.dataset.sure){btn.dataset.sure=1;bt
  btn.textContent='Downloading…';try{const t=await (await dav('GET',name)).text();btn.textContent='Restoring…';const raw=await restoreFromLines(t.split('\n').filter(Boolean),pw);closeSheets();toast(raw?'Restored. Unlock the journal with your old PIN':'Restored from home server','check');setTimeout(()=>location.reload(),1600)}
  catch(e){toast('Restore failed: '+e.message,'alert');btn.textContent='Restore';delete btn.dataset.sure}}
 async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto===false)return;if(H.last&&Date.now()-H.last<20*3600e3)return;
- try{if(NETP){const n=await NETP.getStatus();if(n.connectionType!=='wifi')return}}catch(e){}homeBackupNow(true)}
+ let onWifi=true;try{if(NETP){const n=await NETP.getStatus();if(n.connectionType==='none')return;onWifi=n.connectionType==='wifi'}}catch(e){}
+ if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
 const APP_VERSION=1;
