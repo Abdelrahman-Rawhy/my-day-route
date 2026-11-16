@@ -1,3 +1,5 @@
 node_modules/
 .DS_Store
 *.apk
+home-server/mdr_server_config.json
+home-server/backups/

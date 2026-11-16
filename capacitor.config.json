@@ -10,5 +10,9 @@
       "iconColor": "#7C5CFF",
       "smallIcon": "ic_stat_route"
     }
+  },
+  "server": {
+    "cleartext": true,
+    "androidScheme": "https"
   }
 }

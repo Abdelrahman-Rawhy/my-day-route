@@ -1232,44 +1232,102 @@ async function renderReview(){const el=document.getElementById('revBody');if(!el
   ${jLocked()&&!JKEY?`<div class="meta" style="justify-content:center">${ic('lock',12)}<span>Unlock your journal to include memories and mood</span></div>`:''}`;
  for(const t of el.querySelectorAll('#revMem .th'))t.style.backgroundImage=`url('${await thumbOf(t.dataset.m)}')`}
 
-// ================= BACKUP & RESTORE (encrypted file) =================
+// ================= BACKUP & RESTORE (encrypted file / home server) =================
 const FSP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.Filesystem)||(CAP.registerPlugin&&CAP.registerPlugin('Filesystem'))):null;
 const SHP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.Share)||(CAP.registerPlugin&&CAP.registerPlugin('Share'))):null;
-function openBackup(){document.getElementById('backupBody').innerHTML=`<h3>${ic('rotate',20)}Backup & restore</h3>
- <div class="sub">One encrypted file with your route, points, history, goals, journal, photos and videos. Save it to Google Drive or send it to yourself.</div>
+const NETP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.Network)||(CAP.registerPlugin&&CAP.registerPlugin('Network'))):null;
+async function bkKey(pw,salt){const b=await crypto.subtle.importKey('raw',enc8.encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:250000,hash:'SHA-256'},b,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
+async function bkLine(key,obj,buf){const iv=crypto.getRandomValues(new Uint8Array(12));const payload=buf?buf:enc8.encode(JSON.stringify(obj));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload);return JSON.stringify({iv:b64(iv),d:b64(ct),...(buf?{m:obj}:{})})+'\n'}
+// Produces the backup as lines. If the journal is locked and not open, its records are copied still encrypted (PIN needed after restore).
+async function* backupLines(key,salt,vids,progress){
+ yield JSON.stringify({mdr:2,salt,at:Date.now()})+'\n';
+ if(!(jLocked()&&!JKEY))await ensureJK();const plain=!(jLocked()&&!JKEY);
+ const st={...S};delete st._sync;delete st.home;if(plain)delete st.jLock;delete st.jkRaw;
+ yield await bkLine(key,{t:'state',S:st});
+ if(!window.indexedDB)return;
+ if(plain){const ents=await loadEntries();yield await bkLine(key,{t:'entries',E:ents.map(e=>({id:e.id,date:e.date,at:e.at,media:e.media,mood:e.mood,title:e.title,text:e.text}))})}
+ else{const raw=(await idbAll('entries')).map(r=>({...r,enc:r.enc?wire(r.enc):null}));yield await bkLine(key,{t:'rawentries',E:raw})}
+ let n=0;for(const r of await idbAll('media')){if(r.type==='video'&&!vids)continue;progress&&progress(++n);
+  if(plain){const m=await unpackMedia(r);if(!m)continue;yield await bkLine(key,{t:'media',id:m.id,type:m.type,mime:m.mime,thumb:m.thumb},await m.blob.arrayBuffer())}
+  else yield await bkLine(key,{t:'rawmedia',id:r.id,type:r.type,mime:r.mime,iv:r.enc.iv,tenc:r.tenc?wire(r.tenc):null},r.enc.d)}}
+async function restoreFromLines(lines,pw){const head=JSON.parse(lines[0]);if(!head.mdr)throw new Error('Not a My Day Route backup');
+ const key=await bkKey(pw,head.salt);const dec=async l=>{const o=JSON.parse(l);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},key,unb64(o.d));return o.m?{meta:o.m,buf:pt}:JSON.parse(dec8.decode(pt))};
+ let first;try{first=await dec(lines[1])}catch(e){throw new Error('Wrong password')}
+ const ns=first.S;if(!ns.ecdh)ns.ecdh=S.ecdh;ns.home=S.home;ns.mk=S.mk||ns.mk;
+ await idb();await tx('entries','readwrite',st=>st.clear());await tx('media','readwrite',st=>st.clear());let raw=false;
+ for(const l of lines.slice(2)){const o=await dec(l);
+  if(o.t==='entries'){for(const e of o.E)await idbPut('entries',{id:e.id,date:e.date,at:e.at,media:e.media,body:{mood:e.mood,title:e.title,text:e.text}})}
+  else if(o.t==='rawentries'){raw=true;for(const r of o.E)await idbPut('entries',{...r,enc:r.enc?unwire(r.enc):undefined})}
+  else if(o.meta&&o.meta.t==='rawmedia'){await idbPut('media',{id:o.meta.id,type:o.meta.type,mime:o.meta.mime,enc:{iv:o.meta.iv,d:o.buf},tenc:o.meta.tenc?unwire(o.meta.tenc):null})}
+  else if(o.meta){await idbPut('media',{id:o.meta.id,type:o.meta.type,mime:o.meta.mime,thumb:o.meta.thumb,blob:new Blob([o.buf],{type:o.meta.mime})})}}
+ if(!raw){ns.jLock=null;delete ns.jkRaw}
+ S=ns;S.timer={mode:'focus',running:false,endAt:0,left:(S.focusMin||25)*60,cat:'project'};S.notified={};JKEY=null;jCache=null;urlCache.clear();store.set(S);return raw}
+function openBackup(){const H=S.home||{};document.getElementById('backupBody').innerHTML=`<h3>${ic('rotate',20)}Backup & restore</h3>
+ <div class="tabs2" style="margin-top:6px"><button class="${window._bkTab!=='home'?'on':''}" onclick="window._bkTab='file';openBackup()">Backup file</button><button class="${window._bkTab==='home'?'on':''}" onclick="window._bkTab='home';openBackup()">Home server</button></div>
+ ${window._bkTab==='home'?`
+ <div class="sub">Save encrypted backups to a computer, Raspberry Pi, Nextcloud or Synology at home. Unlimited space, videos included, nothing leaves your house.</div>
+ <label>Server address</label><input id="hsUrl" value="${esc(H.url||'')}" placeholder="http://192.168.1.20:8765/" autocapitalize="off">
+ <div style="display:flex;gap:8px"><div style="flex:1"><label>Username</label><input id="hsUser" value="${esc(H.user||'')}" autocapitalize="off"></div><div style="flex:1"><label>Password</label><input id="hsPass" type="password" value="${esc(H.pass||'')}"></div></div>
+ <label>Backup password (encrypts the files)</label><input id="hsKeyPw" type="password" placeholder="${H.key?'Saved · type to change':'At least 6 characters'}">
+ <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="hsAuto" style="width:auto" ${H.auto!==false?'checked':''}> Back up automatically every day on Wi-Fi</label>
+ <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="hsVid" style="width:auto" ${H.vids!==false?'checked':''}> Include videos</label>
+ <div class="row"><button class="btn ghost" onclick="saveHome(true)">Test & save</button><button class="btn" onclick="homeBackupNow()" id="hsBtn">${ic('lock',15)}Back up now</button></div>
+ <div class="meta" style="margin-top:10px" id="hsStatus">${H.last?'Last backup: '+ago(H.last)+(H.lastSize?' · '+fmtSize(H.lastSize):''):'No backup yet'}</div>
+ <div class="sec" style="margin-top:18px"><h3 style="font-size:15px">Restore from home server</h3><button class="link" onclick="listHome()">Show backups</button></div><div id="hsList"></div>
+ <div class="meta" style="margin-top:12px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>Files are encrypted on the phone with your backup password. The server only stores locked files.</span></div>`
+ :`<div class="sub">One encrypted file with your route, points, history, goals, journal, photos and videos. Save it to Google Drive or send it to yourself.</div>
  <label>Backup password</label><input id="bkPw" type="password" placeholder="At least 6 characters">
  <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="bkVid" style="width:auto"> Include videos (bigger file)</label>
  <button class="btn wide" style="margin-top:14px" onclick="makeBackup()" id="bkBtn">${ic('lock',16)}Create encrypted backup</button>
  <div class="sec" style="margin-top:20px"><h3 style="font-size:15px">Restore</h3></div>
  <div class="sub">Choose a backup file, then enter its password. This replaces the data on this phone.</div>
  <input type="file" id="bkFile" accept=".mdr,.txt,application/octet-stream,text/plain" style="display:none" onchange="restoreBackup(this.files[0]);this.value=''">
- <button class="btn ghost wide" onclick="if(document.getElementById('bkPw').value.length<6){toast('Enter the backup password first','lock');return}document.getElementById('bkFile').click()">Choose backup file</button>
- <div class="meta" style="margin-top:12px;flex-wrap:nowrap">${ic('lock',12)}<span>Without the password the file cannot be opened by anyone.</span></div>`;
+ <button class="btn ghost wide" onclick="if(document.getElementById('bkPw').value.length<6){toast('Enter the backup password first','lock');return}document.getElementById('bkFile').click()">Choose backup file</button>`}`;
  document.getElementById('backupSheet').classList.add('on')}
-async function bkKey(pw,salt){const b=await crypto.subtle.importKey('raw',enc8.encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:250000,hash:'SHA-256'},b,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
-async function bkLine(key,obj,buf){const iv=crypto.getRandomValues(new Uint8Array(12));const payload=buf?buf:enc8.encode(JSON.stringify(obj));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload);return JSON.stringify({iv:b64(iv),d:b64(ct),...(buf?{m:obj}:{})})+'\n'}
 async function makeBackup(){const pw=document.getElementById('bkPw').value;if(pw.length<6){toast('Use at least 6 characters','lock');return}
- if(jLocked()&&!JKEY){askPin('unlock',makeBackup);return}
  if(!FSP){toast('Backup works in the phone app','alert');return}
  const btn=document.getElementById('bkBtn');btn.disabled=true;btn.textContent='Preparing…';const vids=document.getElementById('bkVid').checked;
- try{const salt=b64(crypto.getRandomValues(new Uint8Array(16))),key=await bkKey(pw,salt),name='MyDayRoute-'+today()+'.mdr';
-  await FSP.writeFile({path:name,directory:'CACHE',data:JSON.stringify({mdr:1,salt})+'\n',encoding:'utf8'});
-  const st={...S};delete st.ecdh;await FSP.appendFile({path:name,directory:'CACHE',data:await bkLine(key,{t:'state',S:st}),encoding:'utf8'});
-  const ents=await loadEntries();await FSP.appendFile({path:name,directory:'CACHE',data:await bkLine(key,{t:'entries',E:ents.map(e=>({id:e.id,date:e.date,at:e.at,media:e.media,mood:e.mood,title:e.title,text:e.text}))}),encoding:'utf8'});
-  let n=0;for(const r of await idbAll('media')){const m=await unpackMedia(r);if(!m)continue;if(m.type==='video'&&!vids)continue;btn.textContent='Saving media '+(++n)+'…';
-   await FSP.appendFile({path:name,directory:'CACHE',data:await bkLine(key,{t:'media',id:m.id,type:m.type,mime:m.mime,thumb:m.thumb},await m.blob.arrayBuffer()),encoding:'utf8'})}
+ try{const salt=b64(crypto.getRandomValues(new Uint8Array(16))),key=await bkKey(pw,salt),name='MyDayRoute-'+today()+'.mdr';let first=true;
+  for await(const line of backupLines(key,salt,vids,n=>btn.textContent='Saving media '+n+'…')){if(first){await FSP.writeFile({path:name,directory:'CACHE',data:line,encoding:'utf8'});first=false}else await FSP.appendFile({path:name,directory:'CACHE',data:line,encoding:'utf8'})}
   const u=await FSP.getUri({path:name,directory:'CACHE'});closeSheets();await SHP.share({title:'My Day Route backup',text:'Encrypted backup '+today(),files:[u.uri]});toast('Backup ready. Save it to Drive','check')
  }catch(e){if(!/cancel/i.test(e.message||''))toast('Backup failed: '+e.message,'alert')}btn.disabled=false}
-async function restoreBackup(file){if(!file)return;const pw=document.getElementById('bkPw').value;const btn=document.querySelector('#backupBody .btn.ghost');
- try{btn.textContent='Reading…';const lines=(await file.text()).split('\n').filter(Boolean);const head=JSON.parse(lines[0]);if(!head.mdr)throw new Error('Not a My Day Route backup');
-  const key=await bkKey(pw,head.salt);const dec=async l=>{const o=JSON.parse(l);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},key,unb64(o.d));return o.m?{meta:o.m,buf:pt}:JSON.parse(dec8.decode(pt))};
-  let first;try{first=await dec(lines[1])}catch(e){throw new Error('Wrong password')}
-  const keepEcdh=S.ecdh;const ns=first.S;ns.ecdh=keepEcdh;ns.jLock=null;
-  const d=await idb();await tx('entries','readwrite',st=>st.clear());await tx('media','readwrite',st=>st.clear());
-  for(const l of lines.slice(2)){const o=await dec(l);if(o.t==='entries'){for(const e of o.E)await idbPut('entries',{id:e.id,date:e.date,at:e.at,media:e.media,body:{mood:e.mood,title:e.title,text:e.text}})}
-   else if(o.meta){await idbPut('media',{id:o.meta.id,type:o.meta.type,mime:o.meta.mime,thumb:o.meta.thumb,blob:new Blob([o.buf],{type:o.meta.mime})})}}
-  S=ns;JKEY=null;jCache=null;urlCache.clear();store.set(S);closeSheets();render();toast('Backup restored. Set your journal PIN again if you used one','check');setTimeout(()=>location.reload(),1800)
- }catch(e){toast('Restore failed: '+e.message,'alert');btn.textContent='Choose backup file'}}
+async function restoreBackup(file){if(!file)return;const pw=document.getElementById('bkPw').value;const btn=document.querySelector('#backupBody .btn.ghost.wide');
+ try{btn.textContent='Restoring…';const raw=await restoreFromLines((await file.text()).split('\n').filter(Boolean),pw);closeSheets();toast(raw?'Restored. Unlock the journal with your old PIN':'Backup restored','check');setTimeout(()=>location.reload(),1600)}
+ catch(e){toast('Restore failed: '+e.message,'alert');btn.textContent='Choose backup file'}}
+// ---- home server (WebDAV) ----
+const davBase=()=>{let u=(S.home&&S.home.url||'').trim();if(u&&!/^https?:\/\//i.test(u))u='http://'+u;return u.replace(/\/+$/,'')+'/'};
+const CHTTP=IS_NATIVE&&CAP.Plugins&&CAP.Plugins.CapacitorHttp;
+const fmtSize=b=>b<1048576?Math.max(1,Math.round(b/1024))+' KB':(b/1048576).toFixed(1)+' MB';
+async function dav(method,name,body,headers={}){const H=S.home;const hdr={Authorization:'Basic '+btoa(unescape(encodeURIComponent(H.user+':'+H.pass))),...headers};let r;
+ if(CHTTP){const x=await CHTTP.request({url:davBase()+(name||''),method,headers:hdr,data:body==null?undefined:body,responseType:'text',connectTimeout:15000,readTimeout:600000});r={status:x.status,text:async()=>typeof x.data==='string'?x.data:JSON.stringify(x.data)}}
+ else r=await fetch(davBase()+(name||''),{method,headers:hdr,body});if(r.status===401)throw new Error('Wrong username or password');if(r.status>=400&&!(method==='MKCOL'&&r.status===405))throw new Error('Server answered '+r.status);return r}
+async function saveHome(test){const H=S.home||{};H.url=document.getElementById('hsUrl').value.trim();H.user=document.getElementById('hsUser').value.trim();H.pass=document.getElementById('hsPass').value;
+ H.auto=document.getElementById('hsAuto').checked;H.vids=document.getElementById('hsVid').checked;const kp=document.getElementById('hsKeyPw').value;
+ if(kp){if(kp.length<6){toast('Backup password: at least 6 characters','lock');return false}H.salt=b64(crypto.getRandomValues(new Uint8Array(16)));H.key=await rawKey(await bkKey(kp,H.salt))}
+ if(!H.url){toast('Enter the server address','alert');return false}if(!H.key){toast('Choose a backup password','lock');return false}
+ S.home=H;store.set(S);if(!test)return true;const st=document.getElementById('hsStatus');st.textContent='Testing…';
+ try{await dav('PROPFIND','',null,{Depth:'0'});st.textContent='Connected ✓ Settings saved';toast('Home server connected','check');return true}catch(e){st.textContent='Could not connect: '+e.message;toast('Could not reach the server','alert');return false}}
+async function homeBackupNow(silent){const H=S.home;if(!silent){if(!await saveHome(false))return}else if(!H||!H.key)return;
+ if(!IS_NATIVE&&!silent){toast('Home server backup works in the phone app','alert');return}
+ const btn=document.getElementById('hsBtn'),st=document.getElementById('hsStatus');if(btn)btn.disabled=true;
+ try{const key=await impKey(H.key);let out='';for await(const line of backupLines(key,H.salt,H.vids!==false,n=>{if(st)st.textContent='Packing media '+n+'…'}))out+=line;
+  if(st)st.textContent='Uploading '+fmtSize(out.length)+'…';
+  const name='MyDayRoute-'+today()+'.mdr';await dav('PUT',name,out,{'Content-Type':'application/octet-stream'});
+  H.last=Date.now();H.lastSize=out.length;store.set(S);if(st)st.textContent='Backed up ✓ '+fmtSize(out.length);if(!silent)toast('Saved to your home server','check');
+  try{const files=await listHomeFiles();const old=files.sort((a,b)=>b.name.localeCompare(a.name)).slice(14);for(const f of old)await dav('DELETE',f.name)}catch(e){}
+ }catch(e){if(st)st.textContent='Backup failed: '+e.message;if(!silent)toast('Home backup failed: '+e.message,'alert')}if(btn)btn.disabled=false}
+async function listHomeFiles(){const r=await dav('PROPFIND','',null,{Depth:'1'});const x=new DOMParser().parseFromString(await r.text(),'application/xml');const out=[];
+ for(const resp of x.getElementsByTagNameNS('*','response')){const href=decodeURIComponent((resp.getElementsByTagNameNS('*','href')[0]||{}).textContent||'');const name=href.split('/').filter(Boolean).pop()||'';if(!/^MyDayRoute-\d{4}-\d{2}-\d{2}\.mdr$/.test(name))continue;
+  const size=+((resp.getElementsByTagNameNS('*','getcontentlength')[0]||{}).textContent||0);out.push({name,size})}return out}
+async function listHome(){const box=document.getElementById('hsList');if(!(await saveHome(false)))return;box.innerHTML='<div class="sub">Loading…</div>';
+ try{const f=(await listHomeFiles()).sort((a,b)=>b.name.localeCompare(a.name));box.innerHTML=f.length?f.map(x=>`<div class="li"><span class="ico c-green" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center">${ic('rotate',14)}</span><span class="t">${x.name.replace('MyDayRoute-','').replace('.mdr','')}<div class="meta">${fmtSize(x.size)}</div></span><button class="btn ghost" style="padding:7px 12px;font-size:12px" onclick="restoreHome('${x.name}',this)">Restore</button></div>`).join(''):'<div class="sub">No backups on the server yet.</div>'}
+ catch(e){box.innerHTML=`<div class="sub" style="color:var(--red)">${esc(e.message)}</div>`}}
+async function restoreHome(name,btn){if(!btn.dataset.sure){btn.dataset.sure=1;btn.textContent='Tap to confirm';return}
+ const pw=document.getElementById('hsKeyPw').value;if(!pw){toast('Type the backup password above first','lock');btn.textContent='Restore';delete btn.dataset.sure;return}
+ btn.textContent='Downloading…';try{const t=await (await dav('GET',name)).text();btn.textContent='Restoring…';const raw=await restoreFromLines(t.split('\n').filter(Boolean),pw);closeSheets();toast(raw?'Restored. Unlock the journal with your old PIN':'Restored from home server','check');setTimeout(()=>location.reload(),1600)}
+ catch(e){toast('Restore failed: '+e.message,'alert');btn.textContent='Restore';delete btn.dataset.sure}}
+async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto===false)return;if(H.last&&Date.now()-H.last<20*3600e3)return;
+ try{if(NETP){const n=await NETP.getStatus();if(n.connectionType!=='wifi')return}}catch(e){}homeBackupNow(true)}
 
 // ================= AUTO-UPDATE =================
 const APP_VERSION=1;
@@ -1519,7 +1577,7 @@ function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.t
  const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings()}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 hydrateIcons();
-render();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);
+render();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
 </body>
