@@ -596,6 +596,44 @@ body.reading .toast *{color:inherit}
 html.light .tch{background:radial-gradient(circle,rgba(124,92,255,.35),rgba(124,92,255,.12) 60%,transparent 70%)}
 @keyframes tch{from{transform:scale(.4);opacity:1}to{transform:scale(5.5);opacity:0}}
 button:active,.btn:active,.chip:active{transform:scale(.96)}
+
+
+.jideas{width:100%;margin-bottom:16px;justify-content:center}
+.top{gap:12px}.top .greet{min-width:0;flex:1}.top .hdr-btns{flex:none;display:flex}
+.ftabs{display:grid!important;grid-template-columns:repeat(3,1fr);overflow:visible!important}.ftabs button{width:100%;justify-content:center;text-align:center}
+/* ===== v42 comfort layout: more space, bigger clearer buttons ===== */
+body{padding-left:20px;padding-right:20px;line-height:1.5}
+.top{margin-bottom:24px}
+.sec{margin:32px 2px 16px}
+.sec h3{font-size:18px}
+.card{padding:20px;margin-bottom:18px;border-radius:24px}
+.hero{padding:22px;margin-bottom:18px}
+.btn{min-height:48px;font-size:15px;border-radius:16px;padding-left:18px;padding-right:18px;font-weight:700}
+.btn svg{width:18px;height:18px}
+.row{gap:12px;margin-top:20px}
+.row .btn{min-height:52px}
+.iconbtn{width:44px;height:44px;border-radius:14px}
+.iconbtn svg{width:20px;height:20px}
+.hdr-btns{gap:8px}
+.hchip{min-height:44px}
+.chip{padding:14px 16px;margin-bottom:14px;font-size:14px;border-radius:20px}
+.setting{padding:16px 4px;gap:14px}
+.setting .info b{font-size:15px}.setting .info p{font-size:12.5px;line-height:1.5;margin-top:3px}
+.setting .btn{min-height:42px;min-width:64px}
+.sgroup{margin-bottom:26px}
+.sg-chips{gap:8px;margin-bottom:18px}.sg-chips button{padding:10px 14px;font-size:13px}
+.fbar{gap:10px;margin-bottom:18px}
+.fbar button{padding:14px 6px;font-size:12.5px;border-radius:18px;gap:7px;min-height:72px}
+.opts{gap:10px}.opts button{padding:16px 6px;font-size:13px;border-radius:18px;gap:8px}
+.body{min-height:64px;padding:12px 12px 12px 16px;border-radius:22px}
+input,textarea{padding:14px 16px;font-size:16px;border-radius:16px}
+label,.lbl{display:block;margin:16px 0 8px}
+.sheet .panel{padding-left:20px;padding-right:20px}
+.sheet .panel h3{font-size:19px;margin-bottom:14px}
+.ftabs{gap:8px;margin-bottom:18px}.ftabs button{padding:11px 16px;font-size:14px;min-height:44px}
+.empty{padding:28px 20px}
+.sub{line-height:1.6}
+.nav{padding:10px}.nav button{font-size:10.5px;padding:8px 2px;gap:4px}.nav button svg{width:23px;height:23px}
 </style>
 </head>
 <body>
@@ -656,7 +694,8 @@ button:active,.btn:active,.chip:active{transform:scale(.96)}
 
 <!-- JOURNAL -->
 <section class="view" id="v-journal">
-  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="btn ghost hchip" onclick="openIdeas()"><span data-i="lightbulb" data-s="15"></span>Brain dump</button><button class="iconbtn" onclick="openSearchJ()" data-i="search" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
+  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="iconbtn" onclick="openSearchJ()" data-i="search" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
+  <button class="btn ghost wide jideas" onclick="openIdeas()"><span data-i="lightbulb" data-s="18"></span>Brain dump</button>
   <div id="jBody"></div>
 </section>
 
@@ -2686,7 +2725,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=41;
+const APP_VERSION=42;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
@@ -3011,7 +3050,7 @@ function handleBack(){if(document.body.classList.contains('reading')&&!document.
  if(document.getElementById('pickSheet').classList.contains('on')){closePick();return}
  if(document.getElementById('dtSheet').classList.contains('on')){closeDT();return}if(document.getElementById('askSheet').classList.contains('on')){closeAsk();return}
  if(open.length){const top=open[open.length-1];if(top.id==='recSheet'&&typeof stopRec==='function')stopRec();else if(top.id==='scanSheet')stopScan();else closeSheets();return}
- const v=document.querySelector('.view.on');if(v&&v.id==='v-settings'){go(setFrom||'today');return}if(v&&v.id!=='v-today'){go(['v-faith','v-prizes','v-review'].includes(v.id)?({'v-faith':'today','v-prizes':'awards','v-review':'awards'}[v.id]):'today');return}
+ const v=document.querySelector('.view.on');if(v&&v.id==='v-settings'){go(setFrom||'today');return}{const SUB={'v-prizes':'awards','v-review':'awards','v-ideas':(typeof ideaBack!=='undefined'&&ideaBack)||'journal'};if(v&&SUB[v.id]){go(String(SUB[v.id]).replace(/^v-/,''));return}}
  if(Date.now()-backAt<2000){if(APPP)try{APPP.minimizeApp?APPP.minimizeApp():APPP.exitApp()}catch(e){try{APPP.exitApp()}catch(e2){}}return}
  backAt=Date.now();toast(T('Press back again to leave'),'x')}
 if(APPP&&APPP.addListener){try{APPP.addListener('backButton',handleBack)}catch(e){}}
