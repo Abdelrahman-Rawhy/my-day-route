@@ -6,6 +6,11 @@ service cloud.firestore {
       return signedIn() && exists(/databases/$(database)/documents/families/$(f)/members/$(request.auth.uid));
     }
 
+    // Each person's own encrypted backup/sync. Only that signed-in account can read or write it.
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
     match /families/{f} {
       // Knowing the family code is required to open a family; families cannot be listed.
       allow get: if signedIn();

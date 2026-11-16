@@ -402,6 +402,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
     <h3><span class="ico c-amber" data-i="mosque"></span><span class="sp">Prayer times<br><span style="font-size:12px;color:var(--mu);font-weight:500">Egyptian General Authority · daily</span></span><button class="btn ghost" style="padding:8px 12px;font-size:13px" onclick="openCity()" id="cityBtn"></button></h3>
     <div class="ptgrid" id="ptGrid"></div>
   </div>
+  <div class="card"><h3><span class="ico c-blue" data-i="user"></span><span class="sp">Account & sync</span></h3><div id="acctCard" style="margin-top:12px"></div></div>
   <div class="setting"><span class="ico c-violet" data-i="bell"></span><div class="info" style="flex:1"><b>Reminders</b><p id="notifTxt">Alert when each step's time arrives</p></div><button class="btn" id="notifBtn" onclick="toggleNotif()">Turn on</button></div>
   <div class="setting" id="exactRow" style="display:none"><span class="ico c-amber" data-i="clock"></span><div class="info" style="flex:1"><b>Exact-time alarms</b><p>Allow so reminders ring at the exact minute</p></div><button class="btn" onclick="allowExact()">Allow</button></div>
   <div class="setting"><span class="ico c-teal" data-i="volume"></span><div class="info" style="flex:1"><b>Sound effects</b><p>Chime when you complete a step</p></div><button class="btn ghost" id="sndBtn" onclick="toggleSound()">On</button></div>
@@ -461,6 +462,8 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <div class="sheet" id="pinSheet"><div class="panel" id="pinBody"></div></div>
 <!-- Backup sheet -->
 <div class="sheet" id="backupSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="backupBody"></div></div>
+<!-- Account sheet -->
+<div class="sheet" id="acctSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="acctBody"></div></div>
 <!-- City sheet -->
 <div class="sheet" id="citySheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your city</h3><div id="cityList"></div></div></div>
 
@@ -580,7 +583,7 @@ const EMOJI2KEY={'🕌':'mosque','📿':'beads','📖':'book','🏃':'activity',
 const DEFAULT_TASKS=[['mosque','Pray Fajr','04:50',20],['beads','Morning adhkar','05:10',10],['book','Read Quran','05:25',20],['activity','Exercise / walk','06:15',15],['coffee','Healthy breakfast','07:00',5],['briefcase','Assignment / deep work','08:00',25],['mosque','Pray Dhuhr','11:45',20],['lightbulb','Learn something new','12:30',15],['mosque','Pray Asr','14:45',20],['phone','Calls & admin','15:30',10],['mosque','Pray Maghrib','17:00',20],['users','Family time','17:30',10],['mosque','Pray Isha','18:25',20],['clipboard','Plan tomorrow','21:30',10],['bed','Sleep early','22:30',10]].map(([icon,name,time,pts])=>({id:uid(),icon,name,time,pts,prayer:prayerKey(name)}));
 const DEFAULT_REWARDS=[{id:uid(),icon:'coffee',name:'Special coffee',cost:80},{id:uid(),icon:'cake',name:'Favorite dessert',cost:150},{id:uid(),icon:'video',name:'Movie night',cost:300},{id:uid(),icon:'cart',name:'Buy something you want',cost:800}];
 let S=store.get()||{name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:false,sound:true,notified:{}};
-let save=()=>store.set(S);
+let save=()=>{store.set(S);if(typeof scheduleSync==='function')scheduleSync()};
 // migrations
 S.city=S.city||'Cairo';S.notified=S.notified||{};
 S.tasks.forEach(t=>{if(t.prayer===undefined)t.prayer=prayerKey(t.name);if(EMOJI2KEY[t.icon])t.icon=EMOJI2KEY[t.icon]});
@@ -725,7 +728,7 @@ function renderPrizes(){
 function renderSettings(){
  document.getElementById('cityBtn').innerHTML=ic('pin',15)+esc(S.city);
  document.getElementById('ptGrid').innerHTML=[['fajr','Fajr','sunrise'],['sunrise','Sunrise','sun'],['dhuhr','Dhuhr','sun'],['asr','Asr','cloudsun'],['maghrib','Maghrib','sunset'],['isha','Isha','moon']].map(([k,n,i])=>`<div>${ic(i,18)}<span>${n}</span><b>${fmt(PT[k])}</b></div>`).join('');
- document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
+ document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const ac=document.getElementById('acctCard');if(ac)ac.innerHTML=acctCardHtml();const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
  document.getElementById('sndBtn').textContent=S.sound?'On':'Off';
 }
 
@@ -955,14 +958,14 @@ async function packEntry(e){const meta={id:e.id,date:e.date,at:e.at,media:e.medi
 async function unpackEntry(r){if(r.body)return{...r,...r.body};if(r.enc){if(!JKEY)return null;return{...r,...JSON.parse(dec8.decode(await decBuf(JKEY,r.enc)))}}return r}
 async function packMedia(m){if(!jLocked())return m;return{id:m.id,type:m.type,mime:m.mime,enc:await encBuf(JKEY,await m.blob.arrayBuffer()),tenc:m.thumb?await encBuf(JKEY,enc8.encode(m.thumb)):null}}
 async function unpackMedia(r){if(!r)return null;if(!r.enc)return r;if(!JKEY)return null;return{id:r.id,type:r.type,mime:r.mime,blob:new Blob([await decBuf(JKEY,r.enc)],{type:r.mime}),thumb:r.tenc?dec8.decode(await decBuf(JKEY,r.tenc)):null}}
-async function loadEntries(){const all=await idbAll('entries');const out=[];for(const r of all){try{const e=await unpackEntry(r);if(e)out.push(e)}catch(err){}}out.sort((a,b)=>b.date.localeCompare(a.date)||b.at-a.at);jCache=out;S.jCount=out.length;return out}
+async function loadEntries(){await ensureJK();const all=await idbAll('entries');const out=[];for(const r of all){try{const e=await unpackEntry(r);if(e)out.push(e)}catch(err){}}out.sort((a,b)=>b.date.localeCompare(a.date)||b.at-a.at);jCache=out;S.jCount=out.length;return out}
 async function thumbOf(id){if(urlCache.has('t'+id))return urlCache.get('t'+id);const m=await unpackMedia(await idbGet('media',id));const t=m&&m.thumb||'';urlCache.set('t'+id,t);return t}
 async function blobUrl(id){if(urlCache.has('b'+id))return urlCache.get('b'+id);const m=await unpackMedia(await idbGet('media',id));if(!m)return'';const u=URL.createObjectURL(m.blob);urlCache.set('b'+id,u);return u}
 function imgToJpeg(file,max,q){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const sc=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res({blob:b,dataUrl:max<=400?c.toDataURL('image/jpeg',q):null}),'image/jpeg',q)};im.onerror=rej;im.src=u})}
 function videoThumb(file){return new Promise(res=>{const v=document.createElement('video'),u=URL.createObjectURL(file);v.muted=true;v.playsInline=true;v.preload='metadata';v.src=u;let done=false;const fin=t=>{if(done)return;done=true;URL.revokeObjectURL(u);res(t)};
  v.onloadeddata=()=>{try{v.currentTime=Math.min(1,(v.duration||2)/3)}catch(e){fin('')}};v.onseeked=()=>{try{const sc=300/Math.max(v.videoWidth,v.videoHeight),c=document.createElement('canvas');c.width=v.videoWidth*sc;c.height=v.videoHeight*sc;c.getContext('2d').drawImage(v,0,0,c.width,c.height);fin(c.toDataURL('image/jpeg',.7))}catch(e){fin('')}};v.onerror=()=>fin('');setTimeout(()=>fin(''),5000)})}
 async function addJMedia(files){for(const f of files){try{
-  if(f.type.startsWith('image/')){const big=await imgToJpeg(f,1800,.85),th=await imgToJpeg(f,300,.7);jPendingMedia.push({id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:'image',mime:'image/jpeg',blob:big.blob,thumb:th.dataUrl,isNew:true})}
+  if(f.type.startsWith('image/')){const big=await imgToJpeg(f,1600,.8),th=await imgToJpeg(f,300,.7);jPendingMedia.push({id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:'image',mime:'image/jpeg',blob:big.blob,thumb:th.dataUrl,isNew:true})}
   else if(f.type.startsWith('video/')){if(f.size>150*1024*1024){toast('Video too large (max 150 MB)','alert');continue}jPendingMedia.push({id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:'video',mime:f.type,blob:f,thumb:await videoThumb(f),isNew:true})}
  }catch(e){toast('Could not add one file','alert')}}renderJMediaEdit()}
 function renderJMediaEdit(){document.getElementById('jMediaEdit').innerHTML=jPendingMedia.map((m,i)=>`<div class="th" style="background-image:url('${m.thumb||''}')">${m.type==='video'?`<span class="vid">${ic('play',20,'',2)}</span>`:''}<button class="iconbtn" style="position:absolute;top:4px;right:4px;width:26px;height:26px;background:rgba(0,0,0,.6);color:#fff" onclick="jPendingMedia.splice(${i},1);renderJMediaEdit()">${ic('x',13)}</button></div>`).join('')}
@@ -1028,24 +1031,136 @@ function drawPin(msg){const t={unlock:'Enter your journal PIN',set:'Choose a 4�
   <div class="pindots">${[0,1,2,3,4,5].map(i=>`<i class="${i<pinBuf.length?'on':''}" style="${i>=4&&pinBuf.length<=4&&i>=pinBuf.length?'opacity:.35':''}"></i>`).join('')}</div>
   <div class="pinpad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="pinKey_(${n})">${n}</button>`).join('')}<button onclick="closeSheets()" style="font-size:14px">Cancel</button><button onclick="pinKey_(0)">0</button><button onclick="pinBuf=pinBuf.slice(0,-1);drawPin()">${ic('chevron',20)}</button></div>
   <button class="btn wide" style="margin-top:14px" onclick="pinOk()" ${pinBuf.length<4?'disabled':''}>OK</button>
-  ${pinMode==='set'?'<div class="sub" style="text-align:center;margin-top:12px">If you forget this PIN, the journal cannot be recovered. Not even by Claude.</div>':''}`}
+  ${pinMode==='set'?`<div class="sub" style="text-align:center;margin-top:12px">${isAcct()?'Forgot it later? You can reset it with your account password.':'Tip: create an account in Settings so you can reset a forgotten PIN.'}</div>`:''}${pinMode==='unlock'||pinMode==='off'?'<button class="link" style="margin:14px auto 0" onclick="forgotPin()">Forgot PIN?</button>':''}`}
 function pinKey_(n){if(pinBuf.length<6)pinBuf+=n;drawPin()}
 async function pinOk(){const pin=pinBuf;if(pin.length<4)return;
  if(pinMode==='set'){pinFirst=pin;pinMode='confirm';pinBuf='';drawPin();return}
- if(pinMode==='confirm'){if(pin!==pinFirst){pinMode='set';pinBuf='';drawPin('PINs did not match, try again');return}drawPin();document.getElementById('pinBody').innerHTML='<div class="empty">Encrypting your journal…</div>';await enableLock(pin);closeSheets();pinCb&&pinCb();return}
+ if(pinMode==='confirm'){if(pin!==pinFirst){pinMode='set';pinBuf='';drawPin('PINs did not match, try again');return}document.getElementById('pinBody').innerHTML='<div class="empty">Encrypting your journal…</div>';await enableLock(pin);closeSheets();pinCb&&pinCb();return}
  document.getElementById('pinBody').innerHTML='<div class="empty">Checking…</div>';
- try{const k=await pinKey(pin,S.jLock.salt);await decBuf(k,S.jLock.check);
+ try{const k=await jkFromPin(pin);
   if(pinMode==='unlock'){JKEY=k;closeSheets();await loadEntries();pinCb&&pinCb();renderJournal()}
   else if(pinMode==='off'){JKEY=k;await disableLock();closeSheets();pinCb&&pinCb()}
  }catch(e){pinBuf='';drawPin('Wrong PIN')}}
-async function enableLock(pin){const all=await loadEntries();const salt=b64(crypto.getRandomValues(new Uint8Array(16)));const k=await pinKey(pin,salt);
- const medias=await idbAll('media');S.jLock={salt,check:null};JKEY=k;S.jLock.check=await encBuf(k,enc8.encode('ok'));
- for(const m of medias){if(!m.enc)await idbPut('media',await packMedia(m))}for(const e of all)await idbPut('entries',await packEntry(e));
+async function ensureJK(){if(JKEY)return JKEY;if(S.jkRaw){JKEY=await impKey(S.jkRaw);return JKEY}if(!jLocked()&&window.crypto&&crypto.subtle){const k=await newKey();S.jkRaw=await rawKey(k);store.set(S);JKEY=k;return k}return null}
+async function jkFromPin(pin){const pk=await pinKey(pin,S.jLock.salt);if(S.jLock.w)return impKey(b64(await decBuf(pk,unwire(S.jLock.w))));await decBuf(pk,S.jLock.check);return pk}
+async function enableLock(pin){await ensureJK();const all=await loadEntries();const medias=await idbAll('media');const dm=[];for(const r of medias)dm.push(r.enc?r:await unpackMedia(r));
+ const salt=b64(crypto.getRandomValues(new Uint8Array(16))),pk=await pinKey(pin,salt);S.jLock={salt,w:wire(await encBuf(pk,unb64(await rawKey(JKEY))))};delete S.jkRaw;
+ for(const m of dm)if(m&&!m.enc)await idbPut('media',await packMedia(m));for(const e of all)await idbPut('entries',await packEntry(e));
  save();urlCache.clear();toast('Journal encrypted with your PIN','lock');renderSettings();renderJournal()}
 async function disableLock(){const all=await loadEntries();const medias=await idbAll('media');const dm=[];for(const r of medias)dm.push(await unpackMedia(r));
- S.jLock=null;for(const m of dm)if(m)await idbPut('media',m);for(const e of all)await idbPut('entries',await packEntry(e));JKEY=null;save();toast('Journal lock removed','lock');renderSettings();renderJournal()}
+ S.jkRaw=await rawKey(JKEY);S.jLock=null;for(const m of dm)if(m)await idbPut('media',m);for(const e of all)await idbPut('entries',await packEntry(e));save();toast('Journal lock removed','lock');renderSettings();renderJournal()}
 function journalLockSettings(){if(!(window.crypto&&crypto.subtle)){toast('Encryption not available here','alert');return}if(jLocked())askPin('off',()=>{});else askPin('set',()=>{})}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&jLocked())window._hidAt=Date.now();else if(window._hidAt&&Date.now()-window._hidAt>60000&&JKEY){JKEY=null;jCache=null;urlCache.clear();if(document.getElementById('v-journal').classList.contains('on'))renderJournal()}});
+
+// ================= ACCOUNT & ENCRYPTED SYNC =================
+const isAcct=()=>!!(FB.ok&&window.firebase&&firebase.auth().currentUser&&!firebase.auth().currentUser.isAnonymous);
+const wire=o=>({iv:o.iv,d:b64(o.d)}),unwire=o=>({iv:o.iv,d:unb64(o.d)});
+async function newKey(){return crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
+async function rawKey(k){return b64(await crypto.subtle.exportKey('raw',k))}
+async function impKey(b){return crypto.subtle.importKey('raw',unb64(b),{name:'AES-GCM'},true,['encrypt','decrypt'])}
+async function slowKey(secret,salt){const b=await crypto.subtle.importKey('raw',enc8.encode(secret),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:300000,hash:'SHA-256'},b,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+const wrapKey=async(k,w)=>wire(await encBuf(w,unb64(await rawKey(k))));
+const unwrapKey=async(o,w)=>impKey(b64(await decBuf(w,unwire(o))));
+const sealJ=async(k,o)=>wire(await encBuf(k,enc8.encode(JSON.stringify(o))));
+const openJ=async(k,o)=>JSON.parse(dec8.decode(await decBuf(k,unwire(o))));
+function genRecovery(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Array(24);crypto.getRandomValues(r);let c='';for(let i=0;i<24;i++)c+=a[r[i]%32]+(i%4===3&&i<23?'-':'');return c}
+const normRec=c=>(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/(.{4})(?=.)/g,'$1-');
+const uRef=()=>FB.db.collection('users').doc(FB.uid);
+let MK=null,syncT=null,syncing=false;
+function scheduleSync(){if(!isAcct()||!S.mk)return;clearTimeout(syncT);syncT=setTimeout(doSync,4000)}
+const sigOf=str=>{let h=0;for(let i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))|0;return h.toString(36)+':'+str.length};
+async function cloudBytes(u8){return firebase.firestore.Blob.fromUint8Array(u8)}
+async function doSync(){if(syncing||!isAcct()||!S.mk)return;syncing=true;
+ try{MK=MK||await impKey(S.mk);S._sync=S._sync||{st:{},j:{},m:{}};const sy=S._sync;
+  const {history,mk,jkRaw,timer,notified,_sync,famSeen,...main}=S;const ms=JSON.stringify(main);
+  if(sy.st.main!==sigOf(ms)){await uRef().collection('state').doc('main').set({e:await sealJ(MK,main),at:Date.now()});sy.st.main=sigOf(ms)}
+  const years={};for(const k in S.history)(years[k.slice(0,4)]=years[k.slice(0,4)]||{})[k]=S.history[k];
+  for(const y in years){const hs=JSON.stringify(years[y]);if(sy.st['h'+y]!==sigOf(hs)){await uRef().collection('state').doc('h'+y).set({e:await sealJ(MK,years[y])});sy.st['h'+y]=sigOf(hs)}}
+  if(window.indexedDB){const jk=JKEY||(S.jkRaw?await impKey(S.jkRaw):null);
+   const recs=await idbAll('entries'),ids=new Set();
+   for(const r of recs){ids.add(r.id);let enc=r.enc;const sig=enc?enc.iv:sigOf(JSON.stringify(r.body||{})+(r.media||[]).join());if(sy.j[r.id]===sig)continue;
+    if(!enc){if(!jk)continue;enc=await encBuf(jk,enc8.encode(JSON.stringify(r.body||{})))}
+    await uRef().collection('journal').doc(r.id).set({date:r.date,at:r.at,media:r.media||[],enc:wire(enc)});sy.j[r.id]=sig}
+   for(const id in sy.j)if(!ids.has(id)){await uRef().collection('journal').doc(id).delete().catch(()=>{});delete sy.j[id]}
+   const mids=new Set();for(const r of await idbAll('media')){mids.add(r.id);if(r.type!=='image'||sy.m[r.id])continue;
+    let e=r.enc,te=r.tenc;if(!e){if(!jk)continue;e=await encBuf(jk,await r.blob.arrayBuffer());te=r.thumb?await encBuf(jk,enc8.encode(r.thumb)):null}
+    const u8=new Uint8Array(e.d),CH=900000,parts=Math.ceil(u8.length/CH);
+    for(let i=0;i<parts;i++)await uRef().collection('media').doc(r.id+(i?'_'+i:'')).set({type:r.type,mime:r.mime,iv:e.iv,parts,part:i,d:await cloudBytes(u8.slice(i*CH,(i+1)*CH)),...(i===0&&te?{tiv:te.iv,td:b64(te.d)}:{})});
+    sy.m[r.id]=parts}
+   for(const id in sy.m)if(!mids.has(id)){for(let i=0;i<sy.m[id];i++)await uRef().collection('media').doc(id+(i?'_'+i:'')).delete().catch(()=>{});delete sy.m[id]}}
+  S.lastSync=Date.now();store.set(S);const el=document.getElementById('syncTxt');if(el)el.textContent='Synced · just now';
+ }catch(e){console.log('sync',e);const el=document.getElementById('syncTxt');if(el)el.textContent='Sync waiting for connection'}
+ syncing=false}
+async function restoreFromCloud(mkKey,jkKey,hadPin){
+ const st=await uRef().collection('state').get();let main=null;const hist={};
+ for(const d of st.docs){if(d.id==='main')main=await openJ(mkKey,d.data().e);else if(d.id[0]==='h')Object.assign(hist,await openJ(mkKey,d.data().e))}
+ const d=await idb();await tx('entries','readwrite',x=>x.clear());await tx('media','readwrite',x=>x.clear());
+ const sy={st:{},j:{},m:{}};
+ for(const doc of (await uRef().collection('journal').get()).docs){const r=doc.data();const enc=unwire(r.enc);await idbPut('entries',{id:doc.id,date:r.date,at:r.at,media:r.media,enc});sy.j[doc.id]=enc.iv}
+ const parts={};for(const doc of (await uRef().collection('media').get()).docs){const r=doc.data();const id=doc.id.replace(/_\d+$/,'');(parts[id]=parts[id]||{meta:null,ch:[]});if(r.part===0)parts[id].meta=r;parts[id].ch[r.part]=r.d.toUint8Array()}
+ for(const id in parts){const p=parts[id],m=p.meta;if(!m)continue;const len=p.ch.reduce((a,c)=>a+c.length,0),all=new Uint8Array(len);let o=0;for(const c of p.ch){all.set(c,o);o+=c.length}
+  await idbPut('media',{id,type:m.type,mime:m.mime,enc:{iv:m.iv,d:all.buffer},tenc:m.tiv?{iv:m.tiv,d:unb64(m.td).buffer}:null});sy.m[id]=m.parts}
+ const keepE=S.ecdh;S=main?{...main,history:hist}:{...S,history:hist};S.mk=await rawKey(mkKey);S._sync=sy;if(!S.ecdh)S.ecdh=keepE;S.timer={mode:'focus',running:false,endAt:0,left:(S.focusMin||25)*60,cat:'project'};S.notified={};S.famSeen=S.famSeen||[];
+ JKEY=jkKey;S.jLock=null;S.jkRaw=await rawKey(jkKey);jCache=null;urlCache.clear();store.set(S);
+ return hadPin}
+function openAccount(mode){const b=document.getElementById('acctBody');const m=mode||'create';
+ const pwField=(id,ph)=>`<input id="${id}" type="password" placeholder="${ph}" autocomplete="current-password">`;
+ b.innerHTML=m==='create'?`<h3>${ic('user',20)}Create your account</h3><div class="sub">Restore everything on a new phone. Your data is end-to-end encrypted with your password.</div>
+   <label>Email</label><input id="acEmail" type="email" placeholder="you@example.com" autocomplete="email"><label>Password</label>${pwField('acPw','At least 8 characters')}<label>Repeat password</label>${pwField('acPw2','Repeat password')}
+   <button class="btn wide" style="margin-top:14px" onclick="createAccount()" id="acBtn">Create account</button><button class="link" style="margin:14px auto 0" onclick="openAccount('signin')">I already have an account</button>`
+ :m==='signin'?`<h3>${ic('user',20)}Sign in</h3><div class="sub">Use this on a new phone to bring back your data.</div>
+   <label>Email</label><input id="acEmail" type="email" autocomplete="email"><label>Password</label>${pwField('acPw','Password')}
+   <button class="btn wide" style="margin-top:14px" onclick="signInAccount()" id="acBtn">Sign in & restore</button><button class="link" style="margin:14px auto 0" onclick="openAccount('forgot')">Forgot password?</button>`
+ :m==='forgot'?`<h3>${ic('bell',20)}Reset password</h3><div class="sub">We'll email you a reset link. After resetting, sign in and enter your recovery code to unlock your data.</div>
+   <label>Email</label><input id="acEmail" type="email"><button class="btn wide" style="margin-top:14px" onclick="resetPw()">Send reset email</button>`
+ :`<h3>${ic('lock',20)}Enter recovery code</h3><div class="sub">Your password changed, so your data needs the recovery code you saved when creating the account.</div>
+   <input id="acRec" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" style="text-transform:uppercase;letter-spacing:1px;font-weight:700"><button class="btn wide" style="margin-top:14px" onclick="useRecovery()" id="acBtn">Unlock my data</button>`;
+ closeSheets();document.getElementById('acctSheet').classList.add('on')}
+async function createAccount(){const email=document.getElementById('acEmail').value.trim(),pw=document.getElementById('acPw').value;
+ if(pw.length<8){toast('Password needs at least 8 characters','lock');return}if(pw!==document.getElementById('acPw2').value){toast('Passwords do not match','lock');return}
+ if(jLocked()&&!JKEY){askPin('unlock',()=>openAccount('create'));return}
+ const btn=document.getElementById('acBtn');btn.disabled=true;btn.textContent='Creating…';
+ try{const cred=firebase.auth.EmailAuthProvider.credential(email,pw);const cur=firebase.auth().currentUser;
+  if(cur&&cur.isAnonymous)await cur.linkWithCredential(cred);else await firebase.auth().createUserWithEmailAndPassword(email,pw);
+  FB.uid=firebase.auth().currentUser.uid;FB.anon=false;FB.email=email;
+  const mk=await newKey(),jk=await ensureJK()||await newKey(),salt=b64(crypto.getRandomValues(new Uint8Array(16))),rsalt=b64(crypto.getRandomValues(new Uint8Array(16)));
+  const rc=genRecovery(),pk=await slowKey(pw,salt),rk=await slowKey(rc.replace(/-/g,''),rsalt);
+  await uRef().set({keys:{salt,rsalt,wMKp:await wrapKey(mk,pk),wMKr:await wrapKey(mk,rk),wJKp:await wrapKey(jk,pk),wJKr:await wrapKey(jk,rk)},created:Date.now()});
+  MK=mk;S.mk=await rawKey(mk);S.acct={email};S._sync={st:{},j:{},m:{}};store.set(S);showRecovery(rc);doSync();renderSettings()
+ }catch(e){toast(e.code==='auth/email-already-in-use'?'This email has an account. Use Sign in.':'Could not create: '+(e.message||e),'alert');btn.disabled=false;btn.textContent='Create account'}}
+function showRecovery(rc){document.getElementById('acctBody').innerHTML=`<h3>${ic('lock',20)}Save your recovery code</h3>
+ <div class="sub">If you ever forget your password, this code is the only way to unlock your data. Write it down or save it somewhere safe. It is shown only once.</div>
+ <div class="code" style="font-size:18px;text-align:center;word-break:break-all;padding:16px;background:rgba(0,0,0,.25);border-radius:16px;margin:10px 0">${rc}</div>
+ <div class="row"><button class="btn ghost" onclick="try{navigator.clipboard.writeText('${rc}').then(()=>toast('Copied','clipboard'))}catch(e){}">${ic('clipboard',15)}Copy</button><button class="btn ghost" onclick="openExt('https://wa.me/?text='+encodeURIComponent('My Day Route recovery code (keep private): ${rc}'))">Save to WhatsApp</button></div>
+ <button class="btn wide" style="margin-top:12px" onclick="closeSheets();toast('Account ready. Your data now syncs securely','check');burst(80)">I saved it</button>`;document.getElementById('acctSheet').classList.add('on')}
+async function signInAccount(){const email=document.getElementById('acEmail').value.trim(),pw=document.getElementById('acPw').value;const btn=document.getElementById('acBtn');btn.disabled=true;btn.textContent='Signing in…';
+ try{await firebase.auth().signInWithEmailAndPassword(email,pw);FB.uid=firebase.auth().currentUser.uid;FB.anon=false;FB.email=email;
+  const doc=await uRef().get();const k=doc.exists&&doc.data().keys;if(!k)throw new Error('No data found for this account');
+  let mk,jk;try{const pk=await slowKey(pw,k.salt);mk=await unwrapKey(k.wMKp,pk);jk=await unwrapKey(k.wJKp,pk)}catch(e){window._pendingPw=pw;openAccount('recover');return}
+  btn.textContent='Restoring…';await restoreFromCloud(mk,jk);S.acct={email};store.set(S);closeSheets();toast('Welcome back! Your data is restored','check');setTimeout(()=>location.reload(),1500)
+ }catch(e){toast(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'?'Wrong email or password':(e.message||'Sign in failed'),'alert');btn.disabled=false;btn.textContent='Sign in & restore'}}
+async function resetPw(){const email=document.getElementById('acEmail').value.trim();try{await firebase.auth().sendPasswordResetEmail(email);toast('Reset email sent. Check your inbox','bell');openAccount('signin')}catch(e){toast(e.message,'alert')}}
+async function useRecovery(){const rc=normRec(document.getElementById('acRec').value).replace(/-/g,'');const btn=document.getElementById('acBtn');btn.disabled=true;btn.textContent='Unlocking…';
+ try{const k=(await uRef().get()).data().keys;const rk=await slowKey(rc,k.rsalt);const mk=await unwrapKey(k.wMKr,rk),jk=await unwrapKey(k.wJKr,rk);
+  if(window._pendingPw){const salt=b64(crypto.getRandomValues(new Uint8Array(16))),pk=await slowKey(window._pendingPw,salt);await uRef().set({keys:{...k,salt,wMKp:await wrapKey(mk,pk),wJKp:await wrapKey(jk,pk)}},{merge:true});window._pendingPw=null}
+  await restoreFromCloud(mk,jk);S.acct={email:FB.email};store.set(S);closeSheets();toast('Data unlocked and restored','check');setTimeout(()=>location.reload(),1500)
+ }catch(e){toast('Wrong recovery code','alert');btn.disabled=false;btn.textContent='Unlock my data'}}
+async function newRecovery(){if(!isAcct())return;if(jLocked()&&!JKEY){askPin('unlock',newRecovery);return}
+ try{await ensureJK();MK=MK||await impKey(S.mk);const k=(await uRef().get()).data().keys;const rc=genRecovery(),rsalt=b64(crypto.getRandomValues(new Uint8Array(16))),rk=await slowKey(rc.replace(/-/g,''),rsalt);
+  await uRef().set({keys:{...k,rsalt,wMKr:await wrapKey(MK,rk),wJKr:await wrapKey(JKEY,rk)}},{merge:true});showRecovery(rc)}catch(e){toast('Could not create a new code: '+e.message,'alert')}}
+async function signOutAcct(){const b=event&&event.target.closest('button');if(b&&!b.dataset.sure){b.dataset.sure=1;b.textContent='Tap again: data stays in your account';return}
+ await doSync();await firebase.auth().signOut();S={name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:true,sound:true,notified:{}};store.set(S);
+ try{await tx('entries','readwrite',x=>x.clear());await tx('media','readwrite',x=>x.clear())}catch(e){}location.reload()}
+function forgotPin(){if(!isAcct()){document.getElementById('pinBody').innerHTML=`<h3>${ic('lock',20)}Forgot PIN</h3><div class="sub">Without an account, a forgotten PIN cannot be reset: the journal is encrypted with it. Create an account in Settings so this never becomes a problem.</div><button class="btn wide" onclick="closeSheets()">OK</button>`;return}
+ document.getElementById('pinBody').innerHTML=`<h3>${ic('lock',20)}Reset your PIN</h3><div class="sub">Enter your account password to unlock the journal and choose a new PIN.</div><input id="fpPw" type="password" placeholder="Account password"><button class="btn wide" style="margin-top:12px" onclick="resetPinWithPw()" id="fpBtn">Continue</button>`}
+async function resetPinWithPw(){const pw=document.getElementById('fpPw').value,btn=document.getElementById('fpBtn');btn.disabled=true;btn.textContent='Checking…';
+ try{const k=(await uRef().get()).data().keys;const pk=await slowKey(pw,k.salt);JKEY=await unwrapKey(k.wJKp,pk);toast('Unlocked. Choose a new PIN','lock');askPin('set',()=>{renderJournal()})}catch(e){toast('Wrong password','alert');btn.disabled=false;btn.textContent='Continue'}}
+function acctCardHtml(){if(!FB_CONFIG||!window.firebase)return`<div class="sub" style="margin:0">Accounts and sync work in the phone app.</div>`;
+ if(!FB.ok)return`<div class="sub" style="margin:0">Connecting…</div>`;
+ if(!isAcct()||!S.mk)return`<div class="sub">Create an account to restore everything on a new phone and reset a forgotten PIN. End-to-end encrypted.</div><div class="row" style="margin-top:4px"><button class="btn ghost" onclick="openAccount('signin')">Sign in</button><button class="btn" onclick="openAccount('create')">Create account</button></div>`;
+ return`<div style="display:flex;align-items:center;gap:10px"><span class="av" style="background:${S.color||'#7C5CFF'}">${esc(initials(S.name||FB.email))}</span><div style="flex:1;min-width:0"><b style="font-size:14px">${esc(FB.email)}</b><div class="meta" id="syncTxt">${S.lastSync?'Synced · '+ago(S.lastSync):'Syncing…'}</div></div></div>
+  <div class="meta" style="margin-top:10px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted. Photos sync too; videos stay on this phone and in backup files.</span></div>
+  <div class="row"><button class="btn ghost" onclick="newRecovery()">New recovery code</button><button class="btn red" onclick="signOutAcct()">Sign out</button></div>`}
 
 // ================= REVIEW (week / month / year / all) =================
 let revMode='week',revOff=0;
@@ -1182,8 +1297,7 @@ async function fbInit(){
  try{firebase.initializeApp(FB_CONFIG);FB.db=firebase.firestore();
   try{FB.db.settings({experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}
   try{await FB.db.enablePersistence()}catch(e){}
-  firebase.auth().onAuthStateChanged(async u=>{if(u){FB.uid=u.uid;FB.ok=true;if(S.famCode&&S.famId){FKEY=await famKeyOf(S.famCode);subscribeFamily()}renderFamily();render()}});
-  await firebase.auth().signInAnonymously();
+  firebase.auth().onAuthStateChanged(async u=>{if(!u){firebase.auth().signInAnonymously().catch(e=>{FB.err=e.message;renderFamily()});return}FB.uid=u.uid;FB.ok=true;FB.anon=u.isAnonymous;FB.email=u.email||'';if(S.famCode&&S.famId){FKEY=await famKeyOf(S.famCode);subscribeFamily()}renderFamily();render();scheduleSync()});
  }catch(e){FB.err=e.message;renderFamily()}
 }
 function subscribeFamily(){
