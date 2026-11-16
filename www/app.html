@@ -588,6 +588,14 @@ body.reading .toast *{color:inherit}
 
 /* v40 six-item nav */
 .nav button{white-space:nowrap;min-width:0;font-size:10px;padding:7px 2px}.nav button span{display:flex}
+
+.hchip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;font-size:13px;border-radius:14px;white-space:nowrap}.hchip span{display:flex}
+
+/* v41 touch ripple */
+.tch{position:fixed;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;pointer-events:none;z-index:9999;background:radial-gradient(circle,rgba(255,255,255,.75),rgba(167,139,250,.35) 60%,transparent 70%);animation:tch .5s cubic-bezier(.2,.8,.2,1) forwards}
+html.light .tch{background:radial-gradient(circle,rgba(124,92,255,.35),rgba(124,92,255,.12) 60%,transparent 70%)}
+@keyframes tch{from{transform:scale(.4);opacity:1}to{transform:scale(5.5);opacity:0}}
+button:active,.btn:active,.chip:active{transform:scale(.96)}
 </style>
 </head>
 <body>
@@ -648,7 +656,7 @@ body.reading .toast *{color:inherit}
 
 <!-- JOURNAL -->
 <section class="view" id="v-journal">
-  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="iconbtn" onclick="openIdeas()" data-i="lightbulb" data-s="17"></button><button class="iconbtn" onclick="openSearchJ()" data-i="target" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
+  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="btn ghost hchip" onclick="openIdeas()"><span data-i="lightbulb" data-s="15"></span>Brain dump</button><button class="iconbtn" onclick="openSearchJ()" data-i="search" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
   <div id="jBody"></div>
 </section>
 
@@ -895,7 +903,7 @@ const P={
  crown:'<path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-4-7Z"/><path d="M5 20h14"/>',
  sprout:'<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8Z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2Z"/>',
  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9Z"/>',
- chevron:'<path d="m9 18 6-6-6-6"/>',
+ chevron:'<path d="m9 18 6-6-6-6"/>',search:'<circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/>',
  fingerprint:'<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>',
  alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
  mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>'
@@ -2200,7 +2208,7 @@ function openAdhkarStep(kind){openAdhkar(kind==='morning'?'morning':'evening')}
 function unmove(id){const r=dayRec();if(r.resched)delete r.resched[id];save();render();const t=S.tasks.find(x=>x.id===id);toast('Back to '+fmt(t.time),'rotate')}
 
 // ================= FEEDBACK =================
-let tt;function toast(m,icon='sparkles'){if(m==null||m==='null'||m==='undefined')return;const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;if(!t.classList.contains('on'))SFX('pop');t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
+let tt;function toast(m,icon='sparkles'){if(m==null||m==='null'||m==='undefined')return;const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
 function celebrate(icon,title,sub){window._lastCel={icon,title,sub};const cs=document.getElementById('cShare');if(cs)cs.innerHTML=ic('rocket',15)+'Share';document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on');SFX('rise')}
 let actx;function tone(freqs,dur=.12){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(actx.destination);const s=actx.currentTime+i*dur;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.22,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur*1.8);o.start(s);o.stop(s+dur*2)})}catch(e){}}
 function tickCheck(){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;
@@ -2214,7 +2222,8 @@ function _ac(){actx=actx||new (window.AudioContext||window.webkitAudioContext)()
 function _noise(){const a=_ac();if(_nz)return _nz;const b=a.createBuffer(1,a.sampleRate*1,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return _nz=b}
 function _sweepNoise(f0,f1,dur,vol,q=1.2,type='bandpass'){const a=_ac(),t=a.currentTime,src=a.createBufferSource(),bp=a.createBiquadFilter(),g=a.createGain();src.buffer=_noise();bp.type=type;bp.Q.value=q;bp.frequency.setValueAtTime(f0,t);bp.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+dur*.45);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(bp);bp.connect(g);g.connect(a.destination);src.start(t,Math.random()*.5);src.stop(t+dur+.02)}
 function _osc(type,f0,f1,dur,vol,delay=0){const a=_ac(),t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(.015,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}
-function SFX(k){if(!S.sound||document.hidden)return;const n=Date.now();if(n-(_sfxLast[k]||0)<60)return;_sfxLast[k]=n;try{
+let _lastTouch=0;addEventListener('pointerdown',()=>{_lastTouch=Date.now()},true);addEventListener('touchend',()=>{_lastTouch=Date.now()},true);
+function SFX(k){if(!S.sound||document.hidden)return;const n=Date.now();if(n-_lastTouch>1500)return;if(n-(_sfxLast[k]||0)<60)return;_sfxLast[k]=n;try{
  if(k==='click'){if(S.tapSnd===false)return;_osc('sine',1900,1200,.035,.05);_sweepNoise(5000,3000,.025,.03,.8,'highpass')}
  else if(k==='up'){_sweepNoise(350,2600,.26,.16,1.4)}
  else if(k==='down'){_sweepNoise(2200,320,.2,.1,1.4)}
@@ -2677,7 +2686,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=40;
+const APP_VERSION=41;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
@@ -3028,6 +3037,10 @@ document.querySelectorAll('.view:not(#v-settings) .top').forEach(top=>{if(top.qu
  let box=top.querySelector('.hdr-btns');if(!box){box=document.createElement('div');box.className='hdr-btns';[...top.children].filter(c=>!c.classList.contains('greet')).forEach(c=>box.appendChild(c));top.appendChild(box)}
  if(box.querySelector('[onclick="go(\'settings\')"]'))return;box.appendChild(g)});
 
+
+// touch ripple: a soft circle expands where you touch a button
+(()=>{document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,.task,[onclick]');if(!el||el.closest('#qrStage'))return;
+ const r=document.createElement('i');r.className='tch';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),520)},{passive:true,capture:true})})();
 // light haptic tick on every tap of a button-like control (respects the Vibration setting)
 (()=>{let last=0;document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,[onclick]');if(!el)return;const n=Date.now();if(n-last<70)return;last=n;if(!el.closest('#qrStage'))SFX('click');if(S.vib===false)return;
  try{const H=HAP();if(H)H.impact({style:'LIGHT'}).catch(()=>{});else if(navigator.vibrate)navigator.vibrate(8)}catch(_){}},true)})();
