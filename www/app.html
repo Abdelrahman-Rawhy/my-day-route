@@ -738,6 +738,15 @@ html.light .upd{background:#fff;color:var(--tx);border-color:rgba(124,92,255,.35
 .upd-l li{color:inherit}
 
 #pickPanel.nosel .rd{display:none}
+
+/* v58 every overlay closes smoothly */
+.celebrate.closing,#viewer.closing{animation:ovOut .2s ease forwards!important;pointer-events:none}
+@keyframes ovOut{to{opacity:0}}
+.celebrate.closing>div{transition:transform .2s;transform:scale(.94)}
+.qreader.closing{animation:qrOut .2s ease-in forwards!important;pointer-events:none}
+@keyframes qrOut{to{opacity:0;transform:translateY(24px)}}
+#viewer.on:not(.closing){animation:fadeIn .2s ease}
+.upd.bye{transition:opacity .2s,transform .2s;opacity:0;transform:translateY(16px)}
 </style>
 </head>
 <body>
@@ -1817,7 +1826,7 @@ async function openPage(p,hl){try{await quranData()}catch(e){toast(T('Could not 
   <div class="qr-prog" id="qrProg" onclick="closeReader();fTab='quran';go('faith')"><div class="qr-pbar"><i id="qrPFill"></i></div><span id="qrPTxt"></span></div>
   <div class="qr-stage" id="qrStage"><div class="qr-page" id="qrPage"><div class="qr-inner" id="qrInner"></div><div class="qr-no" id="qrNo"></div></div></div>
   <div class="qr-bot"><button class="qb prev" onclick="qrTurn(-1)"><i>${ic('chevron',16)}</i>${T('Previous')}</button><button class="qb save" onclick="qrSaveHere()">${ic('book',16)}${T('Save page')}</button><button class="qb next" onclick="qrTurn(1)">${T('Next')}<i>${ic('chevron',16)}</i></button></div>`;
-  document.body.appendChild(R);qrSwipe(document.getElementById('qrStage'))}
+  document.body.appendChild(R);qrSwipe(document.getElementById('qrStage'));window._smoothReg&&window._smoothReg(R)}
  if(!R.classList.contains('on'))SFX('up');R.classList.add('on');document.body.classList.add('reading');qrApplyFace();drawPage(hl);trNode&&trNode(R)}
 function closeReader(){const R=document.getElementById('qReader');if(R&&R.classList.contains('on'))SFX('down');if(R)R.classList.remove('on');document.body.classList.remove('reading');if(fTab==='mushaf')renderFaith()}
 function pageHtml(p){const L=qPages()[p];let h='';L.forEach(([s,a])=>{const c=QD.c[s-1];
@@ -2878,7 +2887,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=57;
+const APP_VERSION=58;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -2907,7 +2916,7 @@ async function checkUpdate(){
 }
 function showUpdate(note){if(document.getElementById('updBox'))return;const b=document.createElement('div');b.id='updBox';b.className='upd';const ar=S.lang==='ar';
  const pts=String(note||'').split(/(?<=[.!؟])\s+/).map(x=>x.trim()).filter(Boolean);
- b.innerHTML=`<div class="upd-h"><span class="upd-ic">${ic('rocket',22,'draw')}</span><div><b>${T('Update ready')}</b><small>${ar?'ما الجديد':"What's new"}</small></div></div><ul class="upd-l">${pts.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="upd-b"><button class="btn ghost" onclick="document.getElementById('updBox').remove()">${ar?'لاحقًا':'Later'}</button><button class="btn" onclick="location.href='index.html'">${ar?'إعادة تشغيل':'Restart'}</button></div>`;document.body.appendChild(b)}
+ b.innerHTML=`<div class="upd-h"><span class="upd-ic">${ic('rocket',22,'draw')}</span><div><b>${T('Update ready')}</b><small>${ar?'ما الجديد':"What's new"}</small></div></div><ul class="upd-l">${pts.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="upd-b"><button class="btn ghost" onclick="const u=document.getElementById('updBox');u.classList.add('bye');setTimeout(()=>u.remove(),220)">${ar?'لاحقًا':'Later'}</button><button class="btn" onclick="location.href='index.html'">${ar?'إعادة تشغيل':'Restart'}</button></div>`;document.body.appendChild(b)}
 if(IS_NATIVE){setTimeout(checkUpdate,2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()})}
 
 // ================= FAMILY MODE (Firebase + end-to-end encryption) =================
@@ -3272,7 +3281,7 @@ dtEnhance(document);new MutationObserver(ms=>{for(const m of ms)m.addedNodes.for
 {const R=DOMTokenList.prototype.remove,A=DOMTokenList.prototype.add;const own=new WeakMap();
  DOMTokenList.prototype.remove=function(...c){const el=own.get(this);if(el&&c.length===1&&c[0]==='on'&&this.contains('on')&&!this.contains('closing')&&!document.hidden){SFX('down');A.call(this,'closing');clearTimeout(el._ct);el._ct=setTimeout(()=>{R.call(this,'on','closing')},190);return}return R.apply(this,c)};
  DOMTokenList.prototype.add=function(...c){const el=own.get(this);if(el&&c.includes('on')){if(!this.contains('on')||this.contains('closing'))SFX('up');clearTimeout(el._ct);R.call(this,'closing')}return A.apply(this,c)};
- document.querySelectorAll('.sheet').forEach(sh=>own.set(sh.classList,sh))}
+ document.querySelectorAll('.sheet,#celebrate,#viewer').forEach(sh=>own.set(sh.classList,sh));window._smoothReg=el=>{if(el)own.set(el.classList,el)}}
 applyTheme();hydrateIcons();{const f=document.getElementById('micFab');if(f)f.innerHTML=ic('mic',26)}
 applyWidgetChecks();render();applyLang();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
