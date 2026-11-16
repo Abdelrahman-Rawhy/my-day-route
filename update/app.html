@@ -634,6 +634,19 @@ label,.lbl{display:block;margin:16px 0 8px}
 .empty{padding:28px 20px}
 .sub{line-height:1.6}
 .nav{padding:10px}.nav button{font-size:10.5px;padding:8px 2px;gap:4px}.nav button svg{width:23px;height:23px}
+
+/* v43 no horizontal scrolling anywhere: everything wraps */
+.dz,.members,.tpl{flex-wrap:wrap!important;overflow:visible!important}
+.dz button,.tpl>*{flex:0 1 auto!important}
+.q-juz{display:grid!important;grid-template-columns:repeat(6,1fr);gap:6px;overflow:visible!important}
+.q-juz>*{width:auto!important;min-width:0!important;text-align:center;justify-content:center}
+.sg-chips{display:grid!important;grid-template-columns:repeat(2,1fr);overflow:visible!important;position:static!important}
+.sg-chips button{justify-content:center;white-space:normal!important;text-align:center;min-height:44px}
+#v-today .fbar{display:grid!important;grid-template-columns:repeat(4,1fr);overflow:visible!important;gap:8px}
+#v-today .fbar button{flex-direction:column!important;padding:12px 4px!important;border-radius:18px!important;min-height:76px!important;font-size:12px!important;white-space:normal;text-align:center;line-height:1.3;gap:6px!important}
+#v-today .fbar button .ico{width:32px!important;height:32px!important;border-radius:10px!important}
+html,body{overflow-x:hidden}
+.fbs{display:block;font-size:10.5px;opacity:.7;margin-top:-3px}
 </style>
 </head>
 <body>
@@ -1576,7 +1589,7 @@ function renderFaithBar(){const el=document.getElementById('faithBar');if(!el)re
  else if(h>=17){const tm=new Date();tm.setDate(tm.getDate()+1);const ot=occasions(tm).find(x=>x.fast);if(ot&&!ramadanOn())html+=`<div class="occ"><span class="ico c-indigo">${ic('moon',20)}</span><div style="flex:1"><b>Tomorrow: ${ot.t}</b><p>${ot.sub} · intend tonight and eat suhoor</p></div></div>`}
  if(rec.fast&&!ramadanOn()){const mg=atTime(now,PT.maghrib);if(now<mg)html+=`<div class="occ" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)"><span class="ico c-amber">${ic('sunset',20)}</span><div style="flex:1"><b>Iftar in <span id="ramCd" data-at="${mg.getTime()}">${hms(mg-now)}</span></b><p>at ${clock12(mg)} · Allahumma laka sumtu</p></div></div>`}
  const t=S.tz||{},kh=S.kh||{page:0};
- html+=`<div class="fbar"><button onclick="openAdhkar()"><span class="ico c-blue">${ic('sunrise',17)}</span>Adhkar</button><button onclick="go('faith');fTab='tasbih';renderFaith()"><span class="ico c-violet">${ic('beads',17)}</span>Tasbih${rec.tasbih?' · '+rec.tasbih:''}</button><button onclick="qContinue()"><span class="ico c-green">${ic('book',17)}</span>${T('Mushaf')} · ${Math.round(kh.page/6.04)}%</button><button onclick="go('faith');fTab='qibla';renderFaith()"><span class="ico c-amber">${ic('pin',17)}</span>Qibla</button></div>`;
+ html+=`<div class="fbar"><button onclick="openAdhkar()"><span class="ico c-blue">${ic('sunrise',17)}</span>Adhkar</button><button onclick="go('faith');fTab='tasbih';renderFaith()"><span class="ico c-violet">${ic('beads',17)}</span>Tasbih${rec.tasbih?' · '+rec.tasbih:''}</button><button onclick="qContinue()"><span class="ico c-green">${ic('book',17)}</span>${T('Mushaf')}<small class="fbs">${S.lang==='ar'?arNum(Math.round(kh.page/6.04))+'٪':Math.round(kh.page/6.04)+'%'}</small></button><button onclick="go('faith');fTab='qibla';renderFaith()"><span class="ico c-amber">${ic('pin',17)}</span>Qibla</button></div>`;
  el.innerHTML=html}
 function ramFasts(){const hj=hijri();if(!hj||hj.m!==9)return Object.values(S.history).filter(r=>r.fast).length;let n=0;for(let i=0;i<hj.d;i++){const d=new Date();d.setDate(d.getDate()-i);const r=S.history[keyOf(d)];if(r&&r.fast)n++}return n}
 setInterval(()=>{const e=document.getElementById('ramCd');if(!e||document.hidden)return;const ms=+e.dataset.at-Date.now();if(ms<=0){render();return}e.textContent=hms(ms)},1000);
@@ -2725,7 +2738,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=42;
+const APP_VERSION=43;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
