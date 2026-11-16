@@ -96,6 +96,14 @@ svg.i{display:block;flex:none}
 .tag{color:#fff;background:var(--grad);font-weight:700;font-size:10px;padding:2px 7px;border-radius:99px;letter-spacing:.3px}
 .tag.late{background:rgba(251,113,133,.18);color:var(--red)}
 .tag.auto{background:rgba(251,191,36,.14);color:var(--gold)}
+.tag.fri{background:rgba(52,211,153,.16);color:var(--ok)}
+.tag.sub{background:var(--s2,rgba(255,255,255,.08));color:var(--mu)}
+.daychips{display:flex;gap:6px;flex-wrap:wrap}.daychips button{flex:1;min-width:38px;padding:9px 0;border-radius:12px;border:1px solid var(--bd);background:var(--s1);color:var(--mu);font-weight:700;font-size:12px}.daychips button.on{background:var(--grad);color:#fff;border-color:transparent}
+.subl{display:flex;flex-direction:column;gap:6px;margin-top:4px}.subi{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:10px 12px}.subi .cb{width:24px;height:24px;border-radius:8px;border:2px solid var(--bd);display:grid;place-items:center;flex:none;color:#fff}.subi.on .cb{background:var(--ok);border-color:var(--ok)}.subi.on span.n{text-decoration:line-through;color:var(--mu)}.subi span.n{flex:1;font-size:14px}
+.qaprev{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.qaprev .pv{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:7px 10px;font-size:12px;display:flex;gap:6px;align-items:center}
+.qain{display:flex;gap:8px}.qain input{flex:1}.mic{width:48px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:var(--a1);display:grid;place-items:center}.mic.rec{background:var(--red);color:#fff;animation:pulse 1s infinite}
+.node{cursor:pointer}
+@keyframes pulse{50%{opacity:.6}}
 .check{width:38px;height:38px;border-radius:13px;border:2px solid var(--bd2);flex:none;display:grid;place-items:center;transition:.2s;color:#052e1f}
 .step.done .check{background:var(--ok);border-color:var(--ok)}
 .step.next .check{border-color:var(--a1)}
@@ -350,7 +358,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div id="projChip"></div>
   <div id="rescue"></div>
   <div class="quote" id="quote"></div>
-  <div class="sec"><h3 id="routeH"></h3><button class="link" onclick="openEdit()" id="editLink"></button></div>
+  <div class="sec"><h3 id="routeH"></h3><span style="display:flex;gap:12px"><button class="link" onclick="openQuick()" id="qaLink"></button><button class="link" onclick="openEdit()" id="editLink"></button></span></div>
   <div id="route"></div>
   <div id="review" style="margin-top:10px"></div>
 </section>
@@ -442,8 +450,16 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <label>Name</label><input id="tName" placeholder="e.g. Read Quran">
   <label>Time</label><input id="tTime" type="time">
   <label>Points</label><input id="tPts" type="number" min="1" max="100" value="10">
+  <label>Repeat on</label><div class="daychips" id="tDays"></div>
   <label>Icon</label><div class="icons" id="iconPick"></div>
   <div class="row"><button class="btn ghost" onclick="closeTask()">Cancel</button><button class="btn" onclick="saveTask()">Save</button></div></div></div>
+<div class="sheet" id="stepSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="stepPanel"></div></div>
+<div class="sheet" id="qaSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Quick add</h3>
+  <div class="sub" style="margin-bottom:8px">Type or speak naturally: “Call mom at 5pm”, “Gym every Mon Wed 7pm”, “Read Kahf Friday after Fajr”, “Buy bread tomorrow morning”, “اتصل بماما بكرة الساعة 6”</div>
+  <div class="qain"><input id="qaIn" placeholder="What and when?" oninput="qaPreview()" onkeydown="if(event.key==='Enter')saveQuick()"><button class="mic" id="qaMic" onclick="qaVoice()"></button></div>
+  <div class="qaprev" id="qaPrev"></div>
+  <label>Repeat</label><div class="daychips" id="qaRep"></div>
+  <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" onclick="saveQuick()">Add to route</button></div></div></div>
 <div class="sheet" id="rewardSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>New prize</h3>
   <label>Prize</label><input id="rName" placeholder="e.g. Favorite dessert">
   <label>Cost in points</label><input id="rCost" type="number" min="1" value="100">
@@ -568,7 +584,8 @@ const P={
  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9Z"/>',
  chevron:'<path d="m9 18 6-6-6-6"/>',
  fingerprint:'<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>',
- alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'
+ alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+ mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>'
 };
 const COLOR={mosque:'amber',sunrise:'orange',sun:'amber',cloudsun:'amber',sunset:'rose',moon:'indigo',book:'green',beads:'green',hands:'pink',heart:'pink',briefcase:'blue',laptop:'blue',pen:'blue',clipboard:'violet',phone:'teal',lightbulb:'violet',graduation:'violet',activity:'rose',footprints:'teal',droplet:'blue',leaf:'green',coffee:'orange',bed:'indigo',pill:'pink',users:'rose',target:'violet',scale:'amber',video:'pink',cart:'teal',sparkles:'violet',cake:'pink',gamepad:'violet',smartphone:'blue',plane:'teal',utensils:'orange',gift:'rose',star:'amber'};
 function ic(k,s=24,cls='',sw=1.9){const p=P[k];if(!p)return `<span style="font-size:${Math.round(s*.9)}px;line-height:1">${k}</span>`;
@@ -609,6 +626,8 @@ let save=()=>{store.set(S);if(typeof scheduleSync==='function')scheduleSync()};
 // migrations
 S.city=S.city||'Cairo';S.notified=S.notified||{};
 S.tasks.forEach(t=>{if(t.prayer===undefined)t.prayer=prayerKey(t.name);if(EMOJI2KEY[t.icon])t.icon=EMOJI2KEY[t.icon]});
+if(!S.fri1){S.fri1=1;S.tasks.push({id:uid(),icon:'book',name:'Surat Al-Kahf',time:'09:30',pts:20,prayer:null,days:[5]},{id:uid(),icon:'droplet',name:'Ghusl, perfume & early to the mosque',time:'10:45',pts:15,prayer:null,days:[5]},{id:uid(),icon:'heart',name:'Salawat on the Prophet ﷺ (100×)',time:'16:00',pts:15,prayer:null,days:[5]})}
+{const lim=new Date();lim.setDate(lim.getDate()-7);const lk=lim.getFullYear()+'-'+String(lim.getMonth()+1).padStart(2,'0')+'-'+String(lim.getDate()).padStart(2,'0');S.tasks=S.tasks.filter(t=>!t.date||t.date>=lk)}
 S.rewards.forEach(r=>{if(EMOJI2KEY[r.icon])r.icon=EMOJI2KEY[r.icon]});
 S.claimed.forEach(r=>{if(EMOJI2KEY[r.icon])r.icon=EMOJI2KEY[r.icon]});
 S.project=S.project||{name:'Graduation Project',deadline:'',milestones:['Choose topic & supervisor approval','Research & literature review','Proposal','Build / implementation','Write chapters','Review with supervisor','Final presentation slides','Defense'].map(n=>({id:uid(),name:n,done:false}))};
@@ -619,9 +638,16 @@ if(!S.goals){S.goals=[];const P=S.project;if(P){S.goals.push({id:uid(),type:'pro
 
 const keyOf=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const today=()=>keyOf(new Date());
-const dayRec=(k=today())=>S.history[k]||(S.history[k]={done:[],total:S.tasks.length});
+const dayRec=(k=today())=>S.history[k]||(S.history[k]={done:[],total:dayTasks(new Date(k+'T12:00')).length});
 const effTime=t=>{const r=S.history[today()];return (r&&r.resched&&r.resched[t.id])||t.time};
-const sorted=()=>[...S.tasks].sort((a,b)=>effTime(a).localeCompare(effTime(b)));
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const isFri=(d=new Date())=>d.getDay()===5;
+const onDay=(t,d=new Date())=>t.date?t.date===keyOf(d):(!t.days||!t.days.length||t.days.includes(d.getDay()));
+const dayTasks=(d=new Date())=>S.tasks.filter(t=>onDay(t,d));
+const sorted=d=>{const isT=!d||keyOf(d)===today();return dayTasks(d||new Date()).sort((a,b)=>(isT?effTime(a):a.time).localeCompare(isT?effTime(b):b.time))};
+const allSorted=()=>[...S.tasks].sort((a,b)=>(a.date?1:0)-(b.date?1:0)||a.time.localeCompare(b.time));
+const tName=(t,d=new Date())=>t.prayer==='dhuhr'&&isFri(d)?"Pray Jumu'ah":t.name;
+const daysTxt=t=>t.date?(t.date===today()?'Today only':new Date(t.date+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})):(!t.days||!t.days.length||t.days.length===7)?'Every day':t.days.length===5&&[0,1,2,3,4].every(x=>t.days.includes(x))?'Sun–Thu':[...t.days].sort().map(x=>DOW[x]).join(' ');
 const fmt=t=>{if(!t)return'';let [h,m]=t.split(':').map(Number);const ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+String(m).padStart(2,'0')+' '+ap};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const taskIcon=t=>t.prayer?PRAYER_ICON[t.prayer]:t.icon;
@@ -684,8 +710,7 @@ const BADGES=[
 let firstPaint=true,justDone=null;
 function render(){
  applyPrayers();
- const rec=dayRec();rec.total=S.tasks.length;
- const list=sorted();const done=rec.done.filter(id=>S.tasks.some(t=>t.id===id)).length;
+ const rec=dayRec();const list=sorted();rec.total=list.length;const done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
  const pct=list.length?Math.round(done/list.length*100):0;
  const h=new Date().getHours();
  document.getElementById('hello').textContent=(h<5?'Blessed night':h<12?'Good morning':h<17?'Good afternoon':'Good evening')+(S.name?', '+S.name:'');
@@ -696,21 +721,21 @@ function render(){
  document.getElementById('pct').textContent=pct+'%';
  const next=list.find(t=>!rec.done.includes(t.id));
  document.getElementById('heroTitle').textContent=pct===100?'Route complete!':pct===0?'Your route is ready':pct>=50?'Over halfway there':'Great start, keep moving';
- document.getElementById('heroSub').textContent=next?'Next: '+next.name+' at '+fmt(effTime(next)):'You finished every step today. Rest well.';
+ document.getElementById('heroSub').textContent=next?'Next: '+tName(next)+' at '+fmt(effTime(next)):'You finished every step today. Rest well.';
  const lv=level();
  document.getElementById('stats').innerHTML=`
   <div class="stat"><span class="ico c-green" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center">${ic('check',16)}</span><b>${done}/${list.length}</b><span>Steps today</span></div>
   <div class="stat"><span class="ico c-orange" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center">${ic('flame',16)}</span><b>${streak()}</b><span>Day streak</span></div>
   <div class="stat"><span class="ico c-violet" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center">${ic('trophy',16)}</span><b>Lv ${lv}</b><span>${LEVELS[Math.min(lv-1,LEVELS.length-1)]}</span></div>`;
  const now=new Date().toTimeString().slice(0,5);
- document.getElementById('routeH').innerHTML=ic('map',20)+"Today's route";
- document.getElementById('editLink').innerHTML=ic('pen',15)+'Edit';
+ document.getElementById('routeH').innerHTML=ic('map',20)+(isFri()?"Friday route":"Today's route");
+ document.getElementById('editLink').innerHTML=ic('pen',15)+'Edit';document.getElementById('qaLink').innerHTML=ic('plus',15)+'Add';
  document.getElementById('route').innerHTML=list.map((t,i)=>{
   const d=rec.done.includes(t.id),nx=next&&next.id===t.id,late=!d&&effTime(t)<now&&!nx,moved=rec.resched&&rec.resched[t.id],k=taskIcon(t);
   return `<div class="step ${d?'done':''} ${nx?'next':''}" data-id="${t.id}" style="animation-delay:${firstPaint?i*40:0}ms">
-   <div class="node ${col(k)}">${ic(d?'check':k,24,firstPaint||t.id===justDone?'draw':'')}<span class="num">${i+1}</span></div>
-   <div class="body" onclick="toggle('${t.id}')"><div class="info"><b>${esc(t.name)}</b>
-   <div class="meta">${ic('clock',12)}${fmt(effTime(t))} · +${t.pts} pts ${t.prayer?'<span class="tag auto">AUTO</span>':''}${moved?'<span class="tag auto">MOVED</span>':''}${nx?'<span class="tag">NOW</span>':''}${late?'<span class="tag late">MISSED</span>':''}</div></div>
+   <div class="node ${col(k)}" onclick="openStep('${t.id}')">${ic(d?'check':k,24,firstPaint||t.id===justDone?'draw':'')}<span class="num">${i+1}</span></div>
+   <div class="body" onclick="toggle('${t.id}')"><div class="info"><b>${esc(tName(t))}</b>
+   <div class="meta">${ic('clock',12)}${fmt(effTime(t))} · +${t.pts} pts ${t.prayer?'<span class="tag auto">AUTO</span>':''}${t.date?'<span class="tag sub">ONCE</span>':''}${t.days&&t.days.length===1&&t.days[0]===5?'<span class="tag fri">FRIDAY</span>':''}${t.subs&&t.subs.length?`<span class="tag sub">☑ ${subDone(t,rec)}/${t.subs.length}</span>`:''}${t.note?'<span class="tag sub">📝</span>':''}${moved?'<span class="tag auto">MOVED</span>':''}${nx?'<span class="tag">NOW</span>':''}${late?'<span class="tag late">MISSED</span>':''}</div></div>
    <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>';
  const q=QUOTES[(new Date().getDate()+new Date().getMonth()*31)%QUOTES.length];
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
@@ -965,18 +990,21 @@ function delReward(id){S.rewards=S.rewards.filter(r=>r.id!==id);save();render()}
 function resetToday(){const rec=dayRec();rec.done.forEach(id=>{const t=S.tasks.find(x=>x.id===id);if(t)subPts(t.pts,true)});rec.done=[];rec.resched={};save();render();toast('Today was reset','rotate')}
 
 // ================= EDITING =================
-let editId=null,pickIcon='target',pickRIcon='gift';
+let editId=null,pickIcon='target',pickRIcon='gift',pickDays=[0,1,2,3,4,5,6],pickDate=null;
 function openEdit(){closeSheets();renderEdit();document.getElementById('editSheet').classList.add('on')}
-function renderEdit(){document.getElementById('editList').innerHTML=sorted().map(t=>{const k=taskIcon(t);return `<div class="edit-row"><span class="ico ${col(k)}">${ic(k,20)}</span><div class="info" style="flex:1"><b>${esc(t.name)}</b><div class="meta">${fmt(t.time)} · ${t.pts} pts</div></div>${t.prayer?`<span class="lock">${ic('lock',13)}Auto</span>`:`<button class="iconbtn" onclick="openTask('${t.id}')">${ic('pen',15)}</button><button class="iconbtn" onclick="delTask('${t.id}')">${ic('trash',15)}</button>`}</div>`}).join('')}
+function renderEdit(){document.getElementById('editList').innerHTML=allSorted().map(t=>{const k=taskIcon(t);return `<div class="edit-row"><span class="ico ${col(k)}">${ic(k,20)}</span><div class="info" style="flex:1"><b>${esc(t.name)}</b><div class="meta">${fmt(t.time)} · ${t.pts} pts · ${daysTxt(t)}</div></div>${t.prayer?`<span class="lock">${ic('lock',13)}Auto</span>`:`<button class="iconbtn" onclick="openTask('${t.id}')">${ic('pen',15)}</button><button class="iconbtn" onclick="delTask('${t.id}')">${ic('trash',15)}</button>`}</div>`}).join('')}
 function openTask(id){editId=id||null;const t=S.tasks.find(x=>x.id===id);if(t&&t.prayer)return;
  document.getElementById('taskTitle').textContent=t?'Edit step':'New step';
  document.getElementById('tName').value=t?t.name:'';document.getElementById('tTime').value=t?t.time:'09:00';document.getElementById('tPts').value=t?t.pts:10;
  pickIcon=t?t.icon:'target';drawIcons('iconPick',TASK_ICONS,pickIcon,v=>pickIcon=v);
+ pickDays=t&&t.days&&t.days.length?[...t.days]:[0,1,2,3,4,5,6];pickDate=t?t.date||null:null;drawDays('tDays',()=>pickDays,v=>{pickDays=v;pickDate=null});
  document.getElementById('editSheet').classList.remove('on');document.getElementById('taskSheet').classList.add('on')}
 function closeTask(){document.getElementById('taskSheet').classList.remove('on');openEdit()}
 function saveTask(){const name=document.getElementById('tName').value.trim(),time=document.getElementById('tTime').value||'09:00',pts=Math.max(1,Math.min(100,+document.getElementById('tPts').value||10));
  if(!name){toast('Give the step a name','pen');return}
- if(editId){const t=S.tasks.find(x=>x.id===editId);Object.assign(t,{name,pts,icon:pickIcon,time})}else S.tasks.push({id:uid(),name,time,pts,icon:pickIcon,prayer:null});
+ if(!pickDays.length&&!pickDate){toast('Pick at least one day','clock');return}
+ const days=pickDays.length===7?undefined:[...pickDays].sort();
+ if(editId){const t=S.tasks.find(x=>x.id===editId);Object.assign(t,{name,pts,icon:pickIcon,time,days,date:pickDate||undefined})}else S.tasks.push({id:uid(),name,time,pts,icon:pickIcon,prayer:null,days});
  save();render();closeTask()}
 function delTask(id){if((S.tasks.find(t=>t.id===id)||{}).prayer)return;S.tasks=S.tasks.filter(t=>t.id!==id);save();render();renderEdit()}
 function drawIcons(el,arr,sel,cb){const c=document.getElementById(el);c.innerHTML=arr.map(i=>`<button data-k="${i}" class="${i===sel?'sel':''}">${ic(i,22)}</button>`).join('');
@@ -989,6 +1017,78 @@ function saveName(){S.name=document.getElementById('nameIn').value.trim();save()
 function openCity(){document.getElementById('cityList').innerHTML=CITIES.map(c=>`<button class="edit-row" style="${c[0]===S.city?'border-color:var(--a1)':''}" onclick="pickCity('${c[0]}')"><span class="ico ${c[0]===S.city?'c-green':'c-violet'}">${ic(c[0]===S.city?'check':'pin',18)}</span><b style="flex:1">${c[0]}</b></button>`).join('');document.getElementById('citySheet').classList.add('on')}
 function pickCity(n){S.city=n;save();render();closeSheets();toast('Prayer times set for '+n,'pin')}
 function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('on'))}
+
+// ================= STEP DETAILS (notes & sub-steps) =================
+const subDone=(t,rec=dayRec())=>{const L=(rec.subs&&rec.subs[t.id])||[];return (t.subs||[]).filter(x=>L.includes(x.id)).length};
+let stepId=null;
+function openStep(id){stepId=id;closeSheets();drawStep();document.getElementById('stepSheet').classList.add('on')}
+function drawStep(){const t=S.tasks.find(x=>x.id===stepId);if(!t)return closeSheets();const rec=dayRec(),k=taskIcon(t),d=rec.done.includes(t.id),L=(rec.subs&&rec.subs[t.id])||[];
+ document.getElementById('stepPanel').innerHTML=`<div style="display:flex;gap:12px;align-items:center;margin-bottom:6px"><span class="ico ${col(k)}" style="width:48px;height:48px;border-radius:16px;display:grid;place-items:center">${ic(k,26,'draw')}</span><div style="flex:1"><h3 style="margin:0">${esc(tName(t))}</h3><div class="meta">${ic('clock',12)}${fmt(effTime(t))} · +${t.pts} pts · ${daysTxt(t)}</div></div>${t.prayer?'':`<button class="iconbtn" onclick="closeSheets();openTask('${t.id}')">${ic('pen',15)}</button>`}</div>
+ <label>Sub-steps ${t.subs&&t.subs.length?'· '+subDone(t,rec)+'/'+t.subs.length+' today':''}</label>
+ <div class="subl">${(t.subs||[]).map(x=>`<div class="subi ${L.includes(x.id)?'on':''}"><button class="cb" onclick="tickSub('${x.id}')">${L.includes(x.id)?ic('check',14,'draw',3):''}</button><span class="n" onclick="tickSub('${x.id}')">${esc(x.name)}</span><button class="iconbtn" onclick="delSub('${x.id}')">${ic('x',14)}</button></div>`).join('')}
+ <div class="qain"><input id="subIn" placeholder="Add a sub-step, e.g. Surah Al-Mulk" onkeydown="if(event.key==='Enter')addSub()"><button class="mic" onclick="addSub()">${ic('plus',18)}</button></div></div>
+ <label>Notes</label><textarea id="noteIn" rows="3" placeholder="Anything to remember for this step…" onblur="saveNote()">${esc(t.note||'')}</textarea>
+ <div class="row"><button class="btn ghost" onclick="saveNote();closeSheets()">Close</button><button class="btn" onclick="saveNote();closeSheets();toggle('${t.id}')">${d?'Undo done':'Mark done'}</button></div>`}
+function saveNote(){const t=S.tasks.find(x=>x.id===stepId),el=document.getElementById('noteIn');if(!t||!el)return;const v=el.value.trim();if(v!==(t.note||'')){if(v)t.note=v;else delete t.note;save();render()}}
+function addSub(){const t=S.tasks.find(x=>x.id===stepId),el=document.getElementById('subIn');const v=(el.value||'').trim();if(!t||!v)return;saveNote();(t.subs=t.subs||[]).push({id:uid(),name:v});save();render();drawStep();setTimeout(()=>{const e=document.getElementById('subIn');e&&e.focus()},30)}
+function delSub(sid){const t=S.tasks.find(x=>x.id===stepId);if(!t)return;saveNote();t.subs=(t.subs||[]).filter(x=>x.id!==sid);if(!t.subs.length)delete t.subs;save();render();drawStep()}
+function tickSub(sid){const t=S.tasks.find(x=>x.id===stepId);if(!t)return;saveNote();const rec=dayRec();rec.subs=rec.subs||{};const L=rec.subs[t.id]=rec.subs[t.id]||[];const i=L.indexOf(sid);
+ if(i>=0)L.splice(i,1);else{L.push(sid);tone([880,1320],.06)}
+ save();const all=t.subs.every(x=>L.includes(x.id));
+ if(all&&!rec.done.includes(t.id)){closeSheets();toggle(t.id);return}
+ render();drawStep()}
+function drawDays(el,get,cb){const c=document.getElementById(el);const draw=()=>{const v=get();c.innerHTML=DOW.map((n,i)=>`<button data-d="${i}" class="${v.includes(i)?'on':''}">${n.slice(0,2)}</button>`).join('');
+ c.querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=+b.dataset.d,cur=[...get()];const j=cur.indexOf(d);if(j>=0)cur.splice(j,1);else cur.push(d);cb(cur.sort());draw()})};draw()}
+
+// ================= QUICK ADD (natural language + voice) =================
+const QA_ICONS=[[/quran|qur'?an|kahf|surah|قرآن|سورة|الكهف/i,'book'],[/pray|salah|dua|dhikr|adhkar|صلا|دعاء|اذكار|أذكار|ذكر/i,'hands'],[/call|phone|ring|اتصل|كلم|مكالمة/i,'phone'],[/gym|walk|\brun\b|running|exercise|workout|جيم|تمرين|مشي|رياضة/i,'activity'],[/\bread\b|\bbooks?\b|قراءة|اقرأ|كتاب/i,'book'],[/study|assignment|lecture|exam|project|thesis|graduation|مذاكرة|محاضرة|امتحان|مشروع/i,'graduation'],[/buy|shop|grocer|market|اشتري|شراء|سوبر/i,'cart'],[/lunch|dinner|breakfast|eat|cook|غدا|عشا|فطار|أكل|اكل|طبخ/i,'utensils'],[/coffee|\btea\b|قهوة|شاي/i,'coffee'],[/meet|work|client|court|case|email|office|اجتماع|شغل|عميل|محكمة|قضية|جلسة|مكتب/i,'briefcase'],[/mom|dad|mother|father|family|brother|sister|kids|ماما|بابا|أم|ام|أب|عيلة|أسرة|اخويا|اختي/i,'users'],[/sleep|\bnap\b|نوم|نام/i,'bed'],[/\bwater\b|مياه|ماء/i,'droplet'],[/pill|medicine|meds|دواء|علاج/i,'pill'],[/write|journal|\bplan\b|اكتب|خطة/i,'pen'],[/learn|course|تعلم|كورس/i,'lightbulb']];
+const AR_D={'٠':0,'١':1,'٢':2,'٣':3,'٤':4,'٥':5,'٦':6,'٧':7,'٨':8,'٩':9};
+const WD=[[/\b(sun(day)?s?)\b|الأحد|الاحد|الحد/i,0],[/\b(mon(day)?s?)\b|الاثنين|الإثنين|الاتنين|التلات/i,1],[/\b(tue(s(day)?)?s?)\b|الثلاثاء|الثلاث|التلات/i,2],[/\b(wed(nesday)?s?)\b|الأربعاء|الاربعاء|الاربع/i,3],[/\b(thu(rs(day)?)?s?)\b|الخميس/i,4],[/\b(fri(day)?s?)\b|الجمعة|الجمعه/i,5],[/\b(sat(urday)?s?)\b|السبت/i,6]];
+let qaRep=null;
+function parseQuick(raw){let s=' '+raw.replace(/[٠-٩]/g,c=>AR_D[c])+' ',time=null,days=null,date=null,rel=false;const cut=re=>{s=s.replace(re,' ')};
+ const hm=(h,m)=>String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');let m;
+ // relative: in 30 min / in 2 hours / بعد ساعة
+ if(m=s.match(/\b(?:in|after)\s+(\d+|an?|half an?)\s*(min(?:ute)?s?|hours?|hrs?|h)\b/i)){let n=/half/i.test(m[1])?30:/^an?$/i.test(m[1])?1:+m[1];const mins=/^h/i.test(m[2])?n*60:n;if(/half/i.test(m[1]))n=30;const d=new Date(Date.now()+(/half/i.test(m[1])?30:mins)*6e4);time=hm(d.getHours(),d.getMinutes());rel=true;if(d.getDate()!==new Date().getDate())date=keyOf(d);cut(m[0])}
+ else if(m=s.match(/بعد\s+(نص ساعة|ساعة|ساعتين|(\d+)\s*(دقيقة|دقايق|دقائق|ساعات|ساعة))/)){let mins=m[1]==='نص ساعة'?30:m[1]==='ساعة'?60:m[1]==='ساعتين'?120:(+m[2])*(/ساع/.test(m[3])?60:1);const d=new Date(Date.now()+mins*6e4);time=hm(d.getHours(),d.getMinutes());rel=true;cut(m[0])}
+ // after/before a prayer
+ const PR=[['fajr',/fajr|الفجر/i],['dhuhr',/dhuhr|zuhr|duhr|الظهر|الضهر/i],['asr',/asr|العصر/i],['maghrib',/maghrib|المغرب/i],['isha',/isha|العشاء|العشا/i],['dhuhr',/jum'?u?'?ah|jumaa?|صلاة الجمعة/i]];
+ if(!time)for(const [k,re] of PR){const r=new RegExp('(after|before|بعد|قبل)\\s+(?:the\\s+)?(?:صلاة\\s+)?(?:'+re.source+')(?:\\s+prayer)?','i');if(m=s.match(r)){const [h,mi]=(PT[k]||'12:00').split(':').map(Number);const t=h*60+mi+(/before|قبل/i.test(m[1])?-20:20);time=hm(Math.floor((t+1440)%1440/60),(t+1440)%60);cut(m[0]);break}}
+ // explicit clock
+ if(!time&&(m=s.match(/(?:\bat\s*|@\s*|الساعة\s*|الساعه\s*)?\b(\d{1,2})(?:[:.](\d{2}))?\s*(a\.?m\.?|p\.?m\.?|ص|م|صباحا|مساء|مساءً|الصبح|بالليل|العصر)?(?=\s|$)/i))&&(m[2]||m[3]||/at|@|الساع/i.test(m[0]))){let h=+m[1],mi=+(m[2]||0);const ap=(m[3]||'').toLowerCase();
+  if(h<=23&&mi<60){if(/^p|^م|مساء|بالليل|العصر/.test(ap)&&h<12)h+=12;else if(/^a|^ص|صباح|الصبح/.test(ap)&&h===12)h=0;else if(!ap&&h>=1&&h<=7&&!m[2])h+=12; // "at 5" → 5 PM
+   time=hm(h,mi);cut(m[0])}}
+ // day parts
+ const parts=[[/\b(this\s+)?morning\b|الصبح|صباحا/i,'08:00'],[/\bnoon\b|الضهر/i,'12:30'],[/\b(this\s+)?afternoon\b|بعد الضهر/i,'15:00'],[/\b(this\s+)?evening\b|المسا|مساءً?/i,'19:00'],[/\btonight\b|\bnight\b|بالليل|الليلة/i,'21:00']];
+ for(const [re,t] of parts){if(m=s.match(re)){if(!time)time=t;if(/tonight|الليلة/i.test(m[0]))date=today();cut(m[0]);break}}
+ // dates & repeats
+ if(m=s.match(/\b(every\s*day|daily|each day)\b|كل يوم|يوميا|يومياً/i)){days=[0,1,2,3,4,5,6];cut(m[0])}
+ else if(m=s.match(/\bweekdays\b|أيام الشغل|ايام الشغل/i)){days=[0,1,2,3,4];cut(m[0])}
+ else if(m=s.match(/\bweekends?\b|الويك اند|الاجازة/i)){days=[5,6];cut(m[0])}
+ const found=[];for(const [re,d] of WD){const g=new RegExp(re.source,'gi');if(g.test(s)){found.push(d);s=s.replace(g,' ')}}
+ if(found.length&&!days){days=[...new Set(found)].sort();cut(/\b(every|on|each)\b|كل|يوم/gi)}
+ if(!days){if(m=s.match(/\btomorrow\b|بكرة|بكره|غدا|غداً/i)){const d=new Date();d.setDate(d.getDate()+1);date=keyOf(d);cut(m[0])}
+  else if(m=s.match(/\btoday\b|النهارده|النهاردة|اليوم/i)){date=today();cut(m[0])}}
+ cut(/\b(remind me to|remind me|i need to|i have to|i must|to do|please)\b|فكرني|ذكرني|لازم|محتاج/gi);
+ let name=s.replace(/\s+(at|on|by|in|and)\s*$/i,' ').replace(/^\s*(to|at)\s+/i,' ').replace(/\s{2,}/g,' ').replace(/^[\s,.\-–]+|[\s,.\-–]+$/g,'');
+ name=name.charAt(0).toUpperCase()+name.slice(1);
+ if(!time){const d=new Date(Date.now()+60*6e4);d.setMinutes(Math.ceil(d.getMinutes()/15)*15);time=hm(d.getHours()%24,d.getMinutes()%60)}
+ if(!days&&!date){const now=new Date().toTimeString().slice(0,5);const d=new Date();if(time<=now&&!rel)d.setDate(d.getDate()+1);date=keyOf(d)}
+ const icon=(QA_ICONS.find(([re])=>re.test(raw))||[0,'target'])[1];
+ return{name,time,days,date,icon}}
+function openQuick(){closeSheets();qaRep=null;const i=document.getElementById('qaIn');i.value='';document.getElementById('qaMic').innerHTML=ic('mic',20);qaPreview();document.getElementById('qaSheet').classList.add('on');setTimeout(()=>i.focus(),150)}
+function qaPreview(){const v=document.getElementById('qaIn').value.trim(),P=v?parseQuick(v):null;
+ document.getElementById('qaPrev').innerHTML=P?`<span class="pv">${ic(P.icon,14)}<b>${esc(P.name||'…')}</b></span><span class="pv">${ic('clock',14)}${fmt(P.time)}</span><span class="pv">${ic('rotate',14)}${daysTxt({days:qaRep||P.days,date:qaRep?null:P.date})}</span>`:'';
+ const cur=qaRep||(P&&P.days)||[];drawDays('qaRep',()=>qaRep||(P&&P.days)||[],v=>{qaRep=v.length?v:null;qaPreview()})}
+function saveQuick(){const v=document.getElementById('qaIn').value.trim();if(!v){toast('Type what you want to add','pen');return}const P=parseQuick(v);if(!P.name){toast('Add a name for the step','pen');return}
+ const days=qaRep||P.days,t={id:uid(),name:P.name,time:P.time,pts:10,icon:P.icon,prayer:null};if(days&&days.length&&days.length<7)t.days=days;else if(!days)t.date=P.date;
+ S.tasks.push(t);save();closeSheets();render();burst(30);toast((onDay(t)?'Added to today: ':'Scheduled: ')+t.name+' · '+fmt(t.time),t.icon)}
+let qaRec=null;
+function qaVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.getElementById('qaMic');
+ if(qaRec){try{qaRec.stop()}catch(e){}return}
+ if(!SR){document.getElementById('qaIn').focus();toast('Tap the 🎤 on your keyboard to speak','mic');return}
+ const r=qaRec=new SR();r.lang=/ar/i.test(navigator.language)||S.lang==='ar'?'ar-EG':'en-US';r.interimResults=true;mic.classList.add('rec');
+ r.onresult=e=>{document.getElementById('qaIn').value=[...e.results].map(x=>x[0].transcript).join(' ');qaPreview()};
+ r.onend=r.onerror=()=>{qaRec=null;mic.classList.remove('rec')};try{r.start()}catch(e){qaRec=null;mic.classList.remove('rec')}}
 
 // ================= FEEDBACK =================
 let tt;function toast(m,icon='sparkles'){const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
@@ -1035,11 +1135,11 @@ async function doSchedule(){
   const pend=await LN.getPending();const old=(pend.notifications||[]).filter(n=>n.id<90000).map(n=>({id:n.id}));if(old.length)await LN.cancel({notifications:old});
   const c=CITIES.find(x=>x[0]===S.city)||CITIES[0],now=Date.now(),rec=dayRec(),out=[];
   for(let d=0;d<14;d++){const day=new Date();day.setHours(0,0,0,0);day.setDate(day.getDate()+d);const pt=prayerTimes(day,c[1],c[2]);
-   S.tasks.forEach((t,i)=>{let tm=t.prayer?pt[t.prayer]:t.time;
+   S.tasks.forEach((t,i)=>{if(!onDay(t,day))return;let tm=t.prayer?pt[t.prayer]:t.time;
     if(d===0){if(rec.done.includes(t.id))return;tm=t.prayer?tm:effTime(t)}
     const [h,m]=tm.split(':').map(Number),at=new Date(day);at.setHours(h,m,0,0);if(at.getTime()<=now+20000)return;
-    const pr=t.prayer?t.name.replace(/^pray\s*/i,''):'';
-    out.push({id:(d+1)*1000+i,channelId:'route',title:t.prayer?'Time for '+pr+' prayer':'Time for: '+t.name,body:t.prayer?'Hayya ala salah · +'+t.pts+' points on your route':'Step '+(i+1)+' of your day · +'+t.pts+' points waiting',schedule:{at,allowWhileIdle:true}})})}
+    const pr=t.prayer?tName(t,day).replace(/^pray\s*/i,''):'';
+    out.push({id:(d+1)*1000+i,channelId:'route',title:t.prayer?'Time for '+pr+' prayer':'Time for: '+t.name+(t.subs&&t.subs.length?' ('+t.subs.length+' parts)':''),body:t.prayer?'Hayya ala salah · +'+t.pts+' points on your route':'Step '+(i+1)+' of your day · +'+t.pts+' points waiting',schedule:{at,allowWhileIdle:true}})})}
   out.sort((a,b)=>a.schedule.at-b.schedule.at);
   if(out.length)await LN.schedule({notifications:out.slice(0,300)});
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();document.getElementById('exactRow').style.display=ex.exact_alarm==='granted'?'none':'flex'}
@@ -1694,7 +1794,7 @@ function stepTransition(id){requestAnimationFrame(()=>{const a=document.querySel
 // ================= COUNTDOWNS =================
 const PNAMES={fajr:'Fajr',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha'};
 const atTime=(d,hm)=>{const [h,m]=hm.split(':').map(Number);const x=new Date(d);x.setHours(h,m,0,0);return x};
-function prayerSchedule(days=3){const c=CITIES.find(x=>x[0]===S.city)||CITIES[0],out=[];for(let i=-1;i<days;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+i);const pt=prayerTimes(d,c[1],c[2]);for(const k in PNAMES)out.push({k,n:PNAMES[k],t:atTime(d,pt[k]).getTime()})}return out.sort((a,b)=>a.t-b.t)}
+function prayerSchedule(days=3){const c=CITIES.find(x=>x[0]===S.city)||CITIES[0],out=[];for(let i=-1;i<days;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+i);const pt=prayerTimes(d,c[1],c[2]);for(const k in PNAMES)out.push({k,n:k==='dhuhr'&&d.getDay()===5?"Jumu'ah":PNAMES[k],t:atTime(d,pt[k]).getTime()})}return out.sort((a,b)=>a.t-b.t)}
 function nextPrayer(){const now=Date.now(),L=prayerSchedule(2);const i=L.findIndex(x=>x.t>now);return{next:L[i],prev:L[i-1]}}
 function nextStep(){const now=new Date(),rec=dayRec(),list=sorted().filter(t=>!t.prayer&&!rec.done.includes(t.id));
  const up=list.map(t=>({t,at:atTime(now,effTime(t)).getTime()}));const fut=up.find(x=>x.at>now.getTime());const cur=up.filter(x=>x.at<=now.getTime()).pop();return{fut,cur}}
@@ -1703,7 +1803,7 @@ const clock12=t=>new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'
 function renderCountdowns(){const el=document.getElementById('cds');if(!el)return;const now=Date.now();
  const {next,prev}=nextPrayer();const pc=next?Math.min(100,Math.max(0,(now-(prev?prev.t:now))/(next.t-(prev?prev.t:now))*100)):0;
  const {fut,cur}=nextStep();
- const tk=fut?{lb:'NEXT STEP',nm:fut.t.name,tm:hms(fut.at-now),at:'at '+clock12(fut.at),bar:0}:cur?{lb:'NOW',nm:cur.t.name,tm:'Now',at:'started '+clock12(cur.at),bar:100}:{lb:'NEXT STEP',nm:'All steps done',tm:'🎉',at:'for today',bar:100};
+ const tk=fut?{lb:'NEXT STEP',nm:tName(fut.t),tm:hms(fut.at-now),at:'at '+clock12(fut.at),bar:0}:cur?{lb:'NOW',nm:tName(cur.t),tm:'Now',at:'started '+clock12(cur.at),bar:100}:{lb:'NEXT STEP',nm:'All steps done',tm:'🎉',at:'for today',bar:100};
  el.innerHTML=`<div class="cd pr" onclick="go('settings')"><div class="lb">${ic(PRAYER_ICON[next.k],12)}NEXT PRAYER</div><div class="nm">${next.n}</div><div class="tm" id="cdP">${hms(next.t-now)}</div><div class="at">at ${clock12(next.t)}${new Date(next.t).getDate()!==new Date().getDate()?' tomorrow':''}</div><i class="bar" id="cdPb" style="width:${pc}%"></i></div>
   <div class="cd tk" onclick="document.querySelector('.step.next')&&document.querySelector('.step.next').scrollIntoView({behavior:'smooth',block:'center'})"><div class="lb">${ic(fut?'clock':cur?'zap':'check',12)}${tk.lb}</div><div class="nm">${esc(tk.nm)}</div><div class="tm" id="cdT">${tk.tm}</div><div class="at">${tk.at}</div><i class="bar" style="width:${tk.bar}%"></i></div>`;
  el._p=next;el._f=fut}
@@ -1717,9 +1817,9 @@ async function applyWidgetChecks(){if(!WIDGET||!WIDGET.getPending)return;try{con
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)applyWidgetChecks()});
 const WIDGET=IS_NATIVE?(CAP.Plugins&&CAP.Plugins.WidgetBridge)||(CAP.registerPlugin&&CAP.registerPlugin('WidgetBridge')):null;
 let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);wT=setTimeout(()=>{try{const now=new Date(),rec=dayRec();
- const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted().filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({id:i?'':t.id,n:t.name,t:atTime(d,i?t.time:effTime(t)).getTime()}))}
- const list=sorted(),done=rec.done.filter(id=>S.tasks.some(t=>t.id===id)).length;
- const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:t.name,t:atTime(now,effTime(t)).getTime(),pts:t.pts,p:t.prayer?1:0}));
+ const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted(d).filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({id:i?'':t.id,n:t.name,t:atTime(d,i?t.time:effTime(t)).getTime()}))}
+ const list=sorted(),done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
+ const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:tName(t),t:atTime(now,effTime(t)).getTime(),pts:t.pts,p:t.prayer?1:0}));
  WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:p.n,t:p.t})),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
 
 // ================= NAV & INIT =================
