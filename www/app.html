@@ -288,6 +288,10 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 .heat{display:grid;gap:4px}.heat i{aspect-ratio:1;border-radius:6px;background:rgba(255,255,255,.05);display:grid;place-items:center;font-size:10px;font-style:normal;color:var(--mu);font-weight:600}
 .heat.year{grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:2px}.heat.year i{border-radius:2px}
 .hdr-btns{display:flex;gap:8px;align-items:center}
+
+#appLock{position:fixed;inset:0;z-index:90;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center}
+#appLock.on{display:flex}
+.fp{width:96px;height:96px;border-radius:32px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(124,92,255,.3),rgba(34,211,238,.18));border:1px solid rgba(124,92,255,.45);color:#fff;animation:pop .5s}
 </style>
 </head>
 <body>
@@ -406,6 +410,8 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div class="setting"><span class="ico c-violet" data-i="bell"></span><div class="info" style="flex:1"><b>Reminders</b><p id="notifTxt">Alert when each step's time arrives</p></div><button class="btn" id="notifBtn" onclick="toggleNotif()">Turn on</button></div>
   <div class="setting" id="exactRow" style="display:none"><span class="ico c-amber" data-i="clock"></span><div class="info" style="flex:1"><b>Exact-time alarms</b><p>Allow so reminders ring at the exact minute</p></div><button class="btn" onclick="allowExact()">Allow</button></div>
   <div class="setting"><span class="ico c-teal" data-i="volume"></span><div class="info" style="flex:1"><b>Sound effects</b><p>Chime when you complete a step</p></div><button class="btn ghost" id="sndBtn" onclick="toggleSound()">On</button></div>
+  <div class="setting" id="bioRow" style="display:none"><span class="ico c-teal" data-i="fingerprint"></span><div class="info" style="flex:1"><b>Fingerprint for journal</b><p id="bioTxt">Unlock your journal with your fingerprint</p></div><button class="btn ghost" id="bioBtn" onclick="toggleBio()">Turn on</button></div>
+  <div class="setting" id="appLockRow" style="display:none"><span class="ico c-indigo" data-i="lock"></span><div class="info" style="flex:1"><b>Lock the whole app</b><p>Ask for fingerprint when opening the app</p></div><button class="btn ghost" id="appLockBtn" onclick="toggleAppLock()">Turn on</button></div>
   <div class="setting"><span class="ico c-violet" data-i="lock"></span><div class="info" style="flex:1"><b>Journal lock</b><p id="jLockTxt">Protect your journal with a PIN</p></div><button class="btn ghost" onclick="journalLockSettings()" id="jLockSet">Set PIN</button></div>
   <div class="setting"><span class="ico c-green" data-i="rotate"></span><div class="info" style="flex:1"><b>Backup & restore</b><p>Encrypted backup of everything to Drive or WhatsApp</p></div><button class="btn ghost" onclick="openBackup()">Open</button></div>
   <div class="setting"><span class="ico c-blue" data-i="user"></span><div class="info" style="flex:1"><b>Your name</b><p>Shown in the greeting</p></div><button class="btn ghost" onclick="setName()">Edit</button></div>
@@ -474,6 +480,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div class="ccomp"><button class="cbtn" id="emojiBtn" onclick="toggleEmoji()"></button><textarea id="cinput" rows="1" placeholder="Message" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea><button class="cbtn send" id="sendBtn" onclick="sendMsg()"></button></div>
 </div>
 <div id="rbar"></div>
+<div id="appLock"><div class="fp" id="appLockIc"></div><h2 style="font-size:22px;font-weight:800">My Day Route is locked</h2><p style="color:var(--mu);font-size:14px">Use your fingerprint or phone screen lock to open</p><button class="btn" style="padding:14px 26px" onclick="unlockApp()">Unlock</button></div>
 <div id="viewer" onclick="if(event.target===this)closeViewer()"><button class="iconbtn x" onclick="closeViewer()" id="viewerX"></button><div id="viewerIn" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div></div>
 <div class="toast" id="toast"></div>
 <div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button></div></div>
@@ -546,6 +553,7 @@ const P={
  sprout:'<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8Z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2Z"/>',
  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9Z"/>',
  chevron:'<path d="m9 18 6-6-6-6"/>',
+ fingerprint:'<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>',
  alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'
 };
 const COLOR={mosque:'amber',sunrise:'orange',sun:'amber',cloudsun:'amber',sunset:'rose',moon:'indigo',book:'green',beads:'green',hands:'pink',heart:'pink',briefcase:'blue',laptop:'blue',pen:'blue',clipboard:'violet',phone:'teal',lightbulb:'violet',graduation:'violet',activity:'rose',footprints:'teal',droplet:'blue',leaf:'green',coffee:'orange',bed:'indigo',pill:'pink',users:'rose',target:'violet',scale:'amber',video:'pink',cart:'teal',sparkles:'violet',cake:'pink',gamepad:'violet',smartphone:'blue',plane:'teal',utensils:'orange',gift:'rose',star:'amber'};
@@ -728,7 +736,7 @@ function renderPrizes(){
 function renderSettings(){
  document.getElementById('cityBtn').innerHTML=ic('pin',15)+esc(S.city);
  document.getElementById('ptGrid').innerHTML=[['fajr','Fajr','sunrise'],['sunrise','Sunrise','sun'],['dhuhr','Dhuhr','sun'],['asr','Asr','cloudsun'],['maghrib','Maghrib','sunset'],['isha','Isha','moon']].map(([k,n,i])=>`<div>${ic(i,18)}<span>${n}</span><b>${fmt(PT[k])}</b></div>`).join('');
- document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const ac=document.getElementById('acctCard');if(ac)ac.innerHTML=acctCardHtml();const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
+ document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const ac=document.getElementById('acctCard');if(ac)ac.innerHTML=acctCardHtml();const br=document.getElementById('bioRow');if(br){br.style.display=bioOK?'flex':'none';document.getElementById('appLockRow').style.display=bioOK?'flex':'none';document.getElementById('bioBtn').textContent=S.bio?'On':'Turn on';document.getElementById('appLockBtn').textContent=S.appLock?'On':'Turn on'}const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
  document.getElementById('sndBtn').textContent=S.sound?'On':'Off';
 }
 
@@ -1002,7 +1010,7 @@ function openSearchJ(){jSearch=jSearch?'':' ';renderJournal();setTimeout(()=>{co
 function lockJournalNow(){if(!jLocked()){journalLockSettings();return}JKEY=null;jCache=null;urlCache.forEach((v,k)=>{if(k[0]==='b')URL.revokeObjectURL(v)});urlCache.clear();renderJournal();toast('Journal locked','lock')}
 async function renderJournal(){const el=document.getElementById('jBody');if(!el)return;
  document.getElementById('jLockBtn')&&(document.getElementById('jLockBtn').style.color=jLocked()?(JKEY?'var(--ok)':'var(--gold)'):'var(--mu)');
- if(jLocked()&&!JKEY){el.innerHTML=`<div class="card" style="text-align:center;padding:30px 18px"><span class="ico c-violet" style="width:64px;height:64px;border-radius:22px;display:grid;place-items:center;margin:0 auto">${ic('lock',30,'draw')}</span><h3 style="justify-content:center;margin-top:14px">Journal is locked</h3><div class="sub">Your entries, photos and videos are encrypted with your PIN</div><button class="btn wide" onclick="askPin('unlock',renderJournal)">Unlock</button></div>`;return}
+ if(jLocked()&&!JKEY){el.innerHTML=`<div class="card" style="text-align:center;padding:30px 18px"><span class="ico c-violet" style="width:64px;height:64px;border-radius:22px;display:grid;place-items:center;margin:0 auto">${ic('lock',30,'draw')}</span><h3 style="justify-content:center;margin-top:14px">Journal is locked</h3><div class="sub">Your entries, photos and videos are encrypted with your PIN</div>${S.bio&&BIO?`<button class="btn wide" onclick="bioUnlockJournal()">${ic('fingerprint',18)}Unlock with fingerprint</button><button class="btn ghost wide" style="margin-top:8px" onclick="askPin('unlock',renderJournal)">Use PIN</button>`:`<button class="btn wide" onclick="askPin('unlock',renderJournal)">Unlock</button>`}</div>`;return}
  if(!window.indexedDB){el.innerHTML='<div class="empty">Journal storage is not available here.</div>';return}
  const list=jCache||await loadEntries();const q=jSearch.trim().toLowerCase();
  const md=today().slice(5),onThis=list.filter(e=>e.date.slice(5)===md&&e.date!==today());
@@ -1046,11 +1054,29 @@ async function jkFromPin(pin){const pk=await pinKey(pin,S.jLock.salt);if(S.jLock
 async function enableLock(pin){await ensureJK();const all=await loadEntries();const medias=await idbAll('media');const dm=[];for(const r of medias)dm.push(r.enc?r:await unpackMedia(r));
  const salt=b64(crypto.getRandomValues(new Uint8Array(16))),pk=await pinKey(pin,salt);S.jLock={salt,w:wire(await encBuf(pk,unb64(await rawKey(JKEY))))};delete S.jkRaw;
  for(const m of dm)if(m&&!m.enc)await idbPut('media',await packMedia(m));for(const e of all)await idbPut('entries',await packEntry(e));
- save();urlCache.clear();toast('Journal encrypted with your PIN','lock');renderSettings();renderJournal()}
+ save();urlCache.clear();toast('Journal encrypted with your PIN','lock');renderSettings();renderJournal();if(S.bio&&BIO)BIO.setCredentials({username:'journal',password:await rawKey(JKEY),server:'mydayroute.journal',accessControl:2}).catch(()=>{})}
 async function disableLock(){const all=await loadEntries();const medias=await idbAll('media');const dm=[];for(const r of medias)dm.push(await unpackMedia(r));
- S.jkRaw=await rawKey(JKEY);S.jLock=null;for(const m of dm)if(m)await idbPut('media',m);for(const e of all)await idbPut('entries',await packEntry(e));save();toast('Journal lock removed','lock');renderSettings();renderJournal()}
+ S.jkRaw=await rawKey(JKEY);S.jLock=null;if(S.bio&&BIO){BIO.deleteCredentials({server:'mydayroute.journal'}).catch(()=>{});S.bio=false}for(const m of dm)if(m)await idbPut('media',m);for(const e of all)await idbPut('entries',await packEntry(e));save();toast('Journal lock removed','lock');renderSettings();renderJournal()}
 function journalLockSettings(){if(!(window.crypto&&crypto.subtle)){toast('Encryption not available here','alert');return}if(jLocked())askPin('off',()=>{});else askPin('set',()=>{})}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&jLocked())window._hidAt=Date.now();else if(window._hidAt&&Date.now()-window._hidAt>60000&&JKEY){JKEY=null;jCache=null;urlCache.clear();if(document.getElementById('v-journal').classList.contains('on'))renderJournal()}});
+
+// ================= FINGERPRINT (Android Keystore) =================
+const BIO=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.NativeBiometric)||(CAP.registerPlugin&&CAP.registerPlugin('NativeBiometric'))):null;
+let bioOK=false;
+async function bioInit(){if(!BIO)return;try{const r=await BIO.isAvailable({useFallback:false});bioOK=!!r.isAvailable}catch(e){bioOK=false}renderSettings();if(S.appLock)lockAppNow()}
+async function toggleBio(){if(!bioOK){toast('No fingerprint set up on this phone','fingerprint');return}
+ if(S.bio){try{await BIO.deleteCredentials({server:'mydayroute.journal'})}catch(e){}S.bio=false;save();renderSettings();toast('Fingerprint unlock off','fingerprint');return}
+ if(!jLocked()){toast('Set a journal PIN first: it stays as a backup','lock');askPin('set',()=>toggleBio());return}
+ if(!JKEY){askPin('unlock',()=>toggleBio());return}
+ try{await BIO.setCredentials({username:'journal',password:await rawKey(JKEY),server:'mydayroute.journal',accessControl:2});S.bio=true;save();renderSettings();toast('Fingerprint unlock on','fingerprint')}catch(e){toast('Fingerprint not saved: '+(e.message||e),'alert')}}
+async function bioUnlockJournal(){try{const c=await BIO.getSecureCredentials({server:'mydayroute.journal',reason:'Unlock your journal',title:'My Day Route'});JKEY=await impKey(c.password);await loadEntries();renderJournal()}
+ catch(e){if(String(e.code)==='21'){S.bio=false;save();toast('Fingerprints changed. Use your PIN, then turn fingerprint on again','fingerprint')}else if(!/cancel/i.test(e.message||''))toast('Fingerprint not recognized. Try again or use your PIN','fingerprint')}}
+async function toggleAppLock(){if(!bioOK){toast('No fingerprint or screen lock on this phone','fingerprint');return}
+ if(S.appLock){try{await BIO.verifyIdentity({reason:'Turn off app lock',title:'My Day Route',useFallback:true})}catch(e){return}S.appLock=false}else{try{await BIO.verifyIdentity({reason:'Turn on app lock',title:'My Day Route',useFallback:true})}catch(e){return}S.appLock=true}
+ save();renderSettings();toast(S.appLock?'App lock on':'App lock off','lock')}
+function lockAppNow(){document.getElementById('appLockIc').innerHTML=ic('fingerprint',48,'draw',1.6);document.getElementById('appLock').classList.add('on');unlockApp()}
+async function unlockApp(){try{await BIO.verifyIdentity({reason:'Open My Day Route',title:'My Day Route',useFallback:true});document.getElementById('appLock').classList.remove('on')}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!S.appLock||!BIO)return;if(document.hidden)window._appHid=Date.now();else if(window._appHid&&Date.now()-window._appHid>60000)lockAppNow()});
 
 // ================= ACCOUNT & ENCRYPTED SYNC =================
 const isAcct=()=>!!(FB.ok&&window.firebase&&firebase.auth().currentUser&&!firebase.auth().currentUser.isAnonymous);
@@ -1494,7 +1520,7 @@ function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.t
  const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview()}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 hydrateIcons();
-render();checkBadges();if(IS_NATIVE)scheduleNative();fbInit();
+render();checkBadges();if(IS_NATIVE)scheduleNative();fbInit();bioInit();
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
 </body>
