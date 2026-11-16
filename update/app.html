@@ -1642,7 +1642,7 @@ function qPages(){if(QPAGES)return QPAGES;QPAGES=Array.from({length:605},()=>[])
 function pageOf(s,a){return QD.c[s-1][3][(a||1)-1]}
 async function openPage(p,hl){try{await quranData()}catch(e){toast(T('Could not load the Quran. Connect to the internet once, then it works offline.'),'alert');return}
  qPages();qrCur=Math.max(1,Math.min(604,p||1));let R=document.getElementById('qReader');
- if(!R){R=document.createElement('div');R.id='qReader';R.className='qreader';R.innerHTML=`<div class="qr-top"><button class="iconbtn" onclick="closeReader()" aria-label="back">${ic('x',16)}</button><div class="qr-t"><b id="qrSurah"></b><i id="qrJuz"></i></div><button class="iconbtn qfbtn" onclick="qrFace()" id="qrFaceB">خط</button><button class="iconbtn" onclick="qrFont(-1)">A−</button><button class="iconbtn" onclick="qrFont(1)">A+</button></div>
+ if(!R){R=document.createElement('div');R.id='qReader';R.className='qreader';R.innerHTML=`<div class="qr-top"><button class="iconbtn" onclick="closeReader()" aria-label="back">${ic('x',16)}</button><div class="qr-t"><b id="qrSurah"></b><i id="qrJuz"></i></div><button class="iconbtn qfbtn" onclick="qrFace()" id="qrFaceB">خط</button></div>
   <div class="qr-prog" id="qrProg" onclick="closeReader();fTab='quran';go('faith')"><div class="qr-pbar"><i id="qrPFill"></i></div><span id="qrPTxt"></span></div>
   <div class="qr-stage" id="qrStage"><div class="qr-page" id="qrPage"><div class="qr-inner" id="qrInner"></div><div class="qr-no" id="qrNo"></div></div></div>
   <div class="qr-bot"><button class="qb prev" onclick="qrTurn(-1)"><i>${ic('chevron',16)}</i>${T('Previous')}</button><button class="qb save" onclick="qrSaveHere()">${ic('book',16)}${T('Save page')}</button><button class="qb next" onclick="qrTurn(1)">${T('Next')}<i>${ic('chevron',16)}</i></button></div>`;
@@ -2644,7 +2644,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=36;
+const APP_VERSION=37;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;

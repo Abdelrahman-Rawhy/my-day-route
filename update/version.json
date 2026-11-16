@@ -1,1 +1,1 @@
-{"v": 36, "note": "Mushaf: clear printed Naskh Quran font (tap «خط» to switch back to the decorative one), and a Khatma progress bar at the top that moves with every page you read.", "note_ar": "المصحف: خط نسخ مطبوع وواضح (اضغط «خط» للتبديل إلى الخط المزخرف)، وشريط تقدم للختمة أعلى الصفحة يتقدم مع كل صفحة تقرؤها."}
+{"v": 37, "note": "Mushaf: removed the A+/A− buttons (pages keep the fixed Madinah layout, so the text is always sized to fit the page).", "note_ar": "المصحف: حذف زرّي تكبير وتصغير الخط، لأن الصفحة بترتيب مصحف المدينة الثابت والخط يُضبط تلقائيًا ليملأ الصفحة."}
