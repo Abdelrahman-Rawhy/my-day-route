@@ -697,6 +697,9 @@ html.light .adk-guide .gn{color:#b7791f}
 .adk-guide .gl p{margin:0;font-size:15px;line-height:1.75;font-weight:500}
 .adk-guide .gl q{quotes:none;font-size:18px;color:#f6c453}
 html.light .adk-guide .gl q{color:#9a6b14}
+
+.badge{cursor:pointer;transition:transform .15s}.badge:active{transform:scale(.94)}
+.celebrate.locked .big{filter:grayscale(1);opacity:.7}
 </style>
 </head>
 <body>
@@ -1189,7 +1192,7 @@ function renderAwards(){
  let html='';const d=new Date();d.setDate(d.getDate()-6);
  for(let i=0;i<7;i++){const k=keyOf(d),p=pctOf(k);html+=`<div class="day ${k===today()?'today':''}">${d.toLocaleDateString(LOC(),{weekday:'short'})}<div class="bar"><i style="height:${p}%"></i></div>${p}%</div>`;d.setDate(d.getDate()+1)}
  document.getElementById('week').innerHTML=html;
- document.getElementById('badges').innerHTML=BADGES.map(b=>{const g=S.badges.includes(b.id);return `<div class="badge ${g?'got':''}"><div class="bi">${ic(g?b.icon:'lock',g?26:20)}</div><b>${b.name}</b><span>${b.desc}</span></div>`}).join('');
+ document.getElementById('badges').innerHTML=BADGES.map(b=>{const g=S.badges.includes(b.id);return `<div class="badge ${g?'got':''}" onclick="badgeTap('${b.id}')"><div class="bi">${ic(g?b.icon:'lock',g?26:20)}</div><b>${b.name}</b><span>${b.desc}</span></div>`}).join('');
  document.getElementById('badgeCount').textContent=S.badges.length+' / '+BADGES.length;
  document.getElementById('repBtn').innerHTML=ic('chart',18)+'Review: weeks, months, years';document.getElementById('shopBtn').innerHTML=ic('gift',18)+'Prize shop · '+S.points+' points';
 }
@@ -2314,7 +2317,9 @@ function unmove(id){const r=dayRec();if(r.resched)delete r.resched[id];save();re
 
 // ================= FEEDBACK =================
 let tt;function toast(m,icon='sparkles'){if(m==null||m==='null'||m==='undefined')return;const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
-function celebrate(icon,title,sub){window._lastCel={icon,title,sub};const cs=document.getElementById('cShare');if(cs)cs.innerHTML=ic('rocket',15)+'Share';document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on');SFX('rise')}
+function badgeTap(id){const b=BADGES.find(x=>x.id===id);if(!b)return;const g=S.badges.includes(id),ar=S.lang==='ar';
+ if(g){celebrate(b.icon,T(b.name),T(b.desc));burst(80)}else{celebrate('lock',T(b.name),(ar?'لسه ماكسبتهوش: ':'Not earned yet: ')+T(b.desc));const cs=document.getElementById('cShare');if(cs)cs.style.display='none';document.getElementById('celebrate').classList.add('locked');const bt=document.querySelector('#celebrate .btn');if(bt)bt.textContent=ar?'حاضر، هحاول':'Okay'}}
+function celebrate(icon,title,sub){window._lastCel={icon,title,sub};{const cs=document.getElementById('cShare');if(cs)cs.style.display='';const ce=document.getElementById('celebrate');if(ce)ce.classList.remove('locked');const bt=document.querySelector('#celebrate .btn');if(bt)bt.textContent=T('Alhamdulillah')}const cs=document.getElementById('cShare');if(cs)cs.innerHTML=ic('rocket',15)+'Share';document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on');SFX('rise')}
 let actx;function tone(freqs,dur=.12){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(actx.destination);const s=actx.currentTime+i*dur;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.22,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur*1.8);o.start(s);o.stop(s+dur*2)})}catch(e){}}
 function tickCheck(){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;
  const click=(t,f)=>{const o=actx.createOscillator(),g=actx.createGain(),hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=1200;o.type='square';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.5,t+.03);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.003);g.gain.exponentialRampToValueAtTime(.0001,t+.04);o.connect(hp);hp.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.05)};
@@ -2820,7 +2825,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=48;
+const APP_VERSION=49;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
