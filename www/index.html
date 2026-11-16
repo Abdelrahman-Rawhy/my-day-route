@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>html,body{background:#0A0D17;margin:0}</style></head>
 <body><script>
 // Boot loader: run the newest downloaded version if there is one, otherwise the built-in app.
-var BUILT_IN=9;
+var BUILT_IN=10;
 try{var v=+localStorage.getItem('appV')||0,h=localStorage.getItem('appHtml');
  if(h&&v>BUILT_IN){document.open();document.write(h);document.close();}else{location.replace('app.html');}
 }catch(e){location.replace('app.html');}
