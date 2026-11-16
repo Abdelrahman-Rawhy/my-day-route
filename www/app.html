@@ -485,9 +485,6 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <div class="toast" id="toast"></div>
 <div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button></div></div>
 
-<script src="lib/firebase-app-compat.js"></script>
-<script src="lib/firebase-auth-compat.js"></script>
-<script src="lib/firebase-firestore-compat.js"></script>
 <script>
 // ================= ICONS (stroke, Lucide-style) =================
 const P={
@@ -698,7 +695,7 @@ function render(){
    <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>';
  const q=QUOTES[(new Date().getDate()+new Date().getMonth()*31)%QUOTES.length];
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
- renderToday2(list,rec,now);renderGoals();renderAwards();renderPrizes();renderSettings();
+ renderToday2(list,rec,now);const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();
  firstPaint=false;justDone=null;
 }
 function renderToday2(list,rec,now){
@@ -1318,7 +1315,9 @@ async function seal(obj){const iv=crypto.getRandomValues(new Uint8Array(12));con
 async function open_(s,key=FKEY){if(!s)return{};if(decCache.has(s))return decCache.get(s);const u=unb64(s);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u.slice(0,12)},key,u.slice(12));const o=JSON.parse(dec8.decode(pt));decCache.set(s,o);return o}
 const famRef=()=>FB.db.collection('families').doc(S.famId);
 
+function loadScript(src){return new Promise((res,rej)=>{const e=document.createElement('script');e.src=src;e.onload=res;e.onerror=rej;document.head.appendChild(e)})}
 async function fbInit(){
+ if(FB_CONFIG&&!window.firebase){try{await loadScript('lib/firebase-app-compat.js');await Promise.all([loadScript('lib/firebase-auth-compat.js'),loadScript('lib/firebase-firestore-compat.js')])}catch(e){}}
  if(!FB_CONFIG||!window.firebase||!(window.crypto&&crypto.subtle)||!enc8){renderFamily();return}
  try{firebase.initializeApp(FB_CONFIG);FB.db=firebase.firestore();
   try{FB.db.settings({experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}
@@ -1517,10 +1516,10 @@ function renderFamily(){
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['goals','target','Goals'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];
 function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');
- const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview()}
+ const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings()}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 hydrateIcons();
-render();checkBadges();if(IS_NATIVE)scheduleNative();fbInit();bioInit();
+render();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
 </body>
