@@ -2227,7 +2227,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=13;
+const APP_VERSION=14;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
@@ -2533,11 +2533,12 @@ async function applyWidgetChecks(){if(!WIDGET||!WIDGET.getPending)return;try{con
  if(n){if(pctOf(today())>=100){S.points+=50;S.earned+=50;rec.pts+=50;pts+=50}save();render();burst(60);toast(n+' step'+(n>1?'s':'')+' checked from the widget  +'+pts,'check');checkBadges()}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)applyWidgetChecks()});
 const WIDGET=IS_NATIVE?(CAP.Plugins&&CAP.Plugins.WidgetBridge)||(CAP.registerPlugin&&CAP.registerPlugin('WidgetBridge')):null;
+function widgetLabels(){const ar=S.lang==='ar';return ar?{now:'الآن',next:'التالي',then:'بعدها',last:'آخر خطوة النهارده',points:'نقطة',upNext:'الجاي',allDoneTag:'خلصت',complete:'المسار خلص!',rest:'ما شاء الله، ارتاح',openApp:'افتح التطبيق',loadSteps:'عشان تظهر خطوات النهارده',loadPrayers:'عشان تظهر مواعيد الصلاة',doneT:'تمت!',allDoneToday:'خلصت النهارده',steps:'خطوات',nextPrayer:'الصلاة الجاية',nextStep:'الخطوة الجاية',app:'مسار يومي'}:{}}
 let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);wT=setTimeout(()=>{try{const now=new Date(),rec=dayRec();
- const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted(d).filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({id:i?'':t.id,n:t.name,t:atTime(d,i?t.time:effTime(t)).getTime()}))}
+ const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted(d).filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({id:i?'':t.id,n:T(t.name),t:atTime(d,i?t.time:effTime(t)).getTime()}))}
  const list=sorted(),done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
- const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:tName(t),t:atTime(now,effTime(t)).getTime(),pts:t.pts,p:t.prayer?1:0}));
- WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:p.n,t:p.t})),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
+ const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:T(tName(t)),t:atTime(now,effTime(t)).getTime(),pts:t.pts,p:t.prayer?1:0}));
+ WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:T(p.n),t:p.t})),L:widgetLabels(),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
 
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['goals','target','Goals'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];

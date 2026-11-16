@@ -19,12 +19,20 @@ import org.json.JSONObject;
 
 /** "Current step" widget: shows the step you should do now, with a check button that celebrates and moves on. */
 public class StepWidget extends AppWidgetProvider {
+    private static String L(JSONObject d, String k, String f) { return RouteWidgetBase.L(d, k, f); }
     private static final RouteWidgetBase.Variant[] VARIANTS = {
         new RouteWidgetBase.Variant(R.layout.widget_step_s, 40f, 40f,
             R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title),
         new RouteWidgetBase.Variant(R.layout.widget_step, 200f, 90f,
             R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title,
-            R.id.w_s_label, R.id.w_s_progress, R.id.w_s_pts, R.id.w_s_next, R.id.w_c_name, R.id.w_c_next),
+            R.id.w_s_label, R.id.w_s_progress, R.id.w_s_pts, R.id.w_s_next, R.id.w_s_bar, R.id.w_c_name, R.id.w_c_next),
+        new RouteWidgetBase.Variant(R.layout.widget_step_l, 200f, 170f,
+            R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title,
+            R.id.w_s_label, R.id.w_s_progress, R.id.w_s_pts, R.id.w_s_bar, R.id.w_s_uplabel, R.id.w_c_name, R.id.w_c_next,
+            R.id.w_r1, R.id.w_r1_n, R.id.w_r1_t, R.id.w_r2, R.id.w_r2_n, R.id.w_r2_t, R.id.w_r3, R.id.w_r3_n, R.id.w_r3_t),
+    };
+    private static final int[][] ROWS = {
+        { R.id.w_r1, R.id.w_r1_n, R.id.w_r1_t }, { R.id.w_r2, R.id.w_r2_n, R.id.w_r2_t }, { R.id.w_r3, R.id.w_r3_n, R.id.w_r3_t },
     };
     public static final String PENDING = "pending";
     public static final String ACTION_CHECK = "com.rawhy.mydayroute.STEP_CHECK";
@@ -94,16 +102,18 @@ public class StepWidget extends AppWidgetProvider {
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
         RouteWidgetBase.text(v, var, R.id.w_s_progress, done + "/" + total);
+        if (var.has(R.id.w_s_bar)) v.setProgressBar(R.id.w_s_bar, Math.max(1, total), done, false);
+        RouteWidgetBase.text(v, var, R.id.w_s_uplabel, L(data, "upNext", "UP NEXT"));
         if (left.length > 0) {
             JSONObject cur = left[0];
             long t = cur.optLong("t");
             boolean now = t <= System.currentTimeMillis();
-            RouteWidgetBase.text(v, var, R.id.w_s_label, now ? "NOW" : "NEXT · " + tf.format(new Date(t)));
+            RouteWidgetBase.text(v, var, R.id.w_s_label, now ? L(data, "now", "NOW") : L(data, "next", "NEXT") + " · " + tf.format(new Date(t)));
             RouteWidgetBase.text(v, var, R.id.w_s_name, cur.optString("n"));
-            RouteWidgetBase.text(v, var, R.id.w_s_pts, "+" + cur.optInt("pts") + " points");
+            RouteWidgetBase.text(v, var, R.id.w_s_pts, "+" + cur.optInt("pts") + " " + L(data, "points", "points"));
             RouteWidgetBase.text(v, var, R.id.w_s_next, left.length > 1
-                ? "Then: " + left[1].optString("n") + " · " + tf.format(new Date(left[1].optLong("t")))
-                : "Last step of the day");
+                ? L(data, "then", "Then") + ": " + left[1].optString("n") + " · " + tf.format(new Date(left[1].optLong("t")))
+                : L(data, "last", "Last step of the day"));
             Intent check = new Intent(ctx, StepWidget.class);
             check.setAction(ACTION_CHECK);
             check.putExtra(EXTRA_ID, cur.optString("id"));
@@ -111,15 +121,31 @@ public class StepWidget extends AppWidgetProvider {
             v.setOnClickPendingIntent(R.id.w_s_check, PendingIntent.getBroadcast(ctx, 1000 + widgetId, check,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
         } else {
-            RouteWidgetBase.text(v, var, R.id.w_s_label, total > 0 ? "ALL DONE" : "MY DAY ROUTE");
-            RouteWidgetBase.text(v, var, R.id.w_s_name, total > 0 ? "Route complete!" : "Open the app");
-            RouteWidgetBase.text(v, var, R.id.w_s_pts, total > 0 ? "MashaAllah, rest well" : "to load today's steps");
+            RouteWidgetBase.text(v, var, R.id.w_s_label, total > 0 ? L(data, "allDoneTag", "ALL DONE") : L(data, "app", "MY DAY ROUTE"));
+            RouteWidgetBase.text(v, var, R.id.w_s_name, total > 0 ? L(data, "complete", "Route complete!") : L(data, "openApp", "Open the app"));
+            RouteWidgetBase.text(v, var, R.id.w_s_pts, total > 0 ? L(data, "rest", "MashaAllah, rest well") : L(data, "loadSteps", "to load today's steps"));
             RouteWidgetBase.text(v, var, R.id.w_s_next, "");
         }
+        if (var.has(R.id.w_r1)) {
+            for (int i = 0; i < ROWS.length; i++) {
+                int k = i + 1;
+                if (k < left.length) {
+                    v.setViewVisibility(ROWS[i][0], android.view.View.VISIBLE);
+                    v.setTextViewText(ROWS[i][1], left[k].optString("n"));
+                    v.setTextViewText(ROWS[i][2], tf.format(new Date(left[k].optLong("t"))));
+                } else if (i == 0 && left.length <= 1) {
+                    v.setViewVisibility(ROWS[i][0], android.view.View.VISIBLE);
+                    v.setTextViewText(ROWS[i][1], left.length == 1 ? L(data, "last", "Last step of the day") : L(data, "rest", "MashaAllah, rest well"));
+                    v.setTextViewText(ROWS[i][2], "");
+                } else {
+                    v.setViewVisibility(ROWS[i][0], android.view.View.INVISIBLE);
+                }
+            }
+        }
         if (celebrate) {
-            RouteWidgetBase.text(v, var, R.id.w_c_title, "Done! +" + donePts);
+            RouteWidgetBase.text(v, var, R.id.w_c_title, L(data, "doneT", "Done!") + " +" + donePts);
             RouteWidgetBase.text(v, var, R.id.w_c_name, doneName);
-            RouteWidgetBase.text(v, var, R.id.w_c_next, left.length > 0 ? "Next: " + left[0].optString("n") : "Route complete! 🏆");
+            RouteWidgetBase.text(v, var, R.id.w_c_next, left.length > 0 ? L(data, "next", "Next") + ": " + left[0].optString("n") : L(data, "complete", "Route complete!") + " 🏆");
         }
         v.setDisplayedChild(R.id.w_flip, celebrate ? 1 : 0);
         return v;

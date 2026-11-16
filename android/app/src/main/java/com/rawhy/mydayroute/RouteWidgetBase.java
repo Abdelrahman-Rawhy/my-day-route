@@ -86,6 +86,13 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
         return b.build(best);
     }
 
+    /** Label from the app (sent in its language), or the English fallback. */
+    static String L(JSONObject data, String key, String fallback) {
+        JSONObject l = data.optJSONObject("L");
+        String s = l == null ? null : l.optString(key, null);
+        return s == null || s.length() == 0 ? fallback : s;
+    }
+
     static void text(RemoteViews rv, Variant v, int id, CharSequence s) {
         if (v.has(id)) rv.setTextViewText(id, s);
     }
@@ -143,8 +150,8 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
                 text(rv, v, R.id.w_prayer_at, tf.format(new Date(t)));
                 setCountdown(rv, v, R.id.w_prayer_cd, t, now);
             } else {
-                text(rv, v, R.id.w_prayer_name, "Open app");
-                text(rv, v, R.id.w_prayer_at, "to load prayer times");
+                text(rv, v, R.id.w_prayer_name, L(data, "openApp", "Open app"));
+                text(rv, v, R.id.w_prayer_at, L(data, "loadPrayers", "to load prayer times"));
             }
             if (v.has(R.id.w_step_name)) {
                 if (step != null) {
@@ -153,13 +160,16 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
                     text(rv, v, R.id.w_step_at, tf.format(new Date(t)));
                     setCountdown(rv, v, R.id.w_step_cd, t, now);
                 } else {
-                    text(rv, v, R.id.w_step_name, "All done today");
+                    text(rv, v, R.id.w_step_name, L(data, "allDoneToday", "All done today"));
                     text(rv, v, R.id.w_step_at, "");
                     if (v.has(R.id.w_step_cd)) rv.setChronometer(R.id.w_step_cd, SystemClock.elapsedRealtime(), "🎉", false);
                 }
             }
             text(rv, v, R.id.w_progress,
-                data.optInt("done") + "/" + data.optInt("total") + " steps · " + data.optInt("pct") + "%");
+                data.optInt("done") + "/" + data.optInt("total") + " " + L(data, "steps", "steps") + " · " + data.optInt("pct") + "%");
+            text(rv, v, R.id.w_lbl_prayer, L(data, "nextPrayer", "NEXT PRAYER"));
+            text(rv, v, R.id.w_lbl_step, L(data, "nextStep", "NEXT STEP"));
+            text(rv, v, R.id.w_lbl_app, L(data, "app", "My Day Route"));
             rv.setOnClickPendingIntent(R.id.w_root, openPi);
             return rv;
         };

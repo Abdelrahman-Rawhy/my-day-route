@@ -9,7 +9,7 @@ public class RouteWidget extends RouteWidgetBase {
             R.id.w_root, R.id.w_prayer_name, R.id.w_prayer_cd, R.id.w_step_name, R.id.w_step_cd),
         new Variant(R.layout.widget_route, 220f, 100f,
             R.id.w_root, R.id.w_prayer_name, R.id.w_prayer_cd, R.id.w_prayer_at,
-            R.id.w_step_name, R.id.w_step_cd, R.id.w_step_at, R.id.w_progress),
+            R.id.w_step_name, R.id.w_step_cd, R.id.w_step_at, R.id.w_progress, R.id.w_lbl_prayer, R.id.w_lbl_step, R.id.w_lbl_app),
     };
 
     @Override
