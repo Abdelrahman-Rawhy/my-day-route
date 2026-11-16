@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_flip"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:inAnimation="@anim/w_in"
+    android:outAnimation="@anim/w_out">
+
+    <LinearLayout
+        android:id="@+id/w_step_body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="14dp"
+        android:background="@drawable/widget_bg">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/w_s_label" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                    android:text="" android:textColor="#FF22D3EE" android:textSize="10sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/w_s_progress" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="" android:textColor="#99FFFFFF" android:textSize="11sp"/>
+            </LinearLayout>
+            <TextView android:id="@+id/w_s_name" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="" android:textColor="#FFFFFFFF" android:textSize="19sp" android:textStyle="bold" android:maxLines="2" android:ellipsize="end"/>
+            <TextView android:id="@+id/w_s_pts" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="" android:textColor="#FFFBBF24" android:textSize="12sp"/>
+            <TextView android:id="@+id/w_s_next" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" android:text="" android:textColor="#99FFFFFF" android:textSize="11sp" android:maxLines="1" android:ellipsize="end"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/w_s_check"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginStart="10dp"
+            android:gravity="center"
+            android:text="✓"
+            android:textColor="#FFFFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:background="@drawable/widget_check_btn"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="12dp"
+        android:background="@drawable/widget_celebrate_bg">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎉" android:textSize="30sp"/>
+        <TextView android:id="@+id/w_c_title" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="" android:textColor="#FFFFFFFF" android:textSize="18sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/w_c_name" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="" android:textColor="#E6FFFFFF" android:textSize="13sp" android:maxLines="1" android:ellipsize="end"/>
+        <TextView android:id="@+id/w_c_next" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" android:text="" android:textColor="#B3FFFFFF" android:textSize="11sp" android:maxLines="1" android:ellipsize="end"/>
+    </LinearLayout>
+</ViewFlipper>

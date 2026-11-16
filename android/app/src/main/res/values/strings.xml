@@ -10,4 +10,6 @@
     <string name="w_prayer_desc">Countdown to the next prayer</string>
     <string name="w_route_label">Day route</string>
     <string name="w_prayer_label">Next prayer</string>
+    <string name="w_step_desc">Your current step with a check button</string>
+    <string name="w_step_label">Current step</string>
 </resources>

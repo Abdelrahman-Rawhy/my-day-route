@@ -45,6 +45,12 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_prayer_info" />
         </receiver>
+        <receiver android:name=".StepWidget" android:exported="false" android:label="@string/w_step_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_step_info" />
+        </receiver>
     </application>
 
     <!-- Permissions -->

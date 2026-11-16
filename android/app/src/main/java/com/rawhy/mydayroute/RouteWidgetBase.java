@@ -25,7 +25,7 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
     protected abstract boolean showSteps();
 
     public static void refreshAll(Context ctx) {
-        Class<?>[] classes = { RouteWidget.class, PrayerWidget.class };
+        Class<?>[] classes = { RouteWidget.class, PrayerWidget.class, StepWidget.class };
         AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
         for (Class<?> c : classes) {
             int[] ids = mgr.getAppWidgetIds(new ComponentName(ctx, c));
@@ -39,10 +39,17 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
     }
 
     private static JSONObject firstAfter(JSONArray arr, long now) {
+        return firstAfter(arr, now, null);
+    }
+
+    private static JSONObject firstAfter(JSONArray arr, long now, String skipIds) {
         if (arr == null) return null;
         for (int i = 0; i < arr.length(); i++) {
             JSONObject o = arr.optJSONObject(i);
-            if (o != null && o.optLong("t") > now) return o;
+            if (o == null || o.optLong("t") <= now) continue;
+            String id = o.optString("id");
+            if (skipIds != null && id.length() > 0 && skipIds.contains("\"" + id + "\"")) continue;
+            return o;
         }
         return null;
     }
@@ -65,7 +72,8 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
             data = new JSONObject();
         }
         JSONObject prayer = firstAfter(data.optJSONArray("prayers"), now);
-        JSONObject step = firstAfter(data.optJSONArray("steps"), now);
+        String pending = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(StepWidget.PENDING, "[]");
+        JSONObject step = firstAfter(data.optJSONArray("steps"), now, pending);
         DateFormat tf = android.text.format.DateFormat.getTimeFormat(ctx);
         long nextEvent = Long.MAX_VALUE;
 

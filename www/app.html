@@ -319,6 +319,11 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 .cd .at{font-size:11px;color:var(--mu);margin-top:1px}
 .cd .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width 1s linear}
 .cd.tk .bar{background:var(--a2)}
+
+@keyframes jdflash{0%{transform:scale(1)}30%{transform:scale(1.04);box-shadow:0 0 0 3px rgba(52,211,153,.6),0 0 30px rgba(52,211,153,.35)}100%{transform:scale(1);box-shadow:none}}
+@keyframes arrive{0%{transform:translateX(18px);opacity:.4}60%{transform:translateX(-3px);opacity:1;box-shadow:0 0 0 3px rgba(124,92,255,.55),0 0 30px rgba(124,92,255,.3)}100%{transform:none;box-shadow:none}}
+.step.jd .body{animation:jdflash .8s ease}.step.jd .node{animation:pop .6s}
+.step.arrive .body{animation:arrive .8s cubic-bezier(.2,1,.3,1) .35s both}
 </style>
 </head>
 <body>
@@ -700,7 +705,7 @@ function render(){
  document.getElementById('editLink').innerHTML=ic('pen',15)+'Edit';
  document.getElementById('route').innerHTML=list.map((t,i)=>{
   const d=rec.done.includes(t.id),nx=next&&next.id===t.id,late=!d&&effTime(t)<now&&!nx,moved=rec.resched&&rec.resched[t.id],k=taskIcon(t);
-  return `<div class="step ${d?'done':''} ${nx?'next':''}" style="animation-delay:${firstPaint?i*40:0}ms">
+  return `<div class="step ${d?'done':''} ${nx?'next':''}" data-id="${t.id}" style="animation-delay:${firstPaint?i*40:0}ms">
    <div class="node ${col(k)}">${ic(d?'check':k,24,firstPaint||t.id===justDone?'draw':'')}<span class="num">${i+1}</span></div>
    <div class="body" onclick="toggle('${t.id}')"><div class="info"><b>${esc(t.name)}</b>
    <div class="meta">${ic('clock',12)}${fmt(effTime(t))} · +${t.pts} pts ${t.prayer?'<span class="tag auto">AUTO</span>':''}${moved?'<span class="tag auto">MOVED</span>':''}${nx?'<span class="tag">NOW</span>':''}${late?'<span class="tag late">MISSED</span>':''}</div></div>
@@ -945,7 +950,7 @@ function toggle(id){
  const now=new Date().toTimeString().slice(0,5);if(now<effTime(t))S.early=(S.early||0)+1;
  if(t.prayer==='fajr'){const [h,m]=t.time.split(':').map(Number),lim=new Date();lim.setHours(h+1,m);if(new Date()<=lim)S._fajr=true}
  const lvBefore=Math.floor((S.earned-t.pts)/250)+1;
- save();render();chime();
+ save();render();chime();stepTransition(id);
  const p=pctOf(today());
  if(p>=100&&before<100){burst(160);S.points+=50;S.earned+=50;rec.pts=(rec.pts||0)+50;save();render();setTimeout(()=>celebrate('trophy','Perfect day!','You completed every step of your route. +50 bonus points'),300)}
  else{burst(40);toast(CHEERS[Math.floor(Math.random()*CHEERS.length)]+'  +'+t.pts,taskIcon(t))}
@@ -987,7 +992,11 @@ function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classLis
 let tt;function toast(m,icon='sparkles'){const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
 function celebrate(icon,title,sub){document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on')}
 let actx;function tone(freqs,dur=.12){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(actx.destination);const s=actx.currentTime+i*dur;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.22,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur*1.8);o.start(s);o.stop(s+dur*2)})}catch(e){}}
-const chime=()=>tone([660,880,1320]);const bell=()=>tone([880,660,880,660],.18);
+function tickCheck(){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;
+ const click=(t,f)=>{const o=actx.createOscillator(),g=actx.createGain(),hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=1200;o.type='square';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.5,t+.03);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.003);g.gain.exponentialRampToValueAtTime(.0001,t+.04);o.connect(hp);hp.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.05)};
+ click(t0,2600);click(t0+.09,3000);
+ [[1318.5,.19],[1975.5,.23]].forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;const t=t0+d;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.55)})}catch(e){}}
+const chime=()=>tickCheck();const bell=()=>tone([880,660,880,660],.18);
 function toggleSound(){S.sound=!S.sound;save();render();if(S.sound)chime()}
 const cv=document.getElementById('fx'),cx=cv.getContext('2d');let parts=[];
 function size(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio}size();addEventListener('resize',size);
@@ -1678,6 +1687,8 @@ function renderFamily(){
    <div class="row"><button class="btn red" onclick="leaveFamily()">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;
 }
 
+function stepTransition(id){requestAnimationFrame(()=>{const a=document.querySelector(`.step[data-id="${id}"]`);if(a)a.classList.add('jd');const n=document.querySelector('.step.next');
+ if(n){n.classList.add('arrive');setTimeout(()=>{if(document.getElementById('v-today').classList.contains('on'))n.scrollIntoView({behavior:'smooth',block:'center'})},450)}})}
 // ================= COUNTDOWNS =================
 const PNAMES={fajr:'Fajr',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha'};
 const atTime=(d,hm)=>{const [h,m]=hm.split(':').map(Number);const x=new Date(d);x.setHours(h,m,0,0);return x};
@@ -1698,11 +1709,16 @@ setInterval(()=>{const el=document.getElementById('cds');if(!el||!el._p||documen
  if(el._p.t<=now||(el._f&&el._f.at<=now)){renderCountdowns();pushWidget();return}
  const a=document.getElementById('cdP');if(a)a.textContent=hms(el._p.t-now);const b=document.getElementById('cdT');if(b&&el._f)b.textContent=hms(el._f.at-now)},1000);
 // ---- Android home screen widgets ----
+async function applyWidgetChecks(){if(!WIDGET||!WIDGET.getPending)return;try{const r=await WIDGET.getPending();const L=JSON.parse(r.data||'[]');if(!L.length)return;
+ const rec=dayRec();let n=0,pts=0;for(const x of L){const t=S.tasks.find(k=>k.id===x.id);if(!t||rec.done.includes(t.id)||x.day!==today())continue;rec.done.push(t.id);S.points+=t.pts;S.earned+=t.pts;rec.pts=(rec.pts||0)+t.pts;n++;pts+=t.pts}
+ if(n){if(pctOf(today())>=100){S.points+=50;S.earned+=50;rec.pts+=50;pts+=50}save();render();burst(60);toast(n+' step'+(n>1?'s':'')+' checked from the widget  +'+pts,'check');checkBadges()}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)applyWidgetChecks()});
 const WIDGET=IS_NATIVE?(CAP.Plugins&&CAP.Plugins.WidgetBridge)||(CAP.registerPlugin&&CAP.registerPlugin('WidgetBridge')):null;
 let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);wT=setTimeout(()=>{try{const now=new Date(),rec=dayRec();
- const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted().filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({n:t.name,t:atTime(d,i?t.time:effTime(t)).getTime()}))}
+ const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted().filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({id:i?'':t.id,n:t.name,t:atTime(d,i?t.time:effTime(t)).getTime()}))}
  const list=sorted(),done=rec.done.filter(id=>S.tasks.some(t=>t.id===id)).length;
- WIDGET.setData({data:JSON.stringify({prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:p.n,t:p.t})),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
+ const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:t.name,t:atTime(now,effTime(t)).getTime(),pts:t.pts,p:t.prayer?1:0}));
+ WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:p.n,t:p.t})),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
 
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['goals','target','Goals'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];
@@ -1710,7 +1726,7 @@ function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.t
  const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings()}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 hydrateIcons();
-render();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
+applyWidgetChecks();render();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
 </body>
