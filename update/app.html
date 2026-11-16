@@ -495,6 +495,14 @@ body.reading .nav,body.reading .fab{display:none!important}
 .qa{border-radius:6px;transition:background .25s}.qa .ano{color:#a0782a;font-size:.85em}.qa.qmark{background:rgba(52,211,153,.22)}.qa.qhl{background:rgba(201,164,92,.32)}
 .qr-bot{display:flex;gap:8px;margin-top:8px}.qr-bot .btn{flex:1;padding:10px 6px;font-size:13px}
 html.light .qreader{background:#efe9da}html.light .qr-t b{color:#3a2c10}
+.adk-x summary{font-size:14px!important;padding:4px 0}
+.adk-box{font-family:'Segoe UI',Roboto,'Noto Sans Arabic',Tahoma,system-ui,sans-serif!important;direction:rtl;text-align:right;border-radius:16px;padding:12px 14px;margin-top:10px}
+.adk-box p{font-size:17px!important;line-height:1.85!important;font-weight:600;margin:6px 0 0!important;color:var(--tx)}
+.adk-box small{display:block;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--mu)}
+.adk-lbl{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px}
+.adk-box.fadl{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.35)}.adk-box.fadl .adk-lbl{background:rgba(251,191,36,.18);color:var(--gold)}
+.adk-box.tdb{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.30)}.adk-box.tdb .adk-lbl{background:rgba(34,211,238,.16);color:var(--a2)}
+html.light .adk-box.fadl{background:#FFF7E0}html.light .adk-box.tdb{background:#E8FAFD}
 </style>
 </head>
 <body>
@@ -1514,7 +1522,7 @@ function adkHtml(){const cat=adkCat||(adkCat=adkDefault()),L=adhkarList(cat),st=
  return `<div class="adk-cats">${ADK_CATS.map(([k,n,i])=>{const cc=st[k]||{},l=adhkarList(k),dn=l.filter((x,j)=>(cc[j]||0)>=x.n).length;return `<button class="${k===cat?'on':''}" onclick="adkCat='${k}';renderFaith()"><span class="ico c-${COLOR[i]||'violet'}">${ic(i,16)}</span><b>${n}</b><i>${dn}/${l.length}</i></button>`}).join('')}</div>
  <div class="adk-top"><div class="pbar"><i style="width:${done/L.length*100}%"></i></div><span>${done}/${L.length}</span><span class="adk-tm" id="adkTm" dir="ltr">${ic('clock',13)}<b>${adkTimeTxt(cat)}</b></span><button class="link" onclick="adkReset()">${T('Reset')}</button></div>${adkStatsHtml(cat)}
  <div class="sub" style="margin:0 2px 10px">${T('Tap a card to count. It closes when you finish its count.')}</div><details class="card adk-guide"><summary><span class="ico c-amber">${ic('lightbulb',16)}</span><b class="ar2">كيف تتدبّر الذكر؟</b></summary><ol class="ar2"><li>تمهّل، ولا تجعل همّك سرعة العدّ؛ ذكرٌ قليل بقلب حاضر خير من كثير بلسان غافل.</li><li>افهم المعنى قبل أن تقول: افتح «تدبّر» تحت الذكر واقرأه مرة.</li><li>استحضر أنك تخاطب الله، وأن الله يذكر من يذكره: ﴿فَاذْكُرُونِي أَذْكُرْكُمْ﴾.</li><li>صدّق بالفضل وأنت تقول، فاليقين سبب للأجر كما في سيد الاستغفار.</li><li>اربط الذكر بحالك: الاستعاذة عند الخوف، والحمد عند النعمة، والاستغفار عند التقصير.</li><li>اختم بدعاء لنفسك ولوالديك، فالذكر مفتاح الدعاء.</li></ol></details>
- ${L.map((x,i)=>{const k=c[i]||0,ok=k>=x.n;return `<div class="adk ${ok?'ok':''}" onclick="adkTap(${i})">${x.h?`<div class="adk-h">${x.h}</div>`:''}<div class="ar2 adk-t">${x.t}</div>${(x.f||x.d)&&!ok?`<details class="adk-x" onclick="event.stopPropagation()"><summary>${x.f?'الفضل':''}${x.f&&x.d?' · ':''}${x.d?'تدبّر':''}</summary>${x.f?`<p class="ar2"><b>الفضل:</b> ${x.f}${x.s?` <i>(${x.s})</i>`:''}</p>`:''}${x.d?`<p class="ar2"><b>تدبّر:</b> ${x.d}${!x.f&&x.s?` <i>(${x.s})</i>`:''}</p>`:''}</details>`:x.s&&!ok?`<div class="adk-src ar2">${x.s}</div>`:''}<div class="adk-f"><span class="adk-n" dir="ltr">${ok?ic('check',14,'',3):k+' / '+x.n}</span>${x.n>1&&!ok?`<span class="adk-pb"><i style="width:${k/x.n*100}%"></i></span>`:''}<span class="adk-c">${x.n>1?(S.lang==='ar'?'التكرار: ':'Repeat: ')+x.n:''}</span></div></div>`}).join('')}
+ ${L.map((x,i)=>{const k=c[i]||0,ok=k>=x.n;return `<div class="adk ${ok?'ok':''}" onclick="adkTap(${i})">${x.h?`<div class="adk-h">${x.h}</div>`:''}<div class="ar2 adk-t">${x.t}</div>${(x.f||x.d)&&!ok?`<details class="adk-x" onclick="event.stopPropagation()"><summary>${x.f?'الفضل':''}${x.f&&x.d?' · ':''}${x.d?'تدبّر':''}</summary>${x.f?`<div class="ar2 adk-box fadl"><span class="adk-lbl">${ic('star',13)} الفضل</span><p>${x.f}</p>${x.s?`<small>${x.s}</small>`:''}</div>`:''}${x.d?`<div class="ar2 adk-box tdb"><span class="adk-lbl">${ic('lightbulb',13)} تدبّر</span><p>${x.d}</p>${!x.f&&x.s?`<small>${x.s}</small>`:''}</div>`:''}</details>`:x.s&&!ok?`<div class="adk-src ar2">${x.s}</div>`:''}<div class="adk-f"><span class="adk-n" dir="ltr">${ok?ic('check',14,'',3):k+' / '+x.n}</span>${x.n>1&&!ok?`<span class="adk-pb"><i style="width:${k/x.n*100}%"></i></span>`:''}<span class="adk-c">${x.n>1?(S.lang==='ar'?'التكرار: ':'Repeat: ')+x.n:''}</span></div></div>`}).join('')}
  ${done===L.length?`<div class="card" style="text-align:center"><b>${T('Done. May Allah accept it')} 🤍</b></div>`:''}`}
 function adkTap(i){const cat=adkCat,L=adhkarList(cat),st=adkState();st[cat]=st[cat]||{};const c=st[cat],x=L[i];if(!x)return;if((c[i]||0)>=x.n){return}
  st._t=st._t||{};if(!st._t[cat])st._t[cat]={s:Date.now()};c[i]=(c[i]||0)+1;const fin=c[i]>=x.n;try{const H=HAP();if(H)fin?H.notification({type:'SUCCESS'}):H.impact({style:'LIGHT'})}catch(e){}
@@ -2525,7 +2533,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=30;
+const APP_VERSION=31;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
