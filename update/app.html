@@ -1432,6 +1432,7 @@ async function startChallenge(m){closeSheets();try{await famRef().collection('ch
 async function shareBlob(blob,name,title){
  if(IS_NATIVE&&FSP&&SHP){try{const b64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(String(fr.result).split(',')[1]);fr.readAsDataURL(blob)});await FSP.writeFile({path:name,directory:'CACHE',data:b64});const u=await FSP.getUri({path:name,directory:'CACHE'});await SHP.share({title,files:[u.uri]});return}catch(e){if(/cancel/i.test(e.message||''))return}}
  const f=new File([blob],name,{type:blob.type});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title});return}catch(e){if(e.name==='AbortError')return}}
+ try{if(window.claude&&window.claude.use){const dl=await window.claude.use('downloads');if(dl){try{await dl.save({filename:name,data:blob})}catch(e){try{await dl.save({filename:name,data:new Uint8Array(await blob.arrayBuffer())})}catch(e2){}}return}}}catch(e){}
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Saved '+name,'check')}
 const loadImg=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
 const svgImg=(k,color,sz=96,sw=1.8)=>loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(ic(k,sz,'',sw).replace('<svg','<svg xmlns="http://www.w3.org/2000/svg" color="'+color+'"').replace(/currentColor/g,color)));
