@@ -2878,26 +2878,30 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=56;
+const APP_VERSION=57;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
+// fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
+async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
+ return fetch(UPD+f+'?t='+Date.now(),{cache:'no-store'})}
+
 function verLabel(){const ar=S.lang==='ar',v=Math.max(APP_VERSION,+localStorage.getItem('appV')||0);return (ar?'الإصدار ':'Version ')+(ar?arNum(APP_VERSION):APP_VERSION)+(v>APP_VERSION?(ar?' · التحديث '+arNum(v)+' جاهز':' · update '+v+' ready'):'')}
-async function showWhatsNew(){const ar=S.lang==='ar';let n=localStorage.getItem('lastNote')||'';try{const j=await (await fetch(UPD+'version.json?t='+Date.now(),{cache:'no-store'})).json();n=(ar&&j.note_ar)||j.note||n;localStorage.setItem('lastNote',n)}catch(e){}
+async function showWhatsNew(){const ar=S.lang==='ar';let n=localStorage.getItem('lastNote')||'';try{const j=await (await updFetch('version.json')).json();n=(ar&&j.note_ar)||j.note||n;localStorage.setItem('lastNote',n)}catch(e){}
  if(!n){toast(ar?'تعذّر التحميل، تأكد من الإنترنت':'Could not load. Check your internet.','alert');return}
  const pts=n.split(/(?<=[.!؟])\s+/).filter(Boolean),P=document.getElementById('askPanel');
  P.innerHTML=`<h3>${ar?'ما الجديد':"What's new"}</h3><ul class="upd-l" style="max-height:55vh">${pts.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="row"><button class="btn" onclick="closeAsk()">${ar?'تمام':'OK'}</button></div>`;document.getElementById('askSheet').classList.add('on')}
 async function manualUpdate(){const b=document.getElementById('updBtn'),ar=S.lang==='ar';if(b){b.disabled=true;b.innerHTML=ic('rotate',16)+(ar?'جارٍ الفحص…':'Checking…')}
  const done=(txt,ok)=>{if(b){b.disabled=false;b.innerHTML=(ok?ic('check',16):'')+txt}const vt=document.getElementById('verTxt');if(vt)vt.textContent=verLabel()};
- try{const j=await (await fetch(UPD+'version.json?t='+Date.now(),{cache:'no-store'})).json();
-  if(j.v<=APP_VERSION){done(ar?'محدّث':'Up to date',true);toast(ar?'أنت على أحدث إصدار ✓':'You are up to date ✓','check');return}
+ try{const j=await (await updFetch('version.json')).json();
+  if(j.v<=APP_VERSION){done(ar?'محدّث':'Up to date',true);toast(ar?'أنت على أحدث إصدار ('+arNum(APP_VERSION)+')':'You are up to date (v'+APP_VERSION+')','check');return}
   if(!IS_NATIVE){done(ar?'فحص':'Check');toast(ar?'أعد تحميل الصفحة لتحصل على الإصدار '+arNum(j.v):'Reload the page to get version '+j.v,'rocket');return}
-  if((+localStorage.getItem('appV')||0)<j.v){const h=await (await fetch(UPD+'app.html?t='+Date.now(),{cache:'no-store'})).text();if(!h.includes('APP_VERSION='+j.v+';'))throw 0;localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v))}
+  if((+localStorage.getItem('appV')||0)<j.v){const h=await (await updFetch('app.html')).text();if(!h.includes('APP_VERSION='+j.v+';'))throw 0;localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v))}
   done(ar?'جاهز':'Ready',true);showUpdate((ar&&j.note_ar)||j.note||'New features are ready.')
  }catch(e){done(ar?'حاول مجددًا':'Try again');toast(ar?'تعذّر الفحص، تأكد من الإنترنت':'Could not check. Check your internet.','alert')}}
 async function checkUpdate(){
  if(!IS_NATIVE)return;
- try{const j=await (await fetch(UPD+'version.json?t='+Date.now(),{cache:'no-store'})).json();
+ try{const j=await (await updFetch('version.json')).json();
   const have=Math.max(APP_VERSION,+localStorage.getItem('appV')||0);
-  if(j.v>have){const h=await (await fetch(UPD+'app.html?t='+Date.now(),{cache:'no-store'})).text();
+  if(j.v>have){const h=await (await updFetch('app.html')).text();
    if(h.includes('APP_VERSION='+j.v+';')){localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v));showUpdate((S.lang==='ar'&&j.note_ar)||j.note||'New features are ready.')}}
  }catch(e){}
 }

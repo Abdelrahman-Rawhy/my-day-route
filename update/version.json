@@ -1,1 +1,1 @@
-{"v": 56, "note": "Mic button: it hides as soon as you scroll down and stays hidden. It comes back only when you scroll up.", "note_ar": "زر المايك: يختفي بمجرد التمرير لأسفل ويظل مخفيًا. ويرجع فقط عند التمرير لأعلى."}
+{"v": 57, "note": "Update check is now instant. It reads the newest version straight from the source, so it no longer says «Up to date» for a few minutes after a new update.", "note_ar": "فحص التحديث أصبح فوريًا. يقرأ أحدث إصدار من المصدر مباشرة، فلن يقول «محدّث» لدقائق بعد نزول تحديث جديد."}
