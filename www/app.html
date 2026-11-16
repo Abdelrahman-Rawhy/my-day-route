@@ -1798,7 +1798,7 @@ function tz(){S.tz=S.tz||{i:0,c:0};return S.tz}
 function tasbihHtml(){const T=tz(),D=DHIKR[T.i]||DHIKR[0],tg=T.target||D[2],pc=Math.min(1,T.c/tg),r=dayRec();
  return `<div class="dz">${DHIKR.map((d,i)=>`<button class="${i===T.i?'on':''}" onclick="tzPick(${i})">${d[0]}</button>`).join('')}</div>
  <div class="ar2">${D[1]}</div>
- <div class="tzc" id="tzc" onpointerdown="tzTap(event)"><svg class="rg" width="230" height="230"><circle cx="115" cy="115" r="110" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/><circle id="tzArc" cx="115" cy="115" r="110" fill="none" stroke="url(#rg)" stroke-width="6" stroke-linecap="round" stroke-dasharray="691" stroke-dashoffset="${691*(1-pc)}"/></svg><b id="tzN">${T.c}</b><small id="tzT">of ${tg} · round ${(T.r||0)+1}</small></div>
+ <div class="tzc" id="tzc" onpointerdown="tzDown(event)" onpointerup="tzUp(event)" onpointercancel="window._tzd=null" onpointerleave="window._tzd=null"><svg class="rg" width="230" height="230"><circle cx="115" cy="115" r="110" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/><circle id="tzArc" cx="115" cy="115" r="110" fill="none" stroke="url(#rg)" stroke-width="6" stroke-linecap="round" stroke-dasharray="691" stroke-dashoffset="${691*(1-pc)}"/></svg><b id="tzN">${T.c}</b><small id="tzT">of ${tg} · round ${(T.r||0)+1}</small></div>
  <div style="display:flex;gap:8px;justify-content:center;margin-top:6px"><button class="btn ghost" onclick="tzReset()">${ic('rotate',15)}Reset</button><button class="btn ghost" onclick="tzTarget()">${ic('target',15)}Target: ${tg}</button></div>
  <div class="card" style="margin-top:14px;text-align:center"><div class="sub" style="margin:0">Today: <b style="color:var(--tx,#fff)" id="tzDay">${r.tasbih||0}</b> dhikr · every 100 = +5 pts</div></div>`}
 function tzPick(i){const T=tz();T.i=i;T.c=0;T.r=0;T.target=0;save();renderFaith()}
@@ -1806,7 +1806,9 @@ function tzReset(){const T=tz();T.c=0;T.r=0;save();renderFaith()}
 function tzTarget(){const Z=tz();askNumber(T('Count target for this dhikr'),Z.target||DHIKR[Z.i][2],v=>{if(v>0){Z.target=v;Z.c=0;save();renderFaith()}},1,10000,1)}
 const HAP=()=>S.vib!==false&&IS_NATIVE&&CAP.Plugins&&CAP.Plugins.Haptics;
 function buzz(strong){if(S.vib===false)return;try{const H=HAP();if(H){strong?H.notification({type:'SUCCESS'}):H.impact({style:'LIGHT'})}else if(navigator.vibrate)navigator.vibrate(strong?[60,40,60]:12)}catch(e){}}
-function tzTap(e){e.preventDefault();const T=tz(),D=DHIKR[T.i]||DHIKR[0],tg=T.target||D[2],r=dayRec();T.c++;r.tasbih=(r.tasbih||0)+1;
+function tzDown(e){window._tzd={x:e.clientX,y:e.clientY,t:Date.now()}}
+function tzUp(e){const d=window._tzd;window._tzd=null;if(!d)return;if(Math.abs(e.clientX-d.x)>10||Math.abs(e.clientY-d.y)>10||Date.now()-d.t>800)return;tzTap(e)}
+function tzTap(e){const T=tz(),D=DHIKR[T.i]||DHIKR[0],tg=T.target||D[2],r=dayRec();T.c++;r.tasbih=(r.tasbih||0)+1;
  if(T.c>=tg){buzz(true);tone([784,1175],.08);T.c=0;T.r=(T.r||0)+1;toast(D[0]+' × '+tg+' done','beads');if(T.i<2&&!T.target){T.i++;T.r=0;save();renderFaith();return}}else buzz(false);
  if(Math.floor(r.tasbih/100)>(r.tzP||0)){r.tzP=Math.floor(r.tasbih/100);S.points+=5;S.earned+=5;r.pts=(r.pts||0)+5;toast('100 dhikr  +5','beads')}
  document.getElementById('tzN').textContent=T.c;document.getElementById('tzDay').textContent=r.tasbih;document.getElementById('tzT').textContent='of '+tg+' · round '+((T.r||0)+1);document.getElementById('tzArc').style.strokeDashoffset=691*(1-T.c/tg);
@@ -2751,7 +2753,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=46;
+const APP_VERSION=47;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
