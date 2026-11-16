@@ -726,6 +726,11 @@ html.light .upd{background:#fff;color:var(--tx);border-color:rgba(124,92,255,.35
 .pk-o.mn .mn-i{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none}
 .pk-o.mn .tx{display:flex;flex-direction:column;gap:2px;flex:1;text-align:start}
 .pk-o.mn .tx small{font-size:12px;color:var(--mu)}
+
+/* v53 mic button: smaller, sits above the nav, hides while scrolling down */
+.fab{width:52px!important;height:52px!important;border-radius:18px!important;bottom:calc(env(safe-area-inset-bottom) + 108px)!important;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.fab svg{width:22px;height:22px}
+.fab.hid{transform:translateY(24px) scale(.6);opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
@@ -2859,7 +2864,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=52;
+const APP_VERSION=53;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
@@ -3212,6 +3217,10 @@ document.querySelectorAll('.view:not(#v-settings) .top').forEach(top=>{if(top.qu
  if(box.querySelector('[onclick="go(\'settings\')"]'))return;box.appendChild(g)});
 
 
+
+// hide the mic button while scrolling down so it never covers the list
+(()=>{let ly=scrollY,t;addEventListener('scroll',()=>{const f=document.getElementById('micFab');if(!f)return;const y=scrollY,dy=y-ly;ly=y;
+ if(dy>6&&y>80)f.classList.add('hid');else if(dy<-6||y<80)f.classList.remove('hid');clearTimeout(t);t=setTimeout(()=>{if(innerHeight+scrollY<document.body.scrollHeight*(parseFloat(document.body.style.zoom)||1)-140)f.classList.remove('hid')},1200)},{passive:true})})();
 // touch ripple: a soft circle expands where you touch a button
 (()=>{document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,.task,[onclick]');if(!el||el.closest('#qrStage'))return;
  const r=document.createElement('i');r.className='tch';const z=parseFloat(document.body.style.zoom)||1;r.style.left=e.clientX/z+'px';r.style.top=e.clientY/z+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),520)},{passive:true,capture:true})})();
