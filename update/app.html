@@ -104,6 +104,9 @@ svg.i{display:block;flex:none}
 .qain{display:flex;gap:8px}.qain input{flex:1}.mic{width:48px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:var(--a1);display:grid;place-items:center}.mic.rec{background:var(--red);color:#fff;animation:pulse 1s infinite}
 .node{cursor:pointer}
 @keyframes pulse{50%{opacity:.6}}
+.calc{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:12px 14px;margin-bottom:12px}.calc h4{margin:0 0 8px;font-size:13px;display:flex;gap:8px;align-items:center;color:var(--mu)}.cev{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--bd)}.cev:first-of-type{border-top:0}.cev .tm{font-size:12px;font-weight:700;color:var(--a2,#22D3EE);width:64px;flex:none}.cev .n{flex:1;font-size:14px}.cev.done .n{text-decoration:line-through;color:var(--mu)}.cev .cb{width:26px;height:26px;border-radius:9px;border:2px solid var(--bd);display:grid;place-items:center;color:#fff;background:none}.cev.done .cb{background:var(--ok);border-color:var(--ok)}
+.lb{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--bd)}.lb:first-child{border-top:0}.lb .rk{width:26px;text-align:center;font-weight:800;font-size:16px}.lb .nm{flex:1;font-weight:600}.lb .sc{font-weight:800;font-variant-numeric:tabular-nums}.lb.me .nm{color:var(--a2,#22D3EE)}
+.celebrate .shr{margin-top:10px;background:none;border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 16px;border-radius:14px;font-weight:700;display:inline-flex;gap:8px;align-items:center}
 .fab{position:fixed;right:18px;bottom:104px;width:58px;height:58px;border-radius:20px;background:linear-gradient(135deg,#FB7185,#F472B6);color:#fff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(244,114,182,.45);z-index:40;border:0}
 .recb{width:120px;height:120px;border-radius:50%;margin:16px auto 6px;display:grid;place-items:center;background:var(--red);color:#fff;border:0;box-shadow:0 0 0 0 rgba(251,113,133,.6);animation:recp 1.4s infinite}@keyframes recp{70%{box-shadow:0 0 0 26px rgba(251,113,133,0)}100%{box-shadow:0 0 0 0 rgba(251,113,133,0)}}
 .rect{text-align:center;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}.wave{display:flex;gap:3px;align-items:center;justify-content:center;height:40px;margin:6px 0}.wave i{width:4px;border-radius:2px;background:var(--red);height:6px;transition:height .1s}
@@ -375,6 +378,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div id="faithBar"></div>
   <div class="stats" id="stats"></div>
   <div id="projChip"></div>
+  <div id="calCard"></div>
   <div id="rescue"></div>
   <div class="quote" id="quote"></div>
   <div class="sec"><h3 id="routeH"></h3><span style="display:flex;gap:12px"><button class="link" onclick="openQuick()" id="qaLink"></button><button class="link" onclick="openEdit()" id="editLink"></button></span></div>
@@ -466,6 +470,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div class="card"><h3><span class="ico c-blue" data-i="user"></span><span class="sp">Account & sync</span></h3><div id="acctCard" style="margin-top:12px"></div></div>
   <div class="setting"><span class="ico c-violet" data-i="bell"></span><div class="info" style="flex:1"><b>Reminders</b><p id="notifTxt">Alert when each step's time arrives</p></div><button class="btn" id="notifBtn" onclick="toggleNotif()">Turn on</button></div>
   <div class="setting" id="exactRow" style="display:none"><span class="ico c-amber" data-i="clock"></span><div class="info" style="flex:1"><b>Exact-time alarms</b><p>Allow so reminders ring at the exact minute</p></div><button class="btn" onclick="allowExact()">Allow</button></div>
+  <div class="setting"><span class="ico c-blue" data-i="clock"></span><div class="info" style="flex:1"><b>Google Calendar</b><p id="calTxt">Show your calendar events in today's route</p></div><button class="btn ghost" onclick="openCalSet()" id="calBtn">Connect</button></div>
   <div class="setting"><span class="ico c-amber" data-i="bell"></span><div class="info" style="flex:1"><b>Prayer sound</b><p id="psTxt">Sound at prayer time</p></div><button class="btn ghost" id="psBtn" onclick="cyclePS()">Bell</button></div>
   <div class="setting" id="psFileRow" style="display:none"><span class="ico c-amber" data-i="mosque"></span><div class="info" style="flex:1"><b>Your adhan file</b><p id="psFileTxt">Pick an audio file from your phone</p></div><button class="btn ghost" onclick="document.getElementById('adhanIn').click()">Choose</button><input type="file" id="adhanIn" accept="audio/*" hidden onchange="setAdhan(this.files[0]);this.value=''"></div>
   <div class="setting"><span class="ico c-green" data-i="moon"></span><div class="info" style="flex:1"><b>Hijri date</b><p id="hjTxt">Adjust if your local moon sighting differs</p></div><span style="display:flex;gap:6px"><button class="btn ghost" style="padding:8px 12px" onclick="adjHijri(-1)">−1</button><button class="btn ghost" style="padding:8px 12px" onclick="adjHijri(1)">+1</button></span></div>
@@ -492,6 +497,11 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <label>Repeat on</label><div class="daychips" id="tDays"></div>
   <label>Icon</label><div class="icons" id="iconPick"></div>
   <div class="row"><button class="btn ghost" onclick="closeTask()">Cancel</button><button class="btn" onclick="saveTask()">Save</button></div></div></div>
+<div class="sheet" id="calSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Connect Google Calendar</h3>
+  <div class="sub">1. On a computer open <b>calendar.google.com</b> → ⚙ Settings<br>2. Click your calendar on the left → <b>Integrate calendar</b><br>3. Copy <b>Secret address in iCal format</b> and paste it here.<br><span style="color:var(--mu)">Read-only: the app only reads your events. Keep this link private.</span></div>
+  <label>Secret iCal address</label><input id="calUrl" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics">
+  <div class="row"><button class="btn ghost" onclick="calDisconnect()">Disconnect</button><button class="btn" id="calSave" onclick="calSave()">Connect</button></div></div></div>
+<div class="sheet" id="chSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>This week's family challenge</h3><div class="sub">Everyone's score updates automatically from their own app. Week runs Saturday → Friday.</div><div class="pick" id="chPick"></div></div></div>
 <div class="sheet" id="stepSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="stepPanel"></div></div>
 <div class="sheet" id="qaSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Quick add</h3>
   <div class="sub" style="margin-bottom:8px">Type or speak naturally: “Call mom at 5pm”, “Gym every Mon Wed 7pm”, “Read Kahf Friday after Fajr”, “Buy bread tomorrow morning”, “اتصل بماما بكرة الساعة 6”</div>
@@ -555,7 +565,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <div id="appLock"><img src="logo.png" alt="" style="width:110px;height:110px;border-radius:30px;box-shadow:0 18px 50px rgba(124,92,255,.45);animation:pop .5s"><div class="fp" id="appLockIc" style="width:64px;height:64px;border-radius:22px"></div><h2 style="font-size:22px;font-weight:800">My Day Route is locked</h2><p style="color:var(--mu);font-size:14px">Use your fingerprint or phone screen lock to open</p><button class="btn" style="padding:14px 26px" onclick="unlockApp()">Unlock</button></div>
 <div id="viewer" onclick="if(event.target===this)closeViewer()"><button class="iconbtn x" onclick="closeViewer()" id="viewerX"></button><div id="viewerIn" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div></div>
 <div class="toast" id="toast"></div>
-<div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button></div></div>
+<div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button><br><button class="shr" id="cShare" onclick="event.stopPropagation();shareCard(window._lastCel)">Share</button></div></div>
 
 <script>
 // ================= ICONS (stroke, Lucide-style) =================
@@ -778,7 +788,7 @@ function render(){
    <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>';
  const q=QUOTES[(new Date().getDate()+new Date().getMonth()*31)%QUOTES.length];
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
- renderToday2(list,rec,now);renderFaithBar();renderCountdowns();pushWidget();const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();if(vis('faith'))renderFaith();
+ renderToday2(list,rec,now);renderFaithBar();renderCal();schedScore();renderCountdowns();pushWidget();const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();if(vis('faith'))renderFaith();
  firstPaint=false;justDone=null;
 }
 function renderToday2(list,rec,now){
@@ -821,6 +831,7 @@ function renderSettings(){
  document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const ac=document.getElementById('acctCard');if(ac)ac.innerHTML=acctCardHtml();const br=document.getElementById('bioRow');if(br){br.style.display=bioOK?'flex':'none';document.getElementById('appLockRow').style.display=bioOK?'flex':'none';document.getElementById('bioBtn').textContent=S.bio?'On':'Turn on';document.getElementById('appLockBtn').textContent=S.appLock?'On':'Turn on'}const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
  document.getElementById('sndBtn').textContent=S.sound?'On':'Off';
  const ps=S.psound||'bell';document.getElementById('psBtn').textContent={off:'Off',bell:'Bell',file:'My adhan'}[ps];document.getElementById('psTxt').textContent=ps==='off'?'Silent prayer reminders':ps==='bell'?'A soft bell with each prayer notification':'Plays your adhan in the app · bell in notifications';document.getElementById('psFileRow').style.display=ps==='file'?'flex':'none';document.getElementById('psFileTxt').textContent=S.adhanName?'Using: '+S.adhanName:'Pick an audio file from your phone';
+ document.getElementById('calTxt').textContent=S.cal&&S.cal.url?(S.cal.err?'⚠ '+S.cal.err:(S.cal.ev||[]).length+' upcoming events · synced '+ago(S.cal.fetched)):'Show your calendar events in today\'s route';document.getElementById('calBtn').textContent=S.cal&&S.cal.url?'Manage':'Connect';
  document.getElementById('hjTxt').textContent=(hijriTxt()||'—')+(S.hijriAdj?' (adjusted '+(S.hijriAdj>0?'+':'')+S.hijriAdj+')':'');document.getElementById('ramBtn').textContent={auto:'Auto',on:'On',off:'Off'}[S.ramadan||'auto'];
 }
 
@@ -1333,9 +1344,160 @@ function ideaToJournal(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);
  openJEditor(null).then(()=>{const t=document.getElementById('jText');if(t&&window._jFromIdea===iid){t.value=it.text||'';document.getElementById('jTitle').value='Idea · '+new Date(it.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})}})}
 async function delIdea(){const it=S.ideas.find(x=>x.id===ideaId);if(!it||!confirm('Delete this idea'+(it.aud&&it.aud.length?' and its recording':'')+'?'))return;for(const a of it.aud||[]){try{const d=await miscDB();d.transaction('kv','readwrite').objectStore('kv').delete('aud:'+a)}catch(e){}}S.ideas=S.ideas.filter(x=>x.id!==it.id);save();closeSheets();renderIdeas()}
 
+// ================= GOOGLE CALENDAR (secret iCal link, read-only) =================
+let calBusy=false;
+function openCalSet(){closeSheets();document.getElementById('calUrl').value=(S.cal&&S.cal.url)||'';document.getElementById('calSheet').classList.add('on')}
+async function calSave(){const u=document.getElementById('calUrl').value.trim();if(!/^https?:\/\/.+/i.test(u)&&!/^webcal:/i.test(u)){toast('Paste the full iCal address','clock');return}
+ S.cal={url:u.replace(/^webcal:/i,'https:'),ev:[],fetched:0};const b=document.getElementById('calSave');b.disabled=true;b.textContent='Connecting…';const ok=await calFetch();b.disabled=false;b.textContent='Connect';
+ if(ok){closeSheets();toast('Calendar connected · '+S.cal.ev.length+' upcoming events','clock');render()}else toast(S.cal.err||'Could not read the calendar','alert')}
+function calDisconnect(){delete S.cal;save();closeSheets();render();toast('Calendar disconnected','clock')}
+async function calFetch(){if(!S.cal||!S.cal.url||calBusy)return false;calBusy=true;let txt='';
+ try{if(CHTTP){const r=await CHTTP.get({url:S.cal.url,responseType:'text',headers:{Accept:'text/calendar'}});if(r.status>=400)throw new Error('HTTP '+r.status);txt=typeof r.data==='string'?r.data:''}
+  else{const r=await fetch(S.cal.url);if(!r.ok)throw new Error('HTTP '+r.status);txt=await r.text()}
+  if(!/BEGIN:VCALENDAR/.test(txt))throw new Error('That link is not an iCal calendar');
+  const from=new Date();from.setHours(0,0,0,0);const to=from.getTime()+15*864e5;S.cal.ev=calEvents(parseICS(txt),from.getTime(),to);S.cal.fetched=Date.now();delete S.cal.err;calBusy=false;save();return true}
+ catch(e){calBusy=false;S.cal.err=IS_NATIVE?(e.message||'Could not reach Google Calendar'):'Calendar sync works in the phone app (browsers block it)';S.cal.fetched=Date.now();save();return false}}
+function parseICS(txt){const lines=txt.replace(/\r?\n[ \t]/g,'').split(/\r?\n/);const evs=[];let cur=null;
+ for(const ln of lines){if(ln==='BEGIN:VEVENT'){cur={ex:[]};continue}if(ln==='END:VEVENT'){if(cur)evs.push(cur);cur=null;continue}if(!cur)continue;
+  const i=ln.indexOf(':');if(i<0)continue;const head=ln.slice(0,i),val=ln.slice(i+1),[name,...params]=head.split(';'),P={};params.forEach(p=>{const j=p.indexOf('=');P[p.slice(0,j)]=p.slice(j+1)});
+  if(name==='SUMMARY')cur.t=val.replace(/\\,/g,',').replace(/\;/g,';').replace(/\\n/gi,' ').replace(/\\\\/g,'\\');
+  else if(name==='DTSTART'){cur.s=icsDate(val,P);cur.allDay=P.VALUE==='DATE'||/^\d{8}$/.test(val)}
+  else if(name==='DTEND')cur.e=icsDate(val,P);
+  else if(name==='RRULE')cur.rr=Object.fromEntries(val.split(';').map(x=>x.split('=')));
+  else if(name==='EXDATE')val.split(',').forEach(v=>cur.ex.push(icsDate(v,P)));
+  else if(name==='UID')cur.uid=val;else if(name==='RECURRENCE-ID')cur.rid=icsDate(val,P);else if(name==='STATUS')cur.st=val}
+ return evs}
+function icsDate(v,P={}){const m=String(v).match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/);if(!m)return null;const Y=+m[1],Mo=+m[2]-1,D=+m[3],h=+(m[4]||0),mi=+(m[5]||0),se=+(m[6]||0);
+ if(m[7])return Date.UTC(Y,Mo,D,h,mi,se);
+ if(m[4]&&P.TZID){try{const tz=P.TZID.replace(/^"|"$/g,'');if(tz!==Intl.DateTimeFormat().resolvedOptions().timeZone){const g=Date.UTC(Y,Mo,D,h,mi,se);const f=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(g));const q=k=>+f.find(x=>x.type===k).value;const asU=Date.UTC(q('year'),q('month')-1,q('day'),q('hour')%24,q('minute'),q('second'));return g-(asU-g)}}catch(e){}}
+ return new Date(Y,Mo,D,h,mi,se).getTime()}
+function expandEv(e,from,to){const out=[];if(!e.s||e.st==='CANCELLED')return out;const dur=Math.max(0,(e.e||e.s)-e.s),ex=new Set(e.ex);
+ if(!e.rr){if(e.s+dur>=from&&e.s<to)out.push(e.s);return out}
+ const R=e.rr,iv=Math.max(1,+(R.INTERVAL||1)),until=R.UNTIL?icsDate(R.UNTIL):Infinity,count=R.COUNT?+R.COUNT:Infinity,BD={SU:0,MO:1,TU:2,WE:3,TH:4,FR:5,SA:6},s0=new Date(e.s);let n=0;
+ const occ=t=>{if(t>until)return false;n++;if(n>count)return false;if(t+dur>=from&&t<to&&!ex.has(t))out.push(t);return t<to};
+ if(R.FREQ==='DAILY'){for(let k=0;k<20000;k+=iv){const d=new Date(s0);d.setDate(s0.getDate()+k);if(!occ(d.getTime()))break}}
+ else if(R.FREQ==='WEEKLY'){const days=(R.BYDAY?R.BYDAY.split(',').map(x=>BD[x.slice(-2)]):[s0.getDay()]).sort((a,b)=>a-b);const w0=new Date(s0);w0.setDate(s0.getDate()-s0.getDay());
+  outer:for(let w=0;w<5000;w+=iv)for(const dd of days){const d=new Date(w0);d.setDate(w0.getDate()+w*7+dd);d.setHours(s0.getHours(),s0.getMinutes(),s0.getSeconds(),0);if(d<s0)continue;if(!occ(d.getTime()))break outer}}
+ else if(R.FREQ==='MONTHLY'){for(let k=0;k<1200;k+=iv){const d=new Date(s0);d.setMonth(s0.getMonth()+k);if(d.getDate()!==s0.getDate())continue;if(!occ(d.getTime()))break}}
+ else if(R.FREQ==='YEARLY'){for(let k=0;k<150;k+=iv){const d=new Date(s0);d.setFullYear(s0.getFullYear()+k);if(!occ(d.getTime()))break}}
+ return out}
+function calEvents(evs,from,to){const moved={};evs.forEach(e=>{if(e.rid&&e.uid)(moved[e.uid]=moved[e.uid]||[]).push(e.rid)});const out=[];
+ evs.forEach(e=>{if(!e.rid&&e.uid&&moved[e.uid])e.ex.push(...moved[e.uid]);expandEv(e,from,to).forEach(at=>out.push({id:(e.uid||e.t||'ev').slice(0,40)+'@'+at,t:e.t||'(No title)',at,allDay:!!e.allDay,end:at+Math.max(0,(e.e||e.s)-e.s)}))});
+ return out.sort((a,b)=>a.at-b.at).slice(0,300)}
+function renderCal(){const el=document.getElementById('calCard');if(!el)return;if(!S.cal||!S.cal.url){el.innerHTML='';return}
+ if(Date.now()-(S.cal.fetched||0)>30*6e4&&!calBusy)calFetch().then(ok=>{if(ok)renderCal()});
+ const a=new Date();a.setHours(0,0,0,0);const b=a.getTime()+864e5,rec=dayRec(),L=(S.cal.ev||[]).filter(e=>e.allDay?(e.at<b&&e.end>a.getTime()):(e.at>=a.getTime()&&e.at<b));
+ if(!L.length){el.innerHTML='';return}
+ el.innerHTML=`<div class="calc"><h4>${ic('clock',15)}Google Calendar · today</h4>${L.map(e=>{const d=(rec.cal||[]).includes(e.id);return`<div class="cev ${d?'done':''}"><span class="tm">${e.allDay?'All day':clock12(e.at)}</span><span class="n">${esc(e.t)}</span><button class="cb" onclick="calTick('${esc(e.id)}')">${d?ic('check',14,'',3):''}</button></div>`}).join('')}</div>`}
+function calTick(id){const r=dayRec();r.cal=r.cal||[];const i=r.cal.indexOf(id);if(i>=0){r.cal.splice(i,1);subPts(5)}else{r.cal.push(id);addPts(5,'Calendar event done','clock')}}
+
+// ================= WEEKLY FAMILY CHALLENGES =================
+const CMET={route:['Route completion','map','avg %'],prayers:['Prayers prayed','mosque','prayers'],jamaah:["Prayers in jama'ah",'users','prayers'],quran:['Quran pages','book','pages'],steps:['Steps completed','check','steps'],tasbih:['Dhikr count','beads','dhikr'],focus:['Focus minutes','clock','min'],fasting:['Fasting days','moon','days']};
+const weekKey=(d=new Date())=>{const x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-((x.getDay()+1)%7));return keyOf(x)};
+function weekDays(){const a=new Date(weekKey()+'T12:00'),out=[];for(let i=0;i<7;i++){const d=new Date(a);d.setDate(a.getDate()+i);const k=keyOf(d);if(k>today())break;out.push(k)}return out}
+function myScore(m){const ks=weekDays(),H=ks.map(k=>S.history[k]).filter(Boolean),pids=S.tasks.filter(t=>t.prayer).map(t=>t.id);
+ switch(m){case'route':return Math.round(ks.reduce((s,k)=>s+pctOf(k),0)/Math.max(1,ks.length));case'prayers':return H.reduce((s,r)=>s+pids.filter(i=>r.done.includes(i)).length,0);case'jamaah':return H.reduce((s,r)=>s+Object.values(r.pq||{}).filter(v=>v==='jamaah').length,0);
+  case'quran':return H.reduce((s,r)=>s+(r.qp||0),0);case'tasbih':return H.reduce((s,r)=>s+(r.tasbih||0),0);case'focus':return Math.round(H.reduce((s,r)=>s+sumF(r.focus),0));case'fasting':return H.filter(r=>r.fast).length;default:return H.reduce((s,r)=>s+r.done.length,0)}}
+let chUnsubs=[];
+function subscribeChallenge(){chUnsubs.forEach(u=>{try{u()}catch(e){}});chUnsubs=[];if(!FB.ok||!S.famId)return;const wk=weekKey(),ref=famRef().collection('challenges').doc(wk);FAM.chWeek=wk;FAM.ch=null;
+ chUnsubs.push(ref.onSnapshot(async d=>{if(!d.exists){FAM.ch=null;renderFamily();return}let m={};try{m=await open_(d.data().e)}catch(e){}const had=FAM.ch&&FAM.ch.metric;FAM.ch={...(FAM.ch||{}),...m,by:d.data().by,scores:(FAM.ch&&FAM.ch.scores)||[]};
+  if(!had&&d.data().by!==FB.uid&&S._chSeen!==wk){S._chSeen=wk;store.set(S);toast('New family challenge: '+(CMET[m.metric]||['this week'])[0],'trophy')}pushScore(true);renderFamily()},()=>{}));
+ chUnsubs.push(ref.collection('scores').onSnapshot(async q=>{const sc=await Promise.all(q.docs.map(async d=>{let p={};try{p=await open_(d.data().e)}catch(e){}return{id:d.id,...p}}));FAM.ch=FAM.ch||{};FAM.ch.scores=sc;renderFamily()},()=>{}));
+ FB.unsubs.push(()=>{chUnsubs.forEach(u=>{try{u()}catch(e){}});chUnsubs=[]})}
+async function pushScore(force){const C=FAM.ch;if(!C||!C.metric||!S.famId||!FB.ok)return;const sc=myScore(C.metric),wk=FAM.chWeek;if(!force&&S._lastSc===wk+':'+C.metric+':'+sc)return;S._lastSc=wk+':'+C.metric+':'+sc;
+ try{await famRef().collection('challenges').doc(wk).collection('scores').doc(FB.uid).set({e:await seal({score:sc,name:S.name||'Me'}),at:SV()})}catch(e){}}
+let scT=null;function schedScore(){if(typeof FB==='undefined'||!FB.ok||!S.famId)return;clearTimeout(scT);scT=setTimeout(()=>{if(FAM.chWeek&&FAM.chWeek!==weekKey())subscribeChallenge();else pushScore()},3000)}
+function challengeHtml(){const C=FAM.ch;const end=new Date(weekKey()+'T12:00');end.setDate(end.getDate()+6);const left=Math.max(0,Math.round((end-new Date(today()+'T12:00'))/864e5));
+ if(!C||!C.metric)return`<div class="card"><h3><span class="ico c-amber">${ic('trophy',18)}</span><span class="sp">Weekly family challenge</span></h3><div class="sub">Pick one goal for the whole family this week and see who leads. Scores fill in automatically.</div><button class="btn wide" onclick="openChallenge()">${ic('trophy',16)}Start this week's challenge</button></div>`;
+ const M=CMET[C.metric]||CMET.steps,sc=new Map((C.scores||[]).map(x=>[x.id,x]));
+ const rows=FAM.members.map(m=>({id:m.id,name:m.id===FB.uid?'You':nameOf(m.id),score:(sc.get(m.id)||{}).score||0})).sort((a,b)=>b.score-a.score);
+ return`<div class="card"><h3><span class="ico c-amber">${ic(M[1],18)}</span><span class="sp">${M[0]}<br><span style="font-size:12px;color:var(--mu);font-weight:500">This week's challenge · ${left?left+' day'+(left>1?'s':'')+' left':'last day!'}</span></span><button class="iconbtn" onclick="openChallenge()">${ic('pen',15)}</button></h3>
+  <div style="margin-top:8px">${rows.map((r,i)=>`<div class="lb ${r.id===FB.uid?'me':''}"><span class="rk">${r.score>0?(['🥇','🥈','🥉'][i]||i+1):'·'}</span><span class="nm">${esc(r.name)}</span><span class="sc">${r.score} <span style="font-size:11px;color:var(--mu);font-weight:600">${M[2]}</span></span></div>`).join('')}</div></div>`}
+function openChallenge(){document.getElementById('chPick').innerHTML=Object.entries(CMET).map(([k,[n,i]])=>`<button class="edit-row" onclick="startChallenge('${k}')"><span class="ico c-amber">${ic(i,18)}</span><b style="flex:1">${n}</b>${FAM.ch&&FAM.ch.metric===k?ic('check',16):''}</button>`).join('');closeSheets();document.getElementById('chSheet').classList.add('on')}
+async function startChallenge(m){closeSheets();try{await famRef().collection('challenges').doc(weekKey()).set({by:FB.uid,e:await seal({metric:m}),createdAt:SV()});toast('Challenge on: '+CMET[m][0],'trophy');S._lastSc=null}catch(e){toast('Could not start: '+e.message,'alert')}}
+
+// ================= SHARE FILES (achievement cards, PDF) =================
+async function shareBlob(blob,name,title){
+ if(IS_NATIVE&&FSP&&SHP){try{const b64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(String(fr.result).split(',')[1]);fr.readAsDataURL(blob)});await FSP.writeFile({path:name,directory:'CACHE',data:b64});const u=await FSP.getUri({path:name,directory:'CACHE'});await SHP.share({title,files:[u.uri]});return}catch(e){if(/cancel/i.test(e.message||''))return}}
+ const f=new File([blob],name,{type:blob.type});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title});return}catch(e){if(e.name==='AbortError')return}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Saved '+name,'check')}
+const loadImg=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+const svgImg=(k,color,sz=96,sw=1.8)=>loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(ic(k,sz,'',sw).replace('<svg','<svg xmlns="http://www.w3.org/2000/svg" color="'+color+'"').replace(/currentColor/g,color)));
+const logoSrc=()=>{const i=document.querySelector('#appLock img');return i?i.src:'logo.png'};
+function rr(x,X,y,w,h,r){x.beginPath();x.moveTo(X+r,y);x.arcTo(X+w,y,X+w,y+h,r);x.arcTo(X+w,y+h,X,y+h,r);x.arcTo(X,y+h,X,y,r);x.arcTo(X,y,X+w,y,r);x.closePath()}
+function wrapText(x,t,X,y,maxW,lh,maxLines=3){const words=String(t).split(' ');let line='',n=0;for(const w of words){const test=line?line+' '+w:w;if(x.measureText(test).width>maxW&&line){x.fillText(line,X,y);y+=lh;line=w;if(++n>=maxLines-1){}}else line=test}x.fillText(line,X,y);return y+lh}
+async function shareCard(o){o=o||{icon:'trophy',title:'My Day Route',sub:''};try{await document.fonts.ready}catch(e){}
+ const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0B0B1F');g.addColorStop(1,'#1E1446');x.fillStyle=g;x.fillRect(0,0,W,H);
+ [[180,220,420,'rgba(124,92,255,.45)'],[930,520,380,'rgba(34,211,238,.28)'],[300,1150,420,'rgba(244,114,182,.25)']].forEach(([cx,cy,r,col])=>{const rg=x.createRadialGradient(cx,cy,0,cx,cy,r);rg.addColorStop(0,col);rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,W,H)});
+ const lg=await loadImg(logoSrc());if(lg){x.save();rr(x,80,80,110,110,30);x.clip();x.drawImage(lg,80,80,110,110);x.restore()}
+ x.fillStyle='#fff';x.font='800 44px "Plus Jakarta Sans",sans-serif';x.textBaseline='middle';x.fillText('My Day Route',215,120);x.fillStyle='rgba(255,255,255,.6)';x.font='500 30px "Plus Jakarta Sans",sans-serif';x.fillText(new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+(hijriTxt()?'  ·  '+hijriTxt():''),215,165);
+ // badge tile
+ const tg=x.createLinearGradient(390,330,690,630);tg.addColorStop(0,'#7C5CFF');tg.addColorStop(.6,'#22D3EE');tg.addColorStop(1,'#FBBF24');x.save();x.shadowColor='rgba(124,92,255,.6)';x.shadowBlur=80;rr(x,390,330,300,300,80);x.fillStyle=tg;x.fill();x.restore();
+ if(o.big){x.fillStyle='#fff';x.font='800 120px "Plus Jakarta Sans",sans-serif';x.textAlign='center';x.fillText(o.big,540,485)}else{const im=await svgImg(o.icon||'trophy','#ffffff',160,1.6);if(im)x.drawImage(im,460,400,160,160)}
+ x.textAlign='center';x.fillStyle='#fff';x.font='800 76px "Plus Jakarta Sans",sans-serif';let y=wrapText(x,o.title||'',540,740,900,88,2);
+ x.fillStyle='rgba(255,255,255,.75)';x.font='500 38px "Plus Jakarta Sans",sans-serif';y=wrapText(x,o.sub||'',540,y+10,880,52,3);
+ const st=[[streak()+'','Day streak'],[S.points+'','Points'],['Lv '+level(),LEVELS[Math.min(level()-1,LEVELS.length-1)]]];
+ st.forEach(([v,l],i)=>{const X=90+i*310;rr(x,X,1010,280,170,36);x.fillStyle='rgba(255,255,255,.07)';x.fill();x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;x.stroke();x.fillStyle='#fff';x.font='800 58px "Plus Jakarta Sans",sans-serif';x.fillText(v,X+140,1075);x.fillStyle='rgba(255,255,255,.6)';x.font='600 26px "Plus Jakarta Sans",sans-serif';x.fillText(l,X+140,1135)});
+ x.fillStyle='rgba(255,255,255,.5)';x.font='600 28px "Plus Jakarta Sans",sans-serif';x.fillText((S.name?S.name+' · ':'')+'One step at a time, bi-idhnillah',540,1265);
+ const blob=await new Promise(r=>c.toBlob(r,'image/png'));window._lastCard=c;await shareBlob(blob,'my-day-route-'+today()+'.png',o.title||'My Day Route')}
+
+// ================= MONTHLY PDF REPORT =================
+function pdfFromJpegs(pages){const E=new TextEncoder(),parts=[];let len=0;const offs=[],push=b=>{if(typeof b==='string')b=E.encode(b);parts.push(b);len+=b.length};
+ const n=pages.length,N=3+n*3,obj=(id,f)=>{offs[id]=len;push(id+' 0 obj\n');f();push('\nendobj\n')};
+ push('%PDF-1.4\n');push(new Uint8Array([37,226,227,207,211,10]));
+ obj(1,()=>push('<< /Type /Catalog /Pages 2 0 R >>'));
+ obj(2,()=>push('<< /Type /Pages /Kids ['+pages.map((_,i)=>(5+i*3)+' 0 R').join(' ')+'] /Count '+n+' >>'));
+ pages.forEach((p,i)=>{const im=3+i*3,ct=4+i*3,pg=5+i*3;
+  obj(im,()=>{push(`<< /Type /XObject /Subtype /Image /Width ${p.w} /Height ${p.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.data.length} >>\nstream\n`);push(p.data);push('\nendstream')});
+  const cs=`q 595.28 0 0 841.89 0 0 cm /Im${i} Do Q`;obj(ct,()=>push(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
+  obj(pg,()=>push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im${i} ${im} 0 R >> >> /Contents ${ct} 0 R >>`))});
+ const xr=len;let t='xref\n0 '+N+'\n0000000000 65535 f \n';for(let i=1;i<N;i++)t+=String(offs[i]).padStart(10,'0')+' 00000 n \n';push(t+'trailer\n<< /Size '+N+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF');
+ return new Blob(parts,{type:'application/pdf'})}
+const jpegBytes=c=>{const b=atob(c.toDataURL('image/jpeg',.9).split(',')[1]);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u};
+async function monthPdf(){toast('Building your report…','clipboard');try{await document.fonts.ready}catch(e){}
+ let base=new Date();if(typeof revMode!=='undefined'&&revMode==='month'&&typeof revOff!=='undefined')base.setMonth(base.getMonth()+revOff,1);
+ const y0=base.getFullYear(),m0=base.getMonth(),nd=new Date(y0,m0+1,0).getDate(),tk=today(),days=[];for(let d=1;d<=nd;d++){const k=keyOf(new Date(y0,m0,d));if(k<=tk)days.push(k)}
+ const mName=new Date(y0,m0,15).toLocaleDateString('en-US',{month:'long',year:'numeric'}),h1=hijri(new Date(y0,m0,1)),h2=hijri(new Date(y0,m0,nd));
+ const pids=S.tasks.filter(t=>t.prayer);let act=0,sum=0,perfect=0,run=0,maxRun=0,pts=0,jm=0,ot=0,lt=0,prDone=0,prT=0,sn=0,wt=0,fs=0,tz=0,qp=0,fm=0,deeds=0,rates=[],calD=0;const perP={},focusA={};
+ for(const k of days){const r=S.history[k];prT+=pids.length;if(!r){run=0;continue}const p=pctOf(k);if(r.done.length){act++;sum+=p}if(p>=100){perfect++;run++;maxRun=Math.max(maxRun,run)}else run=0;pts+=r.pts||0;
+  pids.forEach(t=>{perP[t.prayer]=perP[t.prayer]||[0,0];perP[t.prayer][1]++;if(r.done.includes(t.id)){prDone++;perP[t.prayer][0]++;const q=(r.pq||{})[t.prayer];if(q==='jamaah')jm++;else if(q==='late')lt++;else ot++}});
+  sn+=Object.values(r.sun||{}).filter(Boolean).length;if(r.witr)wt++;if(r.fast)fs++;tz+=r.tasbih||0;qp+=r.qp||0;fm+=sumF(r.focus);for(const a in r.focus||{})focusA[a]=(focusA[a]||0)+(+r.focus[a]||0);if(r.deed)deeds++;if(r.review)rates.push(r.review.rating);calD+=(r.cal||[]).length}
+ const avg=act?Math.round(sum/act):0,ideas=S.ideas.filter(i=>{const k=keyOf(new Date(i.at));return k>=days[0]&&k<=days[days.length-1]}).length;
+ const W=1240,H=1754,F='"Plus Jakarta Sans",sans-serif',V='#6D4AFF',INK='#16132B',MU='#6B6880';
+ const page=()=>{const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);x.textBaseline='alphabetic';return[c,x]};
+ const lg=await loadImg(logoSrc());
+ const head=(x,sub)=>{const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,'#7C5CFF');g.addColorStop(1,'#22D3EE');x.fillStyle=g;x.fillRect(0,0,W,14);if(lg){x.save();rr(x,80,60,90,90,24);x.clip();x.drawImage(lg,80,60,90,90);x.restore()}
+  x.fillStyle=INK;x.font='800 46px '+F;x.fillText('Monthly report · '+mName,195,108);x.fillStyle=MU;x.font='500 24px '+F;x.fillText(sub,195,145)};
+ const foot=(x,n)=>{x.fillStyle=MU;x.font='500 20px '+F;x.textAlign='left';x.fillText('My Day Route'+(S.name?' · '+S.name:'')+' · generated '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),80,H-60);x.textAlign='right';x.fillText('Page '+n+' of 2',W-80,H-60);x.textAlign='left'};
+ const sec=(x,t,y)=>{x.fillStyle=INK;x.font='800 30px '+F;x.fillText(t,80,y);x.fillStyle='#ECE9F7';x.fillRect(80,y+14,W-160,3)};
+ const box=(x,X,y,w,h,v,l,col)=>{rr(x,X,y,w,h,22);x.fillStyle='#F6F4FD';x.fill();x.fillStyle=col||V;x.font='800 40px '+F;x.fillText(v,X+24,y+60);x.fillStyle=MU;x.font='600 20px '+F;x.fillText(l,X+24,y+95)};
+ // ---- page 1
+ let [c1,x]=page();head(x,[h1&&h2?HM[h1.m-1]+(h1.m!==h2.m?' – '+HM[h2.m-1]:'')+' '+h2.y+' AH':'',S.name||''].filter(Boolean).join(' · '));
+ x.lineWidth=26;x.strokeStyle='#ECE9F7';x.beginPath();x.arc(220,330,105,0,Math.PI*2);x.stroke();x.strokeStyle=V;x.lineCap='round';x.beginPath();x.arc(220,330,105,-Math.PI/2,-Math.PI/2+Math.PI*2*avg/100);x.stroke();
+ x.fillStyle=INK;x.font='800 60px '+F;x.textAlign='center';x.fillText(avg+'%',220,350);x.textAlign='left';x.fillStyle=MU;x.font='600 20px '+F;x.fillText('average route',160,470);
+ x.fillStyle=INK;x.font='800 40px '+F;x.fillText(avg>=80?'Excellent month, MashaAllah':avg>=50?'Good, steady progress':act?'Keep building, step by step':'No data yet this month',380,300);
+ x.fillStyle=MU;x.font='500 26px '+F;x.fillText(act+' active days · '+perfect+' perfect days · best streak '+maxRun,380,345);x.fillText(pts+' points earned · '+(rates.length?(rates.reduce((a,b)=>a+b,0)/rates.length).toFixed(1)+'★ average day':'no night reviews'),380,385);
+ sec(x,'Highlights',560);const cells=[[(prT?Math.round(prDone/prT*100):0)+'%','Prayers prayed','#D97706'],[jm,"In jama'ah",'#D97706'],[(jm+ot+lt?Math.round((jm+ot)/(jm+ot+lt)*100):0)+'%','On time','#D97706'],[sn+wt,'Sunnah + witr','#D97706'],[qp,'Quran pages','#059669'],[fs,'Fasting days','#4F46E5'],[tz,'Dhikr counted','#7C3AED'],[(fm/60).toFixed(1)+' h','Focus time','#0891B2'],[deeds,'Good deeds','#DB2777'],[ideas,'Ideas captured','#DB2777'],[calD,'Calendar events done','#2563EB'],[streak(),'Current streak','#EA580C']];
+ cells.forEach((cl,i)=>box(x,80+(i%4)*275,600+Math.floor(i/4)*140,255,120,String(cl[0]),cl[1],cl[2]));
+ sec(x,'Every day of the month',1050);const first=(new Date(y0,m0,1).getDay()+1)%7;['Sat','Sun','Mon','Tue','Wed','Thu','Fri'].forEach((d,i)=>{x.fillStyle=MU;x.font='700 20px '+F;x.textAlign='center';x.fillText(d,80+i*154+70,1105)});
+ for(let d=1;d<=nd;d++){const i=first+d-1,X=80+(i%7)*154,Y=1125+Math.floor(i/7)*95,k=keyOf(new Date(y0,m0,d)),p=k>tk?-1:pctOf(k);rr(x,X,Y,140,82,16);x.fillStyle=p<0?'#FAFAFC':p===0?'#F1F0F6':`rgba(16,185,129,${.18+p/100*.75})`;x.fill();x.fillStyle=p>=60?'#fff':INK;x.font='800 26px '+F;x.fillText(d,X+70,Y+38);x.font='600 18px '+F;x.fillText(p<0?'':p+'%',X+70,Y+66)}
+ x.textAlign='left';foot(x,1);
+ // ---- page 2
+ let [c2,y]=page();x=y;head(x,'Prayers, goals and focus');sec(x,'Prayers',230);
+ Object.keys(PNAMES).forEach((k,i)=>{const [d,t]=perP[k]||[0,0],p=t?d/t:0,Y=275+i*62;x.fillStyle=INK;x.font='700 24px '+F;x.fillText(PNAMES[k],80,Y+28);rr(x,260,Y+6,760,30,15);x.fillStyle='#F1F0F6';x.fill();if(p>0){rr(x,260,Y+6,Math.max(30,760*p),30,15);x.fillStyle='#F59E0B';x.fill()}x.fillStyle=MU;x.font='700 22px '+F;x.fillText(Math.round(p*100)+'% ('+d+'/'+t+')',1040,Y+30)});
+ sec(x,'Goals',640);let Y=690;const G=S.goals.filter(g=>!g.archived&&g.type!=='habit').slice(0,9);if(!G.length){x.fillStyle=MU;x.font='500 24px '+F;x.fillText('No goals yet. Add one in the Goals tab.',80,Y+20);Y+=50}
+ G.forEach(g=>{const p=gProg(g);x.fillStyle=INK;x.font='700 24px '+F;const tt=g.title.length>40?g.title.slice(0,40)+'…':g.title;x.fillText(tt,80,Y+26);rr(x,640,Y+6,380,26,13);x.fillStyle='#F1F0F6';x.fill();if(p>0){rr(x,640,Y+6,Math.max(26,380*p/100),26,13);x.fillStyle=V;x.fill()}x.fillStyle=MU;x.font='700 22px '+F;x.fillText(p+'%',1040,Y+28);Y+=52});
+ const HB=S.goals.filter(g=>!g.archived&&g.type==='habit').slice(0,6);if(HB.length){Y+=20;sec(x,'Habits',Y);Y+=50;HB.forEach(h=>{const c=days.filter(k=>(h.log||{})[k]>0).length;x.fillStyle=INK;x.font='700 24px '+F;x.fillText(h.title.slice(0,40),80,Y+26);x.fillStyle=MU;x.font='600 22px '+F;x.fillText(c+' active days · streak '+(typeof habitStreak==='function'?habitStreak(h):0),760,Y+26);Y+=46})}
+ Y+=24;sec(x,'Focus by area',Y);Y+=50;const FA=Object.entries(focusA).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=Math.max(1,...FA.map(a=>a[1]));if(!FA.length){x.fillStyle=MU;x.font='500 24px '+F;x.fillText('No focus sessions this month.',80,Y+20);Y+=40}
+ FA.forEach(([a,v])=>{x.fillStyle=INK;x.font='700 24px '+F;x.fillText(((typeof AREAS!=='undefined'&&AREAS[a]&&AREAS[a][0])||a).toString().slice(0,18),80,Y+26);rr(x,360,Y+6,600*v/mx,26,13);x.fillStyle='#06B6D4';x.fill();x.fillStyle=MU;x.font='700 22px '+F;x.fillText((v/60).toFixed(1)+' h',980,Y+28);Y+=46});
+ const q=QUOTES[m0%QUOTES.length];x.fillStyle='#F6F4FD';rr(x,80,H-300,W-160,170,24);x.fill();x.fillStyle=V;x.font='italic 600 26px '+F;wrapText(x,'“'+q.en+'”',110,H-240,W-220,36,2);x.fillStyle=MU;x.font='600 20px '+F;x.fillText(q.src,110,H-160);
+ foot(x,2);
+ const blob=pdfFromJpegs([{data:jpegBytes(c1),w:W,h:H},{data:jpegBytes(c2),w:W,h:H}]);await shareBlob(blob,'MyDayRoute-'+y0+'-'+String(m0+1).padStart(2,'0')+'.pdf','My Day Route · '+mName)}
+
 // ================= FEEDBACK =================
 let tt;function toast(m,icon='sparkles'){const t=document.getElementById('toast');t.innerHTML=`<span class="ico ${col(icon)}">${ic(icon,17,'draw')}</span><span>${esc(m)}</span>`;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
-function celebrate(icon,title,sub){document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on')}
+function celebrate(icon,title,sub){window._lastCel={icon,title,sub};const cs=document.getElementById('cShare');if(cs)cs.innerHTML=ic('rocket',15)+'Share';document.getElementById('cBig').innerHTML=ic(icon,58,'draw',1.6);document.getElementById('cTitle').textContent=title;document.getElementById('cSub').textContent=sub;const c=document.getElementById('celebrate');c.classList.remove('on');void c.offsetWidth;c.classList.add('on')}
 let actx;function tone(freqs,dur=.12){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(actx.destination);const s=actx.currentTime+i*dur;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.22,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur*1.8);o.start(s);o.stop(s+dur*2)})}catch(e){}}
 function tickCheck(){if(!S.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;
  const click=(t,f)=>{const o=actx.createOscillator(),g=actx.createGain(),hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=1200;o.type='square';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.5,t+.03);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.003);g.gain.exponentialRampToValueAtTime(.0001,t+.04);o.connect(hp);hp.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.05)};
@@ -1383,6 +1545,7 @@ async function doSchedule(){
     const [h,m]=tm.split(':').map(Number),at=new Date(day);at.setHours(h,m,0,0);if(at.getTime()<=now+20000)return;
     const pr=t.prayer?tName(t,day).replace(/^pray\s*/i,''):'';
     out.push({id:(d+1)*1000+i,channelId:t.prayer&&(S.psound||'bell')!=='off'?'prayer':'route',title:t.prayer?'Time for '+pr+' prayer':'Time for: '+t.name+(t.subs&&t.subs.length?' ('+t.subs.length+' parts)':''),body:t.prayer?'Hayya ala salah · +'+t.pts+' points on your route':'Step '+(i+1)+' of your day · +'+t.pts+' points waiting',schedule:{at,allowWhileIdle:true}})})}
+  ((S.cal&&S.cal.ev)||[]).forEach((e,i)=>{if(e.allDay)return;const at=new Date(e.at-10*6e4);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:80000+i,channelId:'route',title:'📅 '+e.t,body:'In 10 minutes · '+clock12(e.at),schedule:{at,allowWhileIdle:true}})});
   out.sort((a,b)=>a.schedule.at-b.schedule.at);
   if(out.length)await LN.schedule({notifications:out.slice(0,300)});
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();document.getElementById('exactRow').style.display=ex.exact_alarm==='granted'?'none':'flex'}
@@ -1652,7 +1815,7 @@ function revRange(){const n=new Date();n.setHours(0,0,0,0);let a,b,label;
  else{const ks=Object.keys(S.history).sort();a=ks.length?new Date(ks[0]+'T00:00'):new Date(n);b=new Date(n);label='All time'}
  return{a,b,label}}
 function daysIn(a,b){const out=[];const d=new Date(a);while(d<=b){out.push(keyOf(d));d.setDate(d.getDate()+1)}return out}
-async function renderReview(){const el=document.getElementById('revBody');if(!el)return;const {a,b,label}=revRange();const days=daysIn(a,b),tk=today();
+async function renderReview(){const el=document.getElementById('revBody');if(!el)return;const {a,b,label}=revRange();window._revLabel=label;const days=daysIn(a,b),tk=today();
  const pids=S.tasks.filter(t=>t.prayer).map(t=>t.id),quran=S.tasks.filter(t=>/quran/i.test(t.name)).map(t=>t.id);
  let jm=0,act=0,sum=0,perfect=0,pr=0,prT=0,qd=0,pts=0,deeds=0,fam=0,rates=[],best=null,bestP=-1,run=0,maxRun=0;const focus={};
  for(const k of days){const r=S.history[k];if(k>tk)break;prT+=pids.length;
@@ -1674,7 +1837,7 @@ async function renderReview(){const el=document.getElementById('revBody');if(!el
  const bv=buckets.map(([n,ks])=>[n,ks.reduce((s,k)=>{const f=(S.history[k]||{}).focus||{};return s+sumF(f)/60},0)]);const mx=Math.max(1,...bv.map(x=>x[1]));
  const memIds=jl.flatMap(e=>(e.media||[]).map(m=>[m,e.id])).slice(0,9);
  const cell=(v,i,c,l)=>`<div><span class="ico c-${c}" style="width:28px;height:28px;border-radius:9px;display:grid;place-items:center;margin-bottom:6px">${ic(i,15)}</span><b>${v}</b><span>${l}</span></div>`;
- el.innerHTML=`<div class="rtabs">${[['week','Week'],['month','Month'],['year','Year'],['all','All']].map(([m,n])=>`<button class="${revMode===m?'on':''}" onclick="revMode='${m}';revOff=0;renderReview()">${n}</button>`).join('')}</div>
+ el.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn ghost" style="flex:1" onclick="monthPdf()">${ic('clipboard',15)}Monthly PDF</button><button class="btn ghost" style="flex:1" onclick="shareCard({icon:'chart',title:window._revLabel,sub:'${avg}% average route · ${perfect} perfect day${perfect===1?'':'s'}',big:'${avg}%'})">${ic('rocket',15)}Share</button></div><div class="rtabs">${[['week','Week'],['month','Month'],['year','Year'],['all','All']].map(([m,n])=>`<button class="${revMode===m?'on':''}" onclick="revMode='${m}';revOff=0;renderReview()">${n}</button>`).join('')}</div>
   <div class="rnav">${revMode!=='all'?`<button class="iconbtn" style="transform:rotate(180deg)" onclick="revOff--;renderReview()">${ic('chevron',18)}</button>`:'<span></span>'}<b>${label}</b>${revMode!=='all'?`<button class="iconbtn" ${revOff>=0?'disabled style="opacity:.3"':''} onclick="if(revOff<0){revOff++;renderReview()}">${ic('chevron',18)}</button>`:'<span></span>'}</div>
   <div class="hero" style="margin-bottom:14px"><div class="ring"><svg width="92" height="92"><circle cx="46" cy="46" r="38" stroke="rgba(255,255,255,.1)" stroke-width="9" fill="none"/><circle cx="46" cy="46" r="38" stroke="url(#rg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="${238.8*(1-avg/100)}"/></svg><div class="pct">${avg}%</div></div>
    <div><h2>${avg>=80?'Excellent, MashaAllah':avg>=50?'Good progress':act?'Keep building':'No data yet'}</h2><p>${act} active day${act===1?'':'s'} · ${perfect} perfect · best streak ${maxRun}${best&&bestP>0?'<br>Best day: '+new Date(best+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' ('+bestP+'%)':''}</p></div></div>
@@ -1859,6 +2022,7 @@ function subscribeFamily(){
   if(changed){S.famSeen=S.famSeen.slice(-300);store.set(S)}
   renderFamily();if(document.getElementById('v-today').classList.contains('on'))render();
  }));
+ subscribeChallenge();
  heartbeat();
 }
 function heartbeat(){if(FB.ok&&S.famId)famRef().collection('members').doc(FB.uid).set({lastSeen:SV()},{merge:true}).catch(()=>{})}
@@ -2024,6 +2188,7 @@ function renderFamily(){
    <div style="margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code · keep it private</span><div class="code" style="font-size:19px">${S.famCode}</div><div class="meta" style="margin-top:4px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted: only your family can read tasks and messages</span></div></div>
    <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}</div>`).join('')}
    <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
+  ${challengeHtml()}
   <div class="tabs2"><button class="${famView==='tasks'?'on':''}" onclick="famView='tasks';renderFamily()">${'Tasks'}${FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length?' ('+FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length+')':''}</button><button class="${famView==='chats'?'on':''}" onclick="famView='chats';renderFamily()">Chats${Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)?' ('+Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)+')':''}</button></div>
   ${famView==='chats'?chatListHtml():`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${Object.entries(FTYPES).map(([k,[n,i,c]])=>`<button class="card" style="margin:0;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700" onclick="openSend(null,'${k}')"><span class="ico c-${c}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(i,18)}</span>${n}</button>`).join('')}</div>
   <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${isSent?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button></div>

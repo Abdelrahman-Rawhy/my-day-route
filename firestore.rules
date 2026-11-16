@@ -35,6 +35,16 @@ service cloud.firestore {
         }
       }
 
+      // Weekly challenges: anyone in the family can start one; each person writes only their own score.
+      match /challenges/{w} {
+        allow read, create, update: if isMember(f);
+        allow delete: if isMember(f) && resource.data.by == request.auth.uid;
+        match /scores/{uid} {
+          allow read: if isMember(f);
+          allow write: if isMember(f) && request.auth.uid == uid;
+        }
+      }
+
       match /tasks/{t} {
         allow read: if isMember(f);
         allow create: if isMember(f) && request.resource.data.from == request.auth.uid;
