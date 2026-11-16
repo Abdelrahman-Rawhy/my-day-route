@@ -292,6 +292,22 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 #appLock{position:fixed;inset:0;z-index:90;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;text-align:center}
 #appLock.on{display:flex}
 .fp{width:96px;height:96px;border-radius:32px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(124,92,255,.3),rgba(34,211,238,.18));border:1px solid rgba(124,92,255,.45);color:#fff;animation:pop .5s}
+
+.gcard{background:var(--s1);border:1px solid var(--bd);border-radius:22px;padding:14px;margin-bottom:10px;cursor:pointer;animation:rise .35s;display:flex;gap:12px;align-items:center}
+.gcard .ico{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;flex:none}
+.gcard .info b{font-size:15px}.gcard .pbar{margin:7px 0 4px;height:6px}
+.gtag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--s2);color:var(--mu)}
+.gsub{margin-left:58px;border-left:2px solid var(--bd);padding-left:10px;margin-top:-4px;margin-bottom:10px}
+.hab{background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:12px;display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.hab .hring{width:46px;height:46px;position:relative;flex:none}.hab .hring svg{transform:rotate(-90deg)}.hab .hring span{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:800}
+.hab .plus{width:44px;height:44px;border-radius:14px;background:var(--grad);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 6px 16px rgba(124,92,255,.3)}
+.hab.full .plus{background:var(--ok);box-shadow:none}
+.typecard{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:14px;margin-bottom:8px}
+.typecard .ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none}
+.typecard p{font-size:12px;color:var(--mu);margin-top:3px;line-height:1.45}
+.tpl{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px}.tpl button{flex:none;padding:8px 12px;border-radius:99px;background:var(--s2);border:1px solid var(--bd);font-size:12px;font-weight:600;white-space:nowrap}
+.wkgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}.wkgrid div{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 0;text-align:center;font-size:11px;color:var(--mu)}.wkgrid div b{display:block;font-size:15px;color:var(--tx);margin-top:2px}.wkgrid div.ok{background:rgba(52,211,153,.18);color:var(--ok)}.wkgrid div.td{outline:2px solid var(--a1)}
+.help{background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);border-radius:14px;padding:10px 12px;font-size:12.5px;color:#C9D7F0;line-height:1.5;margin:8px 0}
 </style>
 </head>
 <body>
@@ -322,42 +338,21 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 
 <!-- GOALS -->
 <section class="view" id="v-goals">
-  <div class="top"><div class="greet"><p>Project · Work · Family</p><h1>Goals</h1></div><div class="pill ptsPill2"></div></div>
-  <div class="card">
-    <h3><span class="ico c-violet" data-i="graduation"></span><span class="sp" id="projName"></span><button class="iconbtn" onclick="openProj()" data-i="settings" data-s="18"></button></h3>
-    <div class="count" id="projCount"></div>
-    <div class="pbar"><i id="projBar"></i></div>
-    <div class="sub" id="projPct"></div>
-    <div id="milestones"></div>
-    <div class="addrow"><input id="msIn" placeholder="Add a milestone…"><button class="btn" onclick="addMs()" data-i="plus"></button></div>
-  </div>
+  <div class="top"><div class="greet"><p>Projects · Habits · Targets · Life</p><h1>Goals</h1></div><div class="hdr-btns"><div class="pill ptsPill2"></div><button class="iconbtn" style="background:var(--grad);color:#fff" onclick="openNewGoal()" data-i="plus" data-s="18"></button></div></div>
+  <div id="gHabits"></div>
+  <div class="rtabs" id="gFilter" style="margin-bottom:14px"></div>
+  <div id="gList"></div>
   <div class="card">
     <h3><span class="ico c-teal" data-i="clock"></span><span class="sp">Focus timer</span></h3>
     <div class="sub" id="tSub">25 min focus · 5 min break · +5 points per session</div>
     <div id="tAdjust"></div>
-    <div class="seg" id="catSeg"></div>
+    <label style="margin-top:0">Focus on</label><select id="catSel" onchange="setCat(this.value)" style="margin-bottom:10px"></select>
     <div class="tring">
       <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/></svg>
       <div class="in"><div class="clock" id="tClock">25:00</div><div class="mode" id="tMode">Ready to focus</div></div>
     </div>
     <div class="row"><button class="btn ghost" onclick="resetTimer()" id="tReset"></button><button class="btn" id="tBtn" onclick="startPause()"></button></div>
     <div class="sub" style="margin:12px 0 0;text-align:center" id="tToday"></div>
-  </div>
-  <div class="card">
-    <h3><span class="ico c-blue" data-i="briefcase"></span><span class="sp">Top 3 work tasks today</span></h3>
-    <div class="sub">Write them in the morning · +5 points each</div>
-    <div id="top3"></div>
-    <h3 style="margin-top:18px"><span class="ico c-blue" data-i="chart"></span><span class="sp">Focus hours this week</span></h3>
-    <div class="chart" id="hoursChart"></div>
-  </div>
-  <div class="card">
-    <h3><span class="ico c-pink" data-i="heart"></span><span class="sp">Good deed for family</span></h3>
-    <div class="sub">One small kindness every day · +10 points</div>
-    <div class="deed"><span class="ico c-pink" data-i="hands"></span><b id="deedTxt"></b><button class="btn" id="deedBtn" onclick="doDeed()">Done</button></div>
-    <h3 style="margin-top:18px"><span class="ico c-rose" data-i="users"></span><span class="sp">Family tasks</span></h3>
-    <div class="sub">Errands and help for your family · +10 points</div>
-    <div id="famList"></div>
-    <div class="addrow"><input id="famIn" placeholder="e.g. Buy medicine for dad"><button class="btn" onclick="addFam()" data-i="plus"></button></div>
   </div>
 </section>
 
@@ -470,6 +465,9 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <div class="sheet" id="backupSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="backupBody"></div></div>
 <!-- Account sheet -->
 <div class="sheet" id="acctSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="acctBody"></div></div>
+<!-- Goal sheets -->
+<div class="sheet" id="goalNewSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="goalNewBody"></div></div>
+<div class="sheet" id="goalSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="goalBody"></div></div>
 <!-- City sheet -->
 <div class="sheet" id="citySheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your city</h3><div id="cityList"></div></div></div>
 
@@ -595,7 +593,10 @@ S.tasks.forEach(t=>{if(t.prayer===undefined)t.prayer=prayerKey(t.name);if(EMOJI2
 S.rewards.forEach(r=>{if(EMOJI2KEY[r.icon])r.icon=EMOJI2KEY[r.icon]});
 S.claimed.forEach(r=>{if(EMOJI2KEY[r.icon])r.icon=EMOJI2KEY[r.icon]});
 S.project=S.project||{name:'Graduation Project',deadline:'',milestones:['Choose topic & supervisor approval','Research & literature review','Proposal','Build / implementation','Write chapters','Review with supervisor','Final presentation slides','Defense'].map(n=>({id:uid(),name:n,done:false}))};
-S.family=S.family||[];S.totalSessions=S.totalSessions||0;S.timer=S.timer||{mode:'focus',running:false,endAt:0,left:1500,cat:'project'};
+S.family=S.family||[];
+if(!S.goals){S.goals=[];const P=S.project;if(P){S.goals.push({id:uid(),type:'project',title:P.name||'Graduation Project',area:'study',icon:'graduation',deadline:P.deadline||'',created:Date.now(),steps:(P.milestones||[]).map(m=>({id:m.id||uid(),name:m.name,done:!!m.done}))})}
+ if(S.family.length)S.goals.push({id:uid(),type:'project',title:'Family errands',area:'family',icon:'users',deadline:'',created:Date.now(),steps:S.family.map(f=>({id:f.id,name:f.name,done:!!f.done}))});
+ if(S.timer)S.timer.cat=(S.goals[0]&&S.goals[0].id)||'other'}S.totalSessions=S.totalSessions||0;S.timer=S.timer||{mode:'focus',running:false,endAt:0,left:1500,cat:'project'};
 
 const keyOf=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const today=()=>keyOf(new Date());
@@ -635,8 +636,6 @@ const allPrayers=()=>{const ids=S.tasks.filter(t=>t.prayer).map(t=>t.id);if(ids.
 function runOf(fn){let n=0;const d=new Date();if(!fn(keyOf(d)))d.setDate(d.getDate()-1);while(fn(keyOf(d))){n++;d.setDate(d.getDate()-1)}return n}
 const streak=()=>runOf(k=>pctOf(k)>=100);
 const level=()=>Math.floor(S.earned/250)+1;
-const projPct=()=>{const m=S.project.milestones;return m.length?Math.round(m.filter(x=>x.done).length/m.length*100):0};
-const daysLeft=()=>{if(!S.project.deadline)return null;const [y,m,d]=S.project.deadline.split('-').map(Number);return Math.round((new Date(y,m-1,d)-new Date(new Date().toDateString()))/864e5)};
 const BADGES=[
  {id:'first',icon:'sprout',name:'First Step',desc:'Complete any step',test:()=>S.earned>0},
  {id:'fajr',icon:'sunrise',name:'Early Riser',desc:'Pray Fajr on time',test:()=>S._fajr},
@@ -652,8 +651,9 @@ const BADGES=[
  {id:'early',icon:'clock',name:'Ahead of Time',desc:'10 steps before their time',test:()=>(S.early||0)>=10},
  {id:'focus10',icon:'lightbulb',name:'Deep Focus',desc:'10 focus sessions',test:()=>S.totalSessions>=10},
  {id:'focus50',icon:'rocket',name:'Focus Machine',desc:'50 focus sessions',test:()=>S.totalSessions>=50},
- {id:'proj50',icon:'book',name:'Halfway Graduate',desc:'Project 50% done',test:()=>projPct()>=50},
- {id:'proj100',icon:'graduation',name:'Graduate!',desc:'All project milestones',test:()=>projPct()>=100},
+ {id:'proj50',icon:'book',name:'Halfway There',desc:'A project 50% done',test:()=>projPct()>=50},
+ {id:'proj100',icon:'graduation',name:'Goal Achieved',desc:'Finish a whole goal',test:()=>S.goals.some(g=>g.done)},
+ {id:'habit7',icon:'rotate',name:'Habit Builder',desc:'7-day habit streak',test:()=>S.goals.some(g=>g.type==='habit'&&g.period==='day'&&habitStreak(g)>=7)},
  {id:'family7',icon:'heart',name:'Family Hero',desc:'Good deed 7 days in a row',test:()=>runOf(k=>S.history[k]&&S.history[k].deed)>=7},
  {id:'review7',icon:'moon',name:'Grateful Heart',desc:'7 night reviews',test:()=>Object.values(S.history).filter(r=>r.review).length>=7},
  {id:'famtask10',icon:'hands',name:'Family Helper',desc:'Finish 10 family tasks',test:()=>(S.famDone||0)>=10},
@@ -699,8 +699,10 @@ function render(){
  firstPaint=false;justDone=null;
 }
 function renderToday2(list,rec,now){
- const dl=daysLeft(),pp=projPct();
- document.getElementById('projChip').innerHTML=`<div class="chip" onclick="go('goals')"><span class="ico c-violet" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('graduation',18)}</span><div class="t">${esc(S.project.name)} · ${pp}%<div class="mini-bar"><i style="width:${pp}%"></i></div></div><b>${dl===null?'Set deadline':dl>0?dl+' days left':dl===0?'Today!':'Passed'}</b>${ic('chevron',16)}</div>`;
+ const ag=S.goals.filter(g=>!g.archived&&!g.done&&g.type!=='habit').sort((x,y)=>(gDays(x)??9999)-(gDays(y)??9999));const ng=ag[0];
+ const hl=S.goals.filter(g=>!g.archived&&g.type==='habit'),hLeft=hl.filter(h=>habitCount(h)<h.target);
+ document.getElementById('projChip').innerHTML=(ng?`<div class="chip" onclick="go('goals');setTimeout(()=>openGoal('${ng.id}'),60)"><span class="ico c-${gColor(ng)}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(gIcon(ng),18)}</span><div class="t">${esc(ng.title)} · ${gProg(ng)}%<div class="mini-bar"><i style="width:${gProg(ng)}%"></i></div></div><b>${gDays(ng)===null?(ag.length>1?'+'+(ag.length-1)+' goals':''):gDays(ng)>0?gDays(ng)+' days left':gDays(ng)===0?'Today!':'Overdue'}</b>${ic('chevron',16)}</div>`:`<div class="chip" onclick="go('goals');setTimeout(openNewGoal,60)"><span class="ico c-violet" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('target',18)}</span><div class="t">Set your first goal</div>${ic('chevron',16)}</div>`)
+  +(hl.length?`<div class="chip" onclick="go('goals')"><span class="ico c-teal" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('rotate',18)}</span><div class="t">${hLeft.length?hLeft.length+' habit'+(hLeft.length>1?'s':'')+' left today':'All habits done today 🎉'}<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${hLeft.slice(0,3).map(h=>esc(h.title)).join(' · ')}</div></div>${ic('chevron',16)}</div>`:'');
  const mine=FAM.tasks.filter(t=>FB.uid&&forMe(t)&&t.status==='open');
  document.getElementById('projChip').innerHTML+=mine.length?`<div class="chip" onclick="go('family')" style="border-color:rgba(244,114,182,.35)"><span class="ico c-pink" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('users',18)}</span><div class="t">${mine.length} family task${mine.length>1?'s':''} for you<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${esc(mine[0].title)} · from ${esc(nameOf(mine[0].from,mine[0].fromName))}</div></div>${ic('chevron',16)}</div>`:'';
  const missed=list.filter(t=>!t.prayer&&!rec.done.includes(t.id)&&effTime(t)<now);
@@ -738,28 +740,117 @@ function renderSettings(){
 }
 
 // ================= GOALS =================
+// ================= GOALS =================
+const AREAS={study:['Study','graduation','violet'],work:['Work','briefcase','blue'],faith:['Faith','mosque','amber'],health:['Health','activity','rose'],family:['Family','users','pink'],money:['Money','scale','green'],personal:['Personal','sparkles','teal']};
+const GTYPES={project:['Project with steps','clipboard','violet','Something you finish by completing steps, like a graduation project, a case, or launching a website. Progress = steps done.'],
+ habit:['Habit','rotate','teal','Something you repeat every day or week, like reading 10 pages or going to the gym 3 times a week. Tap +1 each time and build a streak.'],
+ number:['Number target','target','orange','A number you want to reach, like memorizing 2 juz\', publishing 100 videos, or saving an amount. Update the number as you go.'],
+ life:['Life / yearly goal','star','amber','A big dream for this year or your life. Add smaller goals inside it (any type) and its progress comes from them.']};
+const GTPL=[['project','Graduation project','study','graduation',{steps:'Choose topic & supervisor approval\nResearch & literature review\nProposal\nBuild / implementation\nWrite chapters\nFinal slides\nDefense'}],
+ ['habit','Read 10 pages','study','book',{target:1,period:'day',unit:'times'}],['habit','8 glasses of water','health','droplet',{target:8,period:'day',unit:'glasses'}],['habit','Gym 3× a week','health','activity',{target:3,period:'week',unit:'sessions'}],
+ ['habit','Morning & evening adhkar','faith','beads',{target:2,period:'day',unit:'times'}],['number','Memorize Quran','faith','book',{start:0,target:2,unit:'juz\''}],['number','100 YouTube videos','work','video',{start:0,target:100,unit:'videos'}],
+ ['number','Save money','money','scale',{start:0,target:10000,unit:'EGP'}],['number','Lose weight','health','activity',{start:90,target:80,unit:'kg'}],['project','Launch my website','work','laptop',{steps:'Domain & hosting\nDesign\nWrite pages\nPublish'}],['life','2027 goals','personal','star',{}]];
+let gFilter='all',gNew=null;
+const sumF=f=>Object.values(f||{}).reduce((a,b)=>a+(+b||0),0);
+const periodKey=(per,d=new Date())=>{if(per==='day')return keyOf(d);const x=new Date(d);x.setDate(x.getDate()-((x.getDay()+1)%7));return 'w'+keyOf(x)};
+function habitCount(g,d){g.log=g.log||{};if(g.period==='day')return g.log[keyOf(d||new Date())]||0;const st=new Date(d||new Date());st.setDate(st.getDate()-((st.getDay()+1)%7));let n=0;for(let i=0;i<7;i++){const x=new Date(st);x.setDate(st.getDate()+i);n+=g.log[keyOf(x)]||0}return n}
+function habitStreak(g){let n=0;const d=new Date();const step=g.period==='day'?1:7;if(habitCount(g,d)<g.target)d.setDate(d.getDate()-step);for(let i=0;i<400;i++){if(habitCount(g,d)>=g.target){n++;d.setDate(d.getDate()-step)}else break}return n}
+function gProg(g){if(!g)return 0;if(g.type==='project'){const t=(g.steps||[]).length;return t?Math.round(g.steps.filter(x=>x.done).length/t*100):0}
+ if(g.type==='habit')return Math.min(100,Math.round(habitCount(g)/g.target*100));
+ if(g.type==='number'){const span=g.target-g.start;if(!span)return 100;return Math.max(0,Math.min(100,Math.round((g.current-g.start)/span*100)))}
+ const kids=S.goals.filter(x=>x.parent===g.id&&!x.archived);return kids.length?Math.round(kids.reduce((a,k)=>a+gProg(k),0)/kids.length):0}
+function gSub(g){if(g.type==='project')return (g.steps||[]).filter(x=>x.done).length+' of '+(g.steps||[]).length+' steps';
+ if(g.type==='habit'){const st=habitStreak(g);return habitCount(g)+' / '+g.target+' '+g.unit+(g.period==='day'?' today':' this week')+(st?' · 🔥 '+st:'')}
+ if(g.type==='number')return fmtNum(g.current)+' / '+fmtNum(g.target)+' '+g.unit;
+ const k=S.goals.filter(x=>x.parent===g.id&&!x.archived).length;return k?k+' goal'+(k>1?'s':'')+' inside':'Add smaller goals inside'}
+const fmtNum=n=>(+n).toLocaleString('en-US',{maximumFractionDigits:2});
+const gDays=g=>{if(!g.deadline)return null;const [y,m,d]=g.deadline.split('-').map(Number);return Math.round((new Date(y,m-1,d)-new Date(new Date().toDateString()))/864e5)};
+const goalsPct=()=>{const a=S.goals.filter(g=>!g.archived&&!g.parent&&g.type!=='habit');return a.length?Math.round(a.reduce((x,g)=>x+gProg(g),0)/a.length):0};
+const projPct=()=>Math.max(0,...S.goals.filter(g=>g.type==='project'&&!g.archived).map(gProg));
+function gIcon(g){return g.icon||GTYPES[g.type][1]}
+function gColor(g){return (AREAS[g.area]||AREAS.personal)[2]}
+function goalCard(g,small){const p=gProg(g),dl=gDays(g),a=AREAS[g.area]||AREAS.personal;
+ return `<div class="gcard" onclick="openGoal('${g.id}')"${small?' style="padding:10px;border-radius:16px"':''}><span class="ico c-${gColor(g)}"${small?' style="width:36px;height:36px;border-radius:12px"':''}>${ic(gIcon(g),small?17:21)}</span><div class="info" style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center"><b style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.title)}</b>${g.done?'<span class="tag" style="background:var(--ok)">DONE</span>':dl!==null?`<span class="gtag" style="${dl<=7?'color:var(--red)':''}">${dl>0?dl+'d left':dl===0?'Today':'Overdue'}</span>`:''}</div>
+  <div class="pbar"><i style="width:${p}%"></i></div><div class="meta">${gSub(g)} · ${p}%${small?'':' · '+a[0]}</div></div></div>`}
 function renderGoals(){
- const Pj=S.project,dl=daysLeft(),pp=projPct();
- document.getElementById('projName').textContent=Pj.name;
- document.getElementById('projCount').innerHTML=dl===null?'<span>Tap the gear to set your deadline</span>':`<b>${Math.max(dl,0)}</b><span>days left · ${new Date(Pj.deadline+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>`;
- document.getElementById('projBar').style.width=pp+'%';
- document.getElementById('projPct').textContent=pp+'% complete · '+Pj.milestones.filter(m=>m.done).length+' of '+Pj.milestones.length+' milestones';
- document.getElementById('milestones').innerHTML=Pj.milestones.map(m=>`<div class="li ${m.done?'done':''}"><button class="cb" onclick="togMs('${m.id}')">${m.done?ic('check',14,'',3):''}</button><span class="t">${esc(m.name)}</span><button class="x" onclick="delMs('${m.id}')">${ic('x',15)}</button></div>`).join('');
- document.getElementById('catSeg').innerHTML=[['project','graduation','Project'],['work','briefcase','Work'],['study','book','Study']].map(([c,i,n])=>`<button data-c="${c}" class="${S.timer.cat===c?'on':''}" onclick="setCat('${c}')">${ic(i,15)}${n}</button>`).join('');
+ const act=S.goals.filter(g=>!g.archived);
+ const hab=act.filter(g=>g.type==='habit');
+ document.getElementById('gHabits').innerHTML=hab.length?`<div class="sec" style="margin-top:0"><h3>${ic('rotate',18)}Habits</h3><span class="meta">${hab.filter(h=>habitCount(h)>=h.target).length}/${hab.length} done</span></div>`+hab.map(h=>{const c=habitCount(h),pc=Math.min(1,c/h.target),full=c>=h.target,st=habitStreak(h);
+  return `<div class="hab ${full?'full':''}"><div class="hring" onclick="openGoal('${h.id}')"><svg width="46" height="46"><circle cx="23" cy="23" r="19" stroke="rgba(255,255,255,.08)" stroke-width="5" fill="none"/><circle cx="23" cy="23" r="19" stroke="${full?'#34D399':'#7C5CFF'}" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="${119.4*(1-pc)}" style="transition:stroke-dashoffset .5s"/></svg><span>${c}/${h.target}</span></div>
+   <div class="info" style="flex:1;min-width:0" onclick="openGoal('${h.id}')"><b style="font-size:14px">${esc(h.title)}</b><div class="meta">${h.period==='day'?'Today':'This week'} · ${h.unit}${st?' · 🔥 '+st+(h.period==='day'?' day':' week')+(st>1?'s':''):''}</div></div>
+   <button class="plus" onclick="habitAdd('${h.id}',1)">${full?ic('check',20,'',2.6):ic('plus',20,'',2.4)}</button></div>`}).join(''):'';
+ const F=[['all','All'],['project','Projects'],['habit','Habits'],['number','Numbers'],['life','Life']];
+ document.getElementById('gFilter').innerHTML=F.map(([k,n])=>`<button class="${gFilter===k?'on':''}" onclick="gFilter='${k}';renderGoals()">${n}</button>`).join('');
+ let list=act.filter(g=>gFilter==='all'?(g.type!=='habit'&&!g.parent):g.type===gFilter);
+ list.sort((x,y)=>(x.done-y.done)||((gDays(x)??9999)-(gDays(y)??9999)));
+ document.getElementById('gList').innerHTML=list.length?list.map(g=>goalCard(g)+(g.type==='life'&&gFilter==='all'?`<div class="gsub">${S.goals.filter(k=>k.parent===g.id&&!k.archived).map(k=>goalCard(k,true)).join('')}</div>`:'')).join('')
+  :`<div class="card" style="text-align:center;padding:26px 16px"><span class="ico c-violet" style="width:56px;height:56px;border-radius:18px;display:grid;place-items:center;margin:0 auto">${ic('target',26,'draw')}</span><h3 style="justify-content:center;margin-top:12px">${gFilter==='all'?'No goals yet':'No '+F.find(f=>f[0]===gFilter)[1].toLowerCase()+' yet'}</h3><div class="sub">Tap + to add a project, habit, number target or life goal.</div><button class="btn" onclick="openNewGoal(${gFilter==='all'?'':`'${gFilter}'`})">${ic('plus',16)}New goal</button></div>`;
+ // focus timer
+ const sel=document.getElementById('catSel');if(sel){const opts=act.filter(g=>g.type!=='habit'||true);sel.innerHTML=opts.map(g=>`<option value="${g.id}" ${S.timer.cat===g.id?'selected':''}>${esc(g.title)}</option>`).join('')+`<option value="other" ${!opts.some(g=>g.id===S.timer.cat)?'selected':''}>Something else</option>`}
  document.getElementById('tReset').innerHTML=ic('rotate',16)+'Reset';document.getElementById('tAdjust').innerHTML=timerAdjustHtml();document.getElementById('tSub').textContent=(S.focusMin||25)+' min focus · '+(S.breakMin||5)+' min break · +'+sessPts()+' points per session';
- drawTimer();
- const rec=dayRec(),f=rec.focus||{};
- document.getElementById('tToday').textContent=`Today: ${rec.sessions||0} sessions · ${(((f.project||0)+(f.work||0)+(f.study||0))/60).toFixed(1)} h focused`;
- rec.top=rec.top||[{t:'',done:false},{t:'',done:false},{t:'',done:false}];
- const t3=document.getElementById('top3');
- if(!t3.contains(document.activeElement))t3.innerHTML=rec.top.map((x,i)=>`<div class="li ${x.done?'done':''}"><button class="cb" onclick="togTop(${i})">${x.done?ic('check',14,'',3):i+1}</button>${x.t?`<span class="t">${esc(x.t)}</span><button class="x" onclick="clrTop(${i})">${ic('x',15)}</button>`:`<input style="padding:9px 12px;font-size:14px" placeholder="Task ${i+1}…" onchange="setTop(${i},this.value)">`}</div>`).join('');
- const d=new Date();d.setDate(d.getDate()-6);let bars=[],mx=1;
- for(let i=0;i<7;i++){const r=S.history[keyOf(d)],ff=(r&&r.focus)||{},hrs=((ff.project||0)+(ff.work||0)+(ff.study||0))/60;mx=Math.max(mx,hrs);bars.push([d.toLocaleDateString('en-US',{weekday:'short'}),hrs]);d.setDate(d.getDate()+1)}
- document.getElementById('hoursChart').innerHTML=bars.map(([n,h])=>`<div><b>${h?h.toFixed(1):''}</b><i style="height:${h/mx*78}%"></i>${n}</div>`).join('');
- document.getElementById('deedTxt').textContent=deedOfDay();
- const db=document.getElementById('deedBtn');db.innerHTML=rec.deed?ic('check',16,'',2.6)+'Done':'Done';db.disabled=!!rec.deed;
- document.getElementById('famList').innerHTML=S.family.map(f=>`<div class="li ${f.done?'done':''}"><button class="cb" onclick="togFam('${f.id}')">${f.done?ic('check',14,'',3):''}</button><span class="t">${esc(f.name)}</span><button class="x" onclick="delFam('${f.id}')">${ic('x',15)}</button></div>`).join('')||'<div class="sub" style="margin:0">No family tasks yet. Add one below.</div>';
+ drawTimer();const rec=dayRec();document.getElementById('tToday').textContent=`Today: ${rec.sessions||0} sessions · ${(sumF(rec.focus)/60).toFixed(1)} h focused`;
 }
+function habitAdd(id,d){const g=S.goals.find(x=>x.id===id);if(!g)return;g.log=g.log||{};const k=keyOf(new Date()),before=habitCount(g);g.log[k]=Math.max(0,(g.log[k]||0)+d);if(!g.log[k])delete g.log[k];const after=habitCount(g);
+ if(d>0){if(before<g.target&&after>=g.target){addPts(15,g.title+': done '+(g.period==='day'?'today':'this week')+'!','check');burst(80)}else addPts(3,g.title+' +1',gIcon(g))}else{subPts(before>=g.target&&after<g.target?15:3);save();render()}
+ if(document.getElementById('goalSheet').classList.contains('on'))openGoal(id);checkBadges()}
+function stepToggle(gid,sid){const g=S.goals.find(x=>x.id===gid),st=g.steps.find(x=>x.id===sid);st.done=!st.done;st.doneAt=st.done?Date.now():null;
+ if(st.done){addPts(20,'Step done: '+st.name,'check');goalDoneCheck(g)}else{g.done=false;subPts(20)}openGoal(gid)}
+function goalDoneCheck(g){if(!g.done&&gProg(g)>=100&&g.type!=='habit'){g.done=true;g.doneAt=Date.now();save();setTimeout(()=>{celebrate(gIcon(g),'Goal achieved!',g.title+'. MashaAllah! +100 points');burst(160)},400);addPts(100,null)}
+ if(g.parent){const p=S.goals.find(x=>x.id===g.parent);if(p)goalDoneCheck(p)}}
+function stepAdd(gid){const i=document.getElementById('stepIn'),v=i.value.trim();if(!v)return;const g=S.goals.find(x=>x.id===gid);g.steps.push({id:uid(),name:v,done:false});g.done=false;save();openGoal(gid);setTimeout(()=>document.getElementById('stepIn').focus(),50)}
+function stepDel(gid,sid){const g=S.goals.find(x=>x.id===gid);g.steps=g.steps.filter(x=>x.id!==sid);save();openGoal(gid)}
+function numSet(gid,v){const g=S.goals.find(x=>x.id===gid);v=+v;if(isNaN(v))return;const better=g.target>=g.start?v>g.current:v<g.current;g.history=g.history||[];g.history.push({d:Date.now(),v});g.current=v;
+ if(better)addPts(5,g.title+': '+fmtNum(v)+' '+g.unit,gIcon(g));else save();goalDoneCheck(g);openGoal(gid)}
+function openGoal(id){const g=S.goals.find(x=>x.id===id);if(!g)return;const p=gProg(g),dl=gDays(g),a=AREAS[g.area]||AREAS.personal,t=GTYPES[g.type];let body='';
+ if(g.type==='project'){body=`<div style="margin-top:6px">${(g.steps||[]).map(st=>`<div class="li ${st.done?'done':''}"><button class="cb" onclick="stepToggle('${g.id}','${st.id}')">${st.done?ic('check',14,'',3):''}</button><span class="t">${esc(st.name)}</span><button class="x" onclick="stepDel('${g.id}','${st.id}')">${ic('x',15)}</button></div>`).join('')||'<div class="sub">No steps yet. Add the first one below.</div>'}</div>
+  <div class="addrow"><input id="stepIn" placeholder="Add a step…" onkeydown="if(event.key==='Enter')stepAdd('${g.id}')"><button class="btn" onclick="stepAdd('${g.id}')">${ic('plus',18)}</button></div>`}
+ else if(g.type==='habit'){const st=new Date();st.setDate(st.getDate()-((st.getDay()+1)%7));let wk='';for(let i=0;i<7;i++){const x=new Date(st);x.setDate(st.getDate()+i);const c=(g.log||{})[keyOf(x)]||0;wk+=`<div class="${(g.period==='day'?c>=g.target:c>0)?'ok':''} ${keyOf(x)===today()?'td':''}">${x.toLocaleDateString('en-US',{weekday:'narrow'})}<b>${c||'·'}</b></div>`}
+  body=`<div class="help">${g.period==='day'?`Goal: ${g.target} ${g.unit} every day.`:`Goal: ${g.target} ${g.unit} every week (Sat–Fri).`} Tap +1 each time you do it.</div><div class="wkgrid">${wk}</div>
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin:6px 0"><button class="btn ghost" style="width:52px;height:52px;padding:0;font-size:22px" onclick="habitAdd('${g.id}',-1)">−</button><div style="text-align:center;min-width:110px"><b style="font-size:30px">${habitCount(g)}</b><span style="color:var(--mu)"> / ${g.target}</span><div class="meta" style="justify-content:center">${g.period==='day'?'today':'this week'}</div></div><button class="btn" style="width:52px;height:52px;padding:0;font-size:22px" onclick="habitAdd('${g.id}',1)">+</button></div>
+  <div class="rep"><div><b>🔥 ${habitStreak(g)}</b><span>Current streak (${g.period==='day'?'days':'weeks'})</span></div><div><b>${Object.values(g.log||{}).reduce((x,y)=>x+y,0)}</b><span>Total ${g.unit}</span></div></div>`}
+ else if(g.type==='number'){const h=(g.history||[]).slice(-12);const mx=Math.max(...h.map(x=>x.v),g.target,g.start),mn=Math.min(...h.map(x=>x.v),g.target,g.start);
+  body=`<div class="help">From ${fmtNum(g.start)} to ${fmtNum(g.target)} ${g.unit}. Type your new number whenever it changes.</div>
+  <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="numIn" type="number" inputmode="decimal" value="${g.current}" style="font-size:22px;font-weight:800;text-align:center"><span style="color:var(--mu);white-space:nowrap">${esc(g.unit)}</span><button class="btn" onclick="numSet('${g.id}',document.getElementById('numIn').value)">Update</button></div>
+  ${h.length>1?`<div class="chart" style="height:90px">${h.map(x=>`<div><i style="height:${mx===mn?50:(x.v-mn)/(mx-mn)*80+8}%"></i>${new Date(x.d).toLocaleDateString('en-US',{month:'numeric',day:'numeric'})}</div>`).join('')}</div>`:''}`}
+ else{const kids=S.goals.filter(x=>x.parent===g.id&&!x.archived);body=`<div class="help">Your big goal's progress is the average of the goals inside it.</div>${kids.map(k=>goalCard(k,true)).join('')}
+  <div class="row"><button class="btn" onclick="openNewGoal(null,'${g.id}')">${ic('plus',16)}New goal inside</button></div>
+  ${S.goals.filter(x=>!x.parent&&x.id!==g.id&&x.type!=='life'&&!x.archived).length?`<label>Or move an existing goal inside</label><select onchange="if(this.value){const k=S.goals.find(x=>x.id===this.value);k.parent='${g.id}';save();openGoal('${g.id}')}"><option value="">Choose a goal…</option>${S.goals.filter(x=>!x.parent&&x.id!==g.id&&x.type!=='life'&&!x.archived).map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select>`:''}`}
+ const parent=g.parent&&S.goals.find(x=>x.id===g.parent);
+ document.getElementById('goalBody').innerHTML=`<div style="display:flex;gap:12px;align-items:center"><span class="ico c-${gColor(g)}" style="width:50px;height:50px;border-radius:16px;display:grid;place-items:center;flex:none">${ic(gIcon(g),24,'draw')}</span><div style="flex:1;min-width:0"><b style="font-size:19px;display:block">${esc(g.title)}</b><div class="meta">${t[0]} · ${a[0]}${dl!==null?' · '+(dl>0?dl+' days left':dl===0?'due today':Math.abs(dl)+' days overdue'):''}${parent?' · in '+esc(parent.title):''}</div></div><b style="font-size:22px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">${p}%</b></div>
+  <div class="pbar" style="height:8px;margin-top:12px"><i style="width:${p}%"></i></div>${body}
+  <div class="row" style="margin-top:18px"><button class="btn ghost" onclick="openNewGoal(null,null,'${g.id}')">${ic('pen',15)}Edit</button><button class="btn ghost" onclick="archiveGoal('${g.id}')">${g.done?'Archive':'Archive'}</button><button class="btn red" onclick="delGoal('${g.id}',this)">${ic('trash',15)}</button></div>`;
+ closeSheets();document.getElementById('goalSheet').classList.add('on');renderGoals()}
+function archiveGoal(id){const g=S.goals.find(x=>x.id===id);g.archived=true;S.goals.forEach(k=>{if(k.parent===id)k.parent=null});save();closeSheets();render();toast('Goal archived','check')}
+function delGoal(id,b){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Tap again';return}S.goals=S.goals.filter(x=>x.id!==id);S.goals.forEach(k=>{if(k.parent===id)k.parent=null});save();closeSheets();render();toast('Goal deleted','trash')}
+function openNewGoal(type,parent,editId){const e=editId?S.goals.find(x=>x.id===editId):null;gNew=e?{...e,steps:e.steps,editing:true}:{type:type||null,parent:parent||null,area:'personal',icon:null,title:'',deadline:''};drawNewGoal();closeSheets();document.getElementById('goalNewSheet').classList.add('on')}
+function useTpl(i){const [type,title,area,icon,x]=GTPL[i];gNew={...gNew,type,title,area,icon,...x};drawNewGoal()}
+function drawNewGoal(){const G=gNew,b=document.getElementById('goalNewBody');
+ if(!G.type){b.innerHTML=`<h3>${ic('target',20)}New goal</h3><div class="sub">What kind of goal is it?</div>${Object.entries(GTYPES).map(([k,[n,i,c,d]])=>`<button class="typecard" onclick="gNew.type='${k}';drawNewGoal()"><span class="ico c-${c}">${ic(i,20)}</span><div><b>${n}</b><p>${d}</p></div></button>`).join('')}
+  <label>Or start from an example</label><div class="tpl">${GTPL.map((t,i)=>`<button onclick="useTpl(${i})">${t[1]}</button>`).join('')}</div>`;return}
+ const t=GTYPES[G.type];let extra='';
+ if(G.type==='project')extra=G.editing?'':`<label>Steps (one per line, you can add more later)</label><textarea id="ngSteps" rows="5" placeholder="Step 1&#10;Step 2&#10;Step 3">${esc(G.steps||'')}</textarea>`;
+ if(G.type==='habit')extra=`<label>How often?</label><div style="display:flex;gap:8px;align-items:center"><input id="ngTarget" type="number" min="1" value="${G.target||1}" style="width:80px;text-align:center"><input id="ngUnit" value="${esc(G.unit||'times')}" placeholder="times" style="flex:1"><select id="ngPeriod" style="width:120px"><option value="day" ${G.period!=='week'?'selected':''}>per day</option><option value="week" ${G.period==='week'?'selected':''}>per week</option></select></div>`;
+ if(G.type==='number')extra=`<div style="display:flex;gap:8px"><div style="flex:1"><label>Start</label><input id="ngStart" type="number" value="${G.start??0}"></div><div style="flex:1"><label>Target</label><input id="ngTargetN" type="number" value="${G.target??100}"></div><div style="flex:1"><label>Unit</label><input id="ngUnitN" value="${esc(G.unit||'')}" placeholder="pages, kg, EGP…"></div></div>`;
+ b.innerHTML=`<h3><span class="ico c-${t[2]}" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${ic(t[1],18)}</span>${G.editing?'Edit goal':t[0]}</h3>${G.editing?'':`<div class="help">${t[3]}</div>`}
+  <label>Name</label><input id="ngTitle" value="${esc(G.title)}" placeholder="${{project:'e.g. Graduation project',habit:'e.g. Read 10 pages',number:'e.g. Memorize Quran',life:'e.g. My 2027 goals'}[G.type]}">
+  <label>Area of life</label><div class="tpl">${Object.entries(AREAS).map(([k,[n,i]])=>`<button style="${G.area===k?'border-color:var(--a1);background:rgba(124,92,255,.2);color:#fff':''}" onclick="gNew.title=document.getElementById('ngTitle').value;gNew.area='${k}';if(!gNew.iconSet)gNew.icon='${i}';saveNgFields();drawNewGoal()">${n}</button>`).join('')}</div>
+  ${extra}
+  ${G.type!=='habit'?`<label>Deadline (optional)</label><input id="ngDeadline" type="date" value="${G.deadline||''}">`:''}
+  <label>Icon</label><div class="icons" id="ngIcons"></div>
+  <div class="row"><button class="btn ghost" onclick="${G.editing?'closeSheets()':'gNew.type=null;drawNewGoal()'}">${G.editing?'Cancel':'Back'}</button><button class="btn" onclick="saveGoal()">${G.editing?'Save':'Create goal'}</button></div>`;
+ drawIcons('ngIcons',[...new Set([G.icon||GTYPES[G.type][1],...TASK_ICONS,'star','video','graduation','scale'])].slice(0,24),G.icon||GTYPES[G.type][1],v=>{gNew.icon=v;gNew.iconSet=true})}
+function saveNgFields(){const v=id=>{const e=document.getElementById(id);return e?e.value:undefined};const G=gNew;
+ if(v('ngSteps')!==undefined)G.steps=v('ngSteps');if(v('ngTarget')!==undefined){G.target=Math.max(1,+v('ngTarget')||1);G.unit=v('ngUnit')||'times';G.period=v('ngPeriod')}
+ if(v('ngStart')!==undefined){G.start=+v('ngStart')||0;G.target=+v('ngTargetN');G.unit=v('ngUnitN')||''}if(v('ngDeadline')!==undefined)G.deadline=v('ngDeadline')}
+function saveGoal(){const G=gNew;G.title=document.getElementById('ngTitle').value.trim();if(!G.title){toast('Give your goal a name','pen');return}saveNgFields();
+ if(G.type==='number'&&(isNaN(G.target)||G.target===G.start)){toast('Target must be different from start','target');return}
+ if(G.editing){const g=S.goals.find(x=>x.id===G.id);Object.assign(g,{title:G.title,area:G.area,icon:G.icon||g.icon,deadline:G.deadline||''});if(g.type==='habit')Object.assign(g,{target:G.target,unit:G.unit,period:G.period});if(g.type==='number')Object.assign(g,{start:G.start,target:G.target,unit:G.unit});save();closeSheets();openGoal(g.id);return}
+ const g={id:uid(),type:G.type,title:G.title,area:G.area,icon:G.icon||GTYPES[G.type][1],deadline:G.deadline||'',created:Date.now(),parent:G.parent||null};
+ if(g.type==='project')g.steps=(typeof G.steps==='string'?G.steps:'').split('\n').map(x=>x.trim()).filter(Boolean).map(n=>({id:uid(),name:n,done:false}));
+ if(g.type==='habit')Object.assign(g,{target:G.target||1,unit:G.unit||'times',period:G.period||'day',log:{}});
+ if(g.type==='number')Object.assign(g,{start:G.start,target:G.target,current:G.start,unit:G.unit,history:[{d:Date.now(),v:G.start}]});
+ S.goals.push(g);if(!S.goals.some(x=>x.id===S.timer.cat)&&g.type!=='habit')S.timer.cat=g.id;save();closeSheets();gFilter=g.parent?'all':(g.type==='habit'?gFilter:'all');addPts(5,'Goal created: '+g.title,g.icon);if(g.parent)openGoal(g.parent)}
+
 function togMs(id){const m=S.project.milestones.find(x=>x.id===id);m.done=!m.done;save();if(m.done){addPts(30,'Milestone done!','graduation');if(projPct()===100)setTimeout(()=>{celebrate('graduation','Project complete!','Every milestone finished. MashaAllah!');burst(160)},400)}else subPts(30)}
 function delMs(id){S.project.milestones=S.project.milestones.filter(x=>x.id!==id);save();render()}
 function addMs(){const v=document.getElementById('msIn').value.trim();if(!v)return;S.project.milestones.push({id:uid(),name:v,done:false});document.getElementById('msIn').value='';save();render()}
@@ -768,7 +859,7 @@ function saveProj(){S.project.name=document.getElementById('pName').value.trim()
 function setTop(i,v){v=v.trim();if(!v)return;dayRec().top[i].t=v;save();document.activeElement.blur();render()}
 function clrTop(i){const x=dayRec().top[i];if(x.done)subPts(5,true);dayRec().top[i]={t:'',done:false};save();render()}
 function togTop(i){const x=dayRec().top[i];if(!x.t){toast('Write the task first','pen');return}x.done=!x.done;save();if(x.done){const all=dayRec().top.every(y=>y.t&&y.done);addPts(5,all?'All 3 done! Amazing':'Task done','briefcase');if(all)burst(120)}else subPts(5)}
-function doDeed(){const r=dayRec();if(r.deed)return;r.deed=true;addPts(10,'May Allah reward you','heart')}
+function doDeed(){const r=dayRec();if(r.deed)return;r.deed=true;addPts(10,'May Allah reward you','heart');renderFamily()}
 function addFam(){const v=document.getElementById('famIn').value.trim();if(!v)return;S.family.push({id:uid(),name:v,done:false});document.getElementById('famIn').value='';save();render()}
 function togFam(id){const f=S.family.find(x=>x.id===id);f.done=!f.done;save();if(f.done)addPts(10,'Family helped','users');else subPts(10)}
 function delFam(id){S.family=S.family.filter(x=>x.id!==id);save();render()}
@@ -788,13 +879,13 @@ function timeLeft(){const T=S.timer;return T.running?Math.max(0,Math.round((T.en
 function drawTimer(){const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS_S():BREAK_S();
  document.getElementById('tClock').textContent=String(Math.floor(l/60)).padStart(2,'0')+':'+String(l%60).padStart(2,'0');
  document.getElementById('tArc').style.strokeDashoffset=552.9*(1-l/tot);
- document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?'Focusing on '+T.cat:'Ready to focus'):(T.running?'Break time':'Break ready');
+ const fgN=(S.goals.find(x=>x.id===T.cat)||{}).title;document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?(fgN?fgN.slice(0,22):'Focusing'):'Ready to focus'):(T.running?'Break time':'Break ready');
  document.getElementById('tBtn').innerHTML=T.running?ic('pause',16,'',2.4)+'Pause':ic('play',16,'',2.2)+'Start'}
-function setCat(c){S.timer.cat=c;save();renderGoals()}
+function setCat(c){S.timer.cat=c;save()}
 function startPause(){const T=S.timer;if(T.running){T.left=timeLeft();T.running=false}else{T.endAt=Date.now()+T.left*1000;T.running=true;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}save();drawTimer()}
 function resetTimer(){S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS_S();save();drawTimer()}
 function timerTick(){const T=S.timer;if(!T.running)return;if(timeLeft()>0){if(document.getElementById('v-goals').classList.contains('on'))drawTimer();return}
- if(T.mode==='focus'){const r=dayRec();r.focus=r.focus||{};r.focus[T.cat]=(r.focus[T.cat]||0)+(S.focusMin||25);r.sessions=(r.sessions||0)+1;S.totalSessions++;
+ if(T.mode==='focus'){const r=dayRec();r.focus=r.focus||{};const fg=S.goals.find(x=>x.id===T.cat),ar=fg?fg.area:'personal';r.focus[ar]=(r.focus[ar]||0)+(S.focusMin||25);if(fg){r.gfocus=r.gfocus||{};r.gfocus[fg.id]=(r.gfocus[fg.id]||0)+(S.focusMin||25)}r.sessions=(r.sessions||0)+1;S.totalSessions++;
   T.mode='break';T.left=BREAK_S();T.endAt=Date.now()+BREAK_S()*1000;bell();notify('Focus session done','Take a '+(S.breakMin||5)+'-minute break.');addPts(sessPts(),'Focus session complete! Break time','lightbulb')}
  else{T.mode='focus';T.running=false;T.left=FOCUS_S();bell();notify('Break over','Ready for another focus session?');toast('Break over. Ready for the next session?','clock');save();render()}}
 setInterval(()=>timerTick(),1000);
@@ -818,14 +909,14 @@ function openReport(){
  const d=new Date();d.setDate(d.getDate()-6);let sum=0,n=0,best=null,bestP=-1,pr=0,prT=0,fh=0,deeds=0,rates=[];
  const pids=S.tasks.filter(t=>t.prayer).map(t=>t.id);
  for(let i=0;i<7;i++){const k=keyOf(d),r=S.history[k];if(r){const p=pctOf(k);sum+=p;n++;if(p>bestP){bestP=p;best=new Date(d)}
-   pr+=pids.filter(id=>r.done.includes(id)).length;const f=r.focus||{};fh+=((f.project||0)+(f.work||0)+(f.study||0))/60;if(r.deed)deeds++;if(r.review)rates.push(r.review.rating)}
+   pr+=pids.filter(id=>r.done.includes(id)).length;const f=r.focus||{};fh+=sumF(f)/60;if(r.deed)deeds++;if(r.review)rates.push(r.review.rating)}
   prT+=pids.length;d.setDate(d.getDate()+1)}
  const prP=prT?Math.round(pr/prT*100):0,avg=n?Math.round(sum/n):0;
  const msg=avg>=80?'MashaAllah, an excellent week!':avg>=50?'Solid week. Push a little more next week.':'Every week is a fresh start. You can do it.';
  const cell=(v,i,l)=>`<div><b>${v}</b><span>${ic(i,12)}${l}</span></div>`;
  document.getElementById('reportBody').innerHTML=`<p style="color:#C9D0E2;font-size:14px">${msg}</p><div class="rep">
  ${cell(avg+'%','chart','Avg. completion')}${cell(best?best.toLocaleDateString('en-US',{weekday:'long'}):'—','trophy','Best day'+(bestP>=0?' ('+bestP+'%)':''))}
- ${cell(prP+'%','mosque','Prayers ('+pr+'/'+prT+')')}${cell(projPct()+'%','graduation','Project progress')}
+ ${cell(prP+'%','mosque','Prayers ('+pr+'/'+prT+')')}${cell(goalsPct()+'%','target','Goals progress')}
  ${cell(fh.toFixed(1)+' h','clock','Focus time')}${cell(deeds+'/7','heart','Family deeds')}
  ${cell(rates.length?(rates.reduce((a,b)=>a+b,0)/rates.length).toFixed(1):'—','star','Avg. day rating')}${cell(streak(),'flame','Current streak')}</div>`;
  document.getElementById('reportSheet').classList.add('on');S.lastReport=today();save();
@@ -1197,12 +1288,12 @@ function revRange(){const n=new Date();n.setHours(0,0,0,0);let a,b,label;
 function daysIn(a,b){const out=[];const d=new Date(a);while(d<=b){out.push(keyOf(d));d.setDate(d.getDate()+1)}return out}
 async function renderReview(){const el=document.getElementById('revBody');if(!el)return;const {a,b,label}=revRange();const days=daysIn(a,b),tk=today();
  const pids=S.tasks.filter(t=>t.prayer).map(t=>t.id),quran=S.tasks.filter(t=>/quran/i.test(t.name)).map(t=>t.id);
- let act=0,sum=0,perfect=0,pr=0,prT=0,qd=0,pts=0,deeds=0,fam=0,rates=[],best=null,bestP=-1,run=0,maxRun=0;const focus={project:0,work:0,study:0};
+ let act=0,sum=0,perfect=0,pr=0,prT=0,qd=0,pts=0,deeds=0,fam=0,rates=[],best=null,bestP=-1,run=0,maxRun=0;const focus={};
  for(const k of days){const r=S.history[k];if(k>tk)break;prT+=pids.length;
   if(!r){run=0;continue}const p=pctOf(k);if(r.done.length){act++;sum+=p}if(p>=100){perfect++;run++;maxRun=Math.max(maxRun,run)}else run=0;if(p>bestP){bestP=p;best=k}
   pr+=pids.filter(id=>r.done.includes(id)).length;if(quran.some(id=>r.done.includes(id)))qd++;pts+=r.pts||0;if(r.deed)deeds++;fam+=r.famDone||0;if(r.review)rates.push(r.review.rating);
-  const f=r.focus||{};for(const c in focus)focus[c]+=(f[c]||0)}
- const fh=(focus.project+focus.work+focus.study)/60,avg=act?Math.round(sum/act):0;
+  const f=r.focus||{};for(const c in f)focus[c]=(focus[c]||0)+(+f[c]||0)}
+ const fh=sumF(focus)/60,avg=act?Math.round(sum/act):0;
  let jl=[];try{if(!(jLocked()&&!JKEY))jl=(jCache||await loadEntries()).filter(e=>e.date>=keyOf(a)&&e.date<=keyOf(b))}catch(e){}
  const moods=jl.map(e=>e.mood??3);
  const col=p=>p<=0?'rgba(255,255,255,.05)':`rgba(52,211,153,${.18+p/100*.75})`;
@@ -1214,7 +1305,7 @@ async function renderReview(){const el=document.getElementById('revBody');if(!el
  let buckets=[];if(revMode==='week')buckets=days.map(k=>[new Date(k+'T12:00').toLocaleDateString('en-US',{weekday:'short'}),[k]]);
  else if(revMode==='month'){for(let i=0;i<days.length;i+=7)buckets.push(['W'+(i/7+1),days.slice(i,i+7)])}
  else{const by={};days.forEach(k=>{const m=k.slice(0,7);(by[m]=by[m]||[]).push(k)});buckets=Object.entries(by).slice(-12).map(([m,ks])=>[new Date(m+'-15').toLocaleDateString('en-US',{month:'narrow'}),ks])}
- const bv=buckets.map(([n,ks])=>[n,ks.reduce((s,k)=>{const f=(S.history[k]||{}).focus||{};return s+((f.project||0)+(f.work||0)+(f.study||0))/60},0)]);const mx=Math.max(1,...bv.map(x=>x[1]));
+ const bv=buckets.map(([n,ks])=>[n,ks.reduce((s,k)=>{const f=(S.history[k]||{}).focus||{};return s+sumF(f)/60},0)]);const mx=Math.max(1,...bv.map(x=>x[1]));
  const memIds=jl.flatMap(e=>(e.media||[]).map(m=>[m,e.id])).slice(0,9);
  const cell=(v,i,c,l)=>`<div><span class="ico c-${c}" style="width:28px;height:28px;border-radius:9px;display:grid;place-items:center;margin-bottom:6px">${ic(i,15)}</span><b>${v}</b><span>${l}</span></div>`;
  el.innerHTML=`<div class="rtabs">${[['week','Week'],['month','Month'],['year','Year'],['all','All']].map(([m,n])=>`<button class="${revMode===m?'on':''}" onclick="revMode='${m}';revOff=0;renderReview()">${n}</button>`).join('')}</div>
@@ -1226,7 +1317,7 @@ async function renderReview(){const el=document.getElementById('revBody');if(!el
    ${cell(fh.toFixed(1)+' h','clock','teal','Focus time')}${cell(pts,'star','violet','Points earned')}
    ${cell(deeds,'heart','pink','Family good deeds')}${cell(fam,'users','rose','Family tasks done')}
    ${cell(jl.length,'pen','blue','Journal entries')}${cell(moods.length?MOODS[Math.round(moods.reduce((x,y)=>x+y,0)/moods.length)]:(rates.length?(rates.reduce((x,y)=>x+y,0)/rates.length).toFixed(1)+'★':'—'),'sparkles','orange','Average mood')}</div>
-  <div class="card"><h3><span class="ico c-teal">${ic('chart',18)}</span><span class="sp">Focus hours</span><span class="meta">Project ${(focus.project/60).toFixed(1)} · Work ${(focus.work/60).toFixed(1)} · Study ${(focus.study/60).toFixed(1)}</span></h3>
+  <div class="card"><h3><span class="ico c-teal">${ic('chart',18)}</span><span class="sp">Focus hours</span><span class="meta">${Object.entries(focus).filter(x=>x[1]).map(([k,v])=>((AREAS[k]||[k==='project'?'Project':k])[0])+' '+(v/60).toFixed(1)).join(' · ')||'No sessions yet'}</span></h3>
    <div class="chart">${bv.map(([n,h])=>`<div><b>${h?h.toFixed(1):''}</b><i style="height:${h/mx*78}%"></i>${n}</div>`).join('')}</div></div>
   ${memIds.length?`<div class="card"><h3><span class="ico c-amber">${ic('sparkles',18)}</span><span class="sp">Memories</span></h3><div class="mgrid" id="revMem">${memIds.map(([m,e])=>`<div class="th" data-m="${m}" onclick="openJView('${e}')"></div>`).join('')}</div></div>`:''}
   ${jLocked()&&!JKEY?`<div class="meta" style="justify-content:center">${ic('lock',12)}<span>Unlock your journal to include memories and mood</span></div>`:''}`;
@@ -1543,10 +1634,11 @@ function colorPicker(){pickColor=pickColor||S.color||AVCOLORS[0];return `<div cl
 function renderFamily(){
  const el=document.getElementById('famBody');if(!el)return;
  if(el.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;
- if(!FB_CONFIG||!window.firebase){el.innerHTML=`<div class="card"><h3><span class="ico c-pink">${ic('users',18)}</span><span class="sp">Family mode</span></h3><div class="sub" style="margin-bottom:0">${IS_NATIVE?'Family mode is being set up. It will turn on by itself in the next update.':'Family mode works in the My Day Route phone app. Install the app to send and receive family tasks.'}</div></div>`;return}
- if(!FB.ok){el.innerHTML=`<div class="card"><div class="sub" style="margin:0">${FB.err?'Connection problem: '+esc(FB.err):'Connecting…'}</div></div>`;return}
+ const dr=dayRec(),deedHtml=`<div class="deed" style="margin-bottom:14px"><span class="ico c-pink">${ic('hands',20)}</span><div style="flex:1"><div style="font-size:11px;color:var(--mu);font-weight:700;letter-spacing:.3px">TODAY'S GOOD DEED · +10</div><b style="display:block;margin-top:2px">${esc(deedOfDay())}</b></div><button class="btn" ${dr.deed?'disabled':''} onclick="doDeed()">${dr.deed?ic('check',16,'',2.6):'Done'}</button></div>`;
+ if(!FB_CONFIG||!window.firebase){el.innerHTML=deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('users',18)}</span><span class="sp">Family mode</span></h3><div class="sub" style="margin-bottom:0">${IS_NATIVE?'Family mode is being set up. It will turn on by itself in the next update.':'Family mode works in the My Day Route phone app. Install the app to send and receive family tasks.'}</div></div>`;return}
+ if(!FB.ok){el.innerHTML=deedHtml+`<div class="card"><div class="sub" style="margin:0">${FB.err?'Connection problem: '+esc(FB.err):'Connecting…'}</div></div>`;return}
  if(!S.famCode||!S.famId){
-  el.innerHTML=`<div class="card"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">Your profile</span></h3><div class="sub">How your family will see you</div>
+  el.innerHTML=deedHtml+`<div class="card"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">Your profile</span></h3><div class="sub">How your family will see you</div>
    <label>Your name</label><input id="pfName" value="${esc(S.name||'')}" placeholder="e.g. Ahmed"><label>Color</label>${colorPicker()}</div>
    <div class="tabs2"><button class="${famTab!=='join'?'on':''}" onclick="famTab='create';renderFamily()">Create a family</button><button class="${famTab==='join'?'on':''}" onclick="famTab='join';renderFamily()">Join with code</button></div>
    ${famTab==='join'?`<div class="card"><h3><span class="ico c-teal">${ic('lock',18)}</span><span class="sp">Join your family</span></h3><div class="sub">Ask whoever created the family for the code</div><input id="fCode" placeholder="ABCD-EFGH-JKMN" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;text-align:center;font-size:18px"><button class="btn wide" style="margin-top:12px" onclick="joinFamily()">Join family</button></div>`
@@ -1562,7 +1654,7 @@ function renderFamily(){
    ${isSent?`<span class="status ${t.status==='done'?'ok':'wait'}">${t.status==='done'?'Done'+(t.doneByName&&t.to==='*'?' by '+esc(nameOf(t.doneBy,t.doneByName)):'')+' '+ago(t.doneAt):'Waiting'}</span>`:''}${!isSent&&t.status==='done'&&t.to==='*'&&t.doneByName?`<span class="status ok">Done by ${esc(t.doneBy===FB.uid?'you':nameOf(t.doneBy,t.doneByName))}</span>`:''}</div>
    ${isSent?`<div style="display:flex;gap:8px;margin-top:8px">${t.status==='open'?`<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="tellWhatsApp('${t.id}')">Remind on WhatsApp</button>`:''}<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="delFamTask('${t.id}')">${ic('trash',13)}Delete</button></div>`:''}</div>
    ${!isSent?`<button class="check" style="${t.status==='done'?'background:var(--ok);border-color:var(--ok)':'border-color:var(--a1)'}" onclick="setFamTask('${t.id}',${t.status!=='done'})">${t.status==='done'?ic('check',18,'',3):''}</button>`:''}</div>`};
- el.innerHTML=`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
+ el.innerHTML=deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
    <div style="margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code · keep it private</span><div class="code" style="font-size:19px">${S.famCode}</div><div class="meta" style="margin-top:4px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted: only your family can read tasks and messages</span></div></div>
    <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}</div>`).join('')}
    <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
