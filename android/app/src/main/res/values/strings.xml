@@ -4,4 +4,10 @@
     <string name="title_activity_main">My Day Route</string>
     <string name="package_name">com.rawhy.mydayroute</string>
     <string name="custom_url_scheme">com.rawhy.mydayroute</string>
+    <string name="w_next_prayer">NEXT PRAYER</string>
+    <string name="w_next_step">NEXT STEP</string>
+    <string name="w_route_desc">Next prayer and next step countdowns with today\'s progress</string>
+    <string name="w_prayer_desc">Countdown to the next prayer</string>
+    <string name="w_route_label">Day route</string>
+    <string name="w_prayer_label">Next prayer</string>
 </resources>

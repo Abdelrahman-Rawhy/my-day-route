@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/widget_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/w_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#B3FFFFFF"
+            android:textSize="11sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:background="@drawable/widget_card_prayer">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/w_next_prayer" android:textColor="#FFFBBF24" android:textSize="10sp" android:textStyle="bold"/>
+            <TextView android:id="@+id/w_prayer_name" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="" android:textColor="#FFFFFFFF" android:textSize="15sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end"/>
+            <Chronometer android:id="@+id/w_prayer_cd" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF" android:textSize="22sp" android:textStyle="bold"/>
+            <TextView android:id="@+id/w_prayer_at" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="" android:textColor="#99FFFFFF" android:textSize="11sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:background="@drawable/widget_card_step">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/w_next_step" android:textColor="#FF22D3EE" android:textSize="10sp" android:textStyle="bold"/>
+            <TextView android:id="@+id/w_step_name" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="" android:textColor="#FFFFFFFF" android:textSize="15sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end"/>
+            <Chronometer android:id="@+id/w_step_cd" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF" android:textSize="22sp" android:textStyle="bold"/>
+            <TextView android:id="@+id/w_step_at" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="" android:textColor="#99FFFFFF" android:textSize="11sp"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -308,6 +308,17 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 .tpl{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px}.tpl button{flex:none;padding:8px 12px;border-radius:99px;background:var(--s2);border:1px solid var(--bd);font-size:12px;font-weight:600;white-space:nowrap}
 .wkgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}.wkgrid div{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 0;text-align:center;font-size:11px;color:var(--mu)}.wkgrid div b{display:block;font-size:15px;color:var(--tx);margin-top:2px}.wkgrid div.ok{background:rgba(52,211,153,.18);color:var(--ok)}.wkgrid div.td{outline:2px solid var(--a1)}
 .help{background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);border-radius:14px;padding:10px 12px;font-size:12.5px;color:#C9D7F0;line-height:1.5;margin:8px 0}
+
+.cds{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.cd{border-radius:20px;padding:12px 14px;position:relative;overflow:hidden;cursor:pointer}
+.cd.pr{background:linear-gradient(135deg,rgba(251,191,36,.18),rgba(251,146,60,.08));border:1px solid rgba(251,191,36,.3)}
+.cd.tk{background:linear-gradient(135deg,rgba(124,92,255,.2),rgba(34,211,238,.08));border:1px solid rgba(124,92,255,.35)}
+.cd .lb{font-size:10.5px;font-weight:800;letter-spacing:.5px;color:var(--mu);display:flex;gap:5px;align-items:center}
+.cd .nm{font-size:15px;font-weight:800;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd .tm{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px;margin-top:2px}
+.cd .at{font-size:11px;color:var(--mu);margin-top:1px}
+.cd .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width 1s linear}
+.cd.tk .bar{background:var(--a2)}
 </style>
 </head>
 <body>
@@ -327,6 +338,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
     </div>
     <div><h2 id="heroTitle"></h2><p id="heroSub"></p></div>
   </div>
+  <div class="cds" id="cds"></div>
   <div class="stats" id="stats"></div>
   <div id="projChip"></div>
   <div id="rescue"></div>
@@ -695,7 +707,7 @@ function render(){
    <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>';
  const q=QUOTES[(new Date().getDate()+new Date().getMonth()*31)%QUOTES.length];
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
- renderToday2(list,rec,now);const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();
+ renderToday2(list,rec,now);renderCountdowns();pushWidget();const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();
  firstPaint=false;justDone=null;
 }
 function renderToday2(list,rec,now){
@@ -1665,6 +1677,32 @@ function renderFamily(){
   <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}"><label>Color</label>${colorPicker()}
    <div class="row"><button class="btn red" onclick="leaveFamily()">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;
 }
+
+// ================= COUNTDOWNS =================
+const PNAMES={fajr:'Fajr',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha'};
+const atTime=(d,hm)=>{const [h,m]=hm.split(':').map(Number);const x=new Date(d);x.setHours(h,m,0,0);return x};
+function prayerSchedule(days=3){const c=CITIES.find(x=>x[0]===S.city)||CITIES[0],out=[];for(let i=-1;i<days;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+i);const pt=prayerTimes(d,c[1],c[2]);for(const k in PNAMES)out.push({k,n:PNAMES[k],t:atTime(d,pt[k]).getTime()})}return out.sort((a,b)=>a.t-b.t)}
+function nextPrayer(){const now=Date.now(),L=prayerSchedule(2);const i=L.findIndex(x=>x.t>now);return{next:L[i],prev:L[i-1]}}
+function nextStep(){const now=new Date(),rec=dayRec(),list=sorted().filter(t=>!t.prayer&&!rec.done.includes(t.id));
+ const up=list.map(t=>({t,at:atTime(now,effTime(t)).getTime()}));const fut=up.find(x=>x.at>now.getTime());const cur=up.filter(x=>x.at<=now.getTime()).pop();return{fut,cur}}
+const hms=ms=>{ms=Math.max(0,ms);const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+const clock12=t=>new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+function renderCountdowns(){const el=document.getElementById('cds');if(!el)return;const now=Date.now();
+ const {next,prev}=nextPrayer();const pc=next?Math.min(100,Math.max(0,(now-(prev?prev.t:now))/(next.t-(prev?prev.t:now))*100)):0;
+ const {fut,cur}=nextStep();
+ const tk=fut?{lb:'NEXT STEP',nm:fut.t.name,tm:hms(fut.at-now),at:'at '+clock12(fut.at),bar:0}:cur?{lb:'NOW',nm:cur.t.name,tm:'Now',at:'started '+clock12(cur.at),bar:100}:{lb:'NEXT STEP',nm:'All steps done',tm:'🎉',at:'for today',bar:100};
+ el.innerHTML=`<div class="cd pr" onclick="go('settings')"><div class="lb">${ic(PRAYER_ICON[next.k],12)}NEXT PRAYER</div><div class="nm">${next.n}</div><div class="tm" id="cdP">${hms(next.t-now)}</div><div class="at">at ${clock12(next.t)}${new Date(next.t).getDate()!==new Date().getDate()?' tomorrow':''}</div><i class="bar" id="cdPb" style="width:${pc}%"></i></div>
+  <div class="cd tk" onclick="document.querySelector('.step.next')&&document.querySelector('.step.next').scrollIntoView({behavior:'smooth',block:'center'})"><div class="lb">${ic(fut?'clock':cur?'zap':'check',12)}${tk.lb}</div><div class="nm">${esc(tk.nm)}</div><div class="tm" id="cdT">${tk.tm}</div><div class="at">${tk.at}</div><i class="bar" style="width:${tk.bar}%"></i></div>`;
+ el._p=next;el._f=fut}
+setInterval(()=>{const el=document.getElementById('cds');if(!el||!el._p||document.hidden)return;const now=Date.now();
+ if(el._p.t<=now||(el._f&&el._f.at<=now)){renderCountdowns();pushWidget();return}
+ const a=document.getElementById('cdP');if(a)a.textContent=hms(el._p.t-now);const b=document.getElementById('cdT');if(b&&el._f)b.textContent=hms(el._f.at-now)},1000);
+// ---- Android home screen widgets ----
+const WIDGET=IS_NATIVE?(CAP.Plugins&&CAP.Plugins.WidgetBridge)||(CAP.registerPlugin&&CAP.registerPlugin('WidgetBridge')):null;
+let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);wT=setTimeout(()=>{try{const now=new Date(),rec=dayRec();
+ const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted().filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>steps.push({n:t.name,t:atTime(d,i?t.time:effTime(t)).getTime()}))}
+ const list=sorted(),done=rec.done.filter(id=>S.tasks.some(t=>t.id===id)).length;
+ WIDGET.setData({data:JSON.stringify({prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:p.n,t:p.t})),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
 
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['goals','target','Goals'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];
