@@ -267,6 +267,27 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 .rbar{position:fixed;z-index:60;background:rgba(28,33,52,.97);border:1px solid var(--bd2);border-radius:20px;padding:8px;box-shadow:0 14px 34px rgba(0,0,0,.5);animation:pop .2s;left:50%;transform:translateX(-50%);width:max-content;max-width:92vw}
 .rbar .em{display:flex;gap:4px}.rbar .em button{font-size:26px;width:42px;height:42px;border-radius:12px}.rbar .em button.on{background:rgba(124,92,255,.3)}
 .rbar .acts{display:flex;gap:6px;margin-top:6px;border-top:1px solid var(--bd);padding-top:6px}.rbar .acts button{flex:1;padding:8px;border-radius:10px;font-size:13px;font-weight:600;display:flex;gap:6px;justify-content:center;align-items:center;background:var(--s2)}
+
+.jcard{background:var(--s1);border:1px solid var(--bd);border-radius:22px;padding:14px;margin-bottom:10px;cursor:pointer;animation:rise .35s}
+.jcard .jd{display:flex;align-items:center;gap:10px}.jcard .mood{font-size:26px}
+.jcard .jt{font-size:14px;color:#C9D0E2;line-height:1.5;margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.thumbs{display:flex;gap:6px;margin-top:10px;overflow:hidden}.thumbs .th{width:64px;height:64px;border-radius:12px;background:var(--s2) center/cover;flex:none;position:relative;display:grid;place-items:center;color:#fff}
+.thumbs .th.more{background:var(--s2);font-weight:800;color:var(--mu)}
+.th .vid{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.25);border-radius:12px}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.mgrid .th{width:auto;height:auto;aspect-ratio:1}
+.moods{display:flex;justify-content:space-between;gap:6px}.moods button{flex:1;font-size:28px;padding:8px 0;border-radius:14px;background:rgba(0,0,0,.22);border:1px solid var(--bd);filter:grayscale(.8);opacity:.6}
+.moods button.on{filter:none;opacity:1;border-color:var(--a1);background:rgba(124,92,255,.2);transform:scale(1.05)}
+#viewer{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center}
+#viewer.on{display:flex}#viewer img,#viewer video{max-width:100%;max-height:100%}
+#viewer .x{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:12px;z-index:2}
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:16px auto 0}
+.pinpad button{height:62px;border-radius:20px;background:var(--s2);font-size:22px;font-weight:700}
+.pindots{display:flex;gap:12px;justify-content:center;margin:18px 0 4px}.pindots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--bd2)}.pindots i.on{background:var(--grad);border-color:transparent}
+.rtabs{display:flex;background:rgba(0,0,0,.25);border-radius:14px;padding:4px;gap:4px}.rtabs button{flex:1;padding:9px;border-radius:11px;font-weight:700;font-size:13px;color:var(--mu)}.rtabs button.on{background:var(--s2);color:#fff}
+.rnav{display:flex;align-items:center;justify-content:space-between;margin:14px 0}.rnav b{font-size:16px}
+.heat{display:grid;gap:4px}.heat i{aspect-ratio:1;border-radius:6px;background:rgba(255,255,255,.05);display:grid;place-items:center;font-size:10px;font-style:normal;color:var(--mu);font-weight:600}
+.heat.year{grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:2px}.heat.year i{border-radius:2px}
+.hdr-btns{display:flex;gap:8px;align-items:center}
 </style>
 </head>
 <body>
@@ -277,7 +298,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 <section class="view on" id="v-today">
   <div class="top">
     <div class="greet"><p id="dateTxt"></p><h1 id="hello">Good morning</h1></div>
-    <div class="pill" id="ptsPill"></div>
+    <div class="hdr-btns"><div class="pill" id="ptsPill"></div><button class="iconbtn" onclick="go('settings')" data-i="settings" data-s="18"></button></div>
   </div>
   <div class="hero">
     <div class="ring">
@@ -342,10 +363,22 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div id="famBody"></div>
 </section>
 
+<!-- JOURNAL -->
+<section class="view" id="v-journal">
+  <div class="top"><div class="greet"><p>Private · stays on this phone</p><h1>Journal</h1></div><div class="hdr-btns"><button class="iconbtn" onclick="openSearchJ()" data-i="target" data-s="17"></button><button class="iconbtn" onclick="lockJournalNow()" id="jLockBtn" data-i="lock" data-s="17"></button></div></div>
+  <div id="jBody"></div>
+</section>
+
+<!-- REVIEW -->
+<section class="view" id="v-review">
+  <div class="top"><div class="greet"><p>Look back on your journey</p><h1>Review</h1></div><button class="iconbtn" onclick="go('awards')" data-i="x" data-s="17"></button></div>
+  <div id="revBody"></div>
+</section>
+
 <!-- AWARDS -->
 <section class="view" id="v-awards">
   <div class="top"><div class="greet"><p>Earn badges by finishing your route</p><h1>Awards</h1></div><div class="pill ptsPill2"></div></div>
-  <button class="btn wide" style="margin-bottom:20px" onclick="openReport()" id="repBtn"></button>
+  <button class="btn wide" style="margin-bottom:20px" onclick="openReview()" id="repBtn"></button>
   <button class="btn ghost wide" style="margin:-8px 0 20px" onclick="go('prizes')" id="shopBtn"></button>
   <div class="sec"><h3>Last 7 days</h3></div>
   <div class="week" id="week"></div>
@@ -364,7 +397,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 
 <!-- SETTINGS -->
 <section class="view" id="v-settings">
-  <div class="top"><div class="greet"><p>Reminders, prayer times and data</p><h1>Settings</h1></div></div>
+  <div class="top"><div class="greet"><p>Reminders, prayer times and data</p><h1>Settings</h1></div><button class="iconbtn" onclick="go('today')" data-i="x" data-s="17"></button></div>
   <div class="card">
     <h3><span class="ico c-amber" data-i="mosque"></span><span class="sp">Prayer times<br><span style="font-size:12px;color:var(--mu);font-weight:500">Egyptian General Authority · daily</span></span><button class="btn ghost" style="padding:8px 12px;font-size:13px" onclick="openCity()" id="cityBtn"></button></h3>
     <div class="ptgrid" id="ptGrid"></div>
@@ -372,6 +405,8 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div class="setting"><span class="ico c-violet" data-i="bell"></span><div class="info" style="flex:1"><b>Reminders</b><p id="notifTxt">Alert when each step's time arrives</p></div><button class="btn" id="notifBtn" onclick="toggleNotif()">Turn on</button></div>
   <div class="setting" id="exactRow" style="display:none"><span class="ico c-amber" data-i="clock"></span><div class="info" style="flex:1"><b>Exact-time alarms</b><p>Allow so reminders ring at the exact minute</p></div><button class="btn" onclick="allowExact()">Allow</button></div>
   <div class="setting"><span class="ico c-teal" data-i="volume"></span><div class="info" style="flex:1"><b>Sound effects</b><p>Chime when you complete a step</p></div><button class="btn ghost" id="sndBtn" onclick="toggleSound()">On</button></div>
+  <div class="setting"><span class="ico c-violet" data-i="lock"></span><div class="info" style="flex:1"><b>Journal lock</b><p id="jLockTxt">Protect your journal with a PIN</p></div><button class="btn ghost" onclick="journalLockSettings()" id="jLockSet">Set PIN</button></div>
+  <div class="setting"><span class="ico c-green" data-i="rotate"></span><div class="info" style="flex:1"><b>Backup & restore</b><p>Encrypted backup of everything to Drive or WhatsApp</p></div><button class="btn ghost" onclick="openBackup()">Open</button></div>
   <div class="setting"><span class="ico c-blue" data-i="user"></span><div class="info" style="flex:1"><b>Your name</b><p>Shown in the greeting</p></div><button class="btn ghost" onclick="setName()">Edit</button></div>
   <div class="setting"><span class="ico c-green" data-i="map"></span><div class="info" style="flex:1"><b>Edit route</b><p>Add, remove or change steps</p></div><button class="btn ghost" onclick="openEdit()">Open</button></div>
   <div class="setting"><span class="ico c-rose" data-i="rotate"></span><div class="info" style="flex:1"><b>Reset today</b><p>Untick all of today's steps</p></div><button class="btn red" onclick="resetToday()">Reset</button></div>
@@ -410,6 +445,22 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" id="sBtn" onclick="sendTask()">Send</button></div></div></div>
 <!-- Member sheet -->
 <div class="sheet" id="memberSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><div id="memberBody"></div></div></div>
+<!-- Journal entry editor -->
+<div class="sheet" id="jEditSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3 id="jEditTitle">New entry</h3>
+  <label>How was your day?</label><div class="moods" id="jMoods"></div>
+  <label>Date</label><input id="jDate" type="date">
+  <label>Title (optional)</label><input id="jTitle" placeholder="A few words about today">
+  <label>Write freely</label><textarea id="jText" rows="7" placeholder="What happened today? What did you learn? What are you grateful for?"></textarea>
+  <label>Photos & videos</label><div class="mgrid" id="jMediaEdit"></div>
+  <input type="file" id="jFile" accept="image/*,video/*" multiple style="display:none" onchange="addJMedia(Array.from(this.files));this.value=''">
+  <button class="btn ghost wide" style="margin-top:8px" onclick="document.getElementById('jFile').click()" id="jAddMedia"></button>
+  <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" id="jSaveBtn" onclick="saveJEntry()">Save</button></div></div></div>
+<!-- Journal entry view -->
+<div class="sheet" id="jViewSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="jViewBody"></div></div>
+<!-- PIN sheet -->
+<div class="sheet" id="pinSheet"><div class="panel" id="pinBody"></div></div>
+<!-- Backup sheet -->
+<div class="sheet" id="backupSheet" onclick="if(event.target===this)closeSheets()"><div class="panel" id="backupBody"></div></div>
 <!-- City sheet -->
 <div class="sheet" id="citySheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your city</h3><div id="cityList"></div></div></div>
 
@@ -420,6 +471,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
   <div class="ccomp"><button class="cbtn" id="emojiBtn" onclick="toggleEmoji()"></button><textarea id="cinput" rows="1" placeholder="Message" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea><button class="cbtn send" id="sendBtn" onclick="sendMsg()"></button></div>
 </div>
 <div id="rbar"></div>
+<div id="viewer" onclick="if(event.target===this)closeViewer()"><button class="iconbtn x" onclick="closeViewer()" id="viewerX"></button><div id="viewerIn" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div></div>
 <div class="toast" id="toast"></div>
 <div class="celebrate" id="celebrate" onclick="this.classList.remove('on')"><div><div class="big" id="cBig"></div><h2 id="cTitle"></h2><p id="cSub"></p><button class="btn">Alhamdulillah</button></div></div>
 
@@ -597,6 +649,7 @@ const BADGES=[
  {id:'family7',icon:'heart',name:'Family Hero',desc:'Good deed 7 days in a row',test:()=>runOf(k=>S.history[k]&&S.history[k].deed)>=7},
  {id:'review7',icon:'moon',name:'Grateful Heart',desc:'7 night reviews',test:()=>Object.values(S.history).filter(r=>r.review).length>=7},
  {id:'famtask10',icon:'hands',name:'Family Helper',desc:'Finish 10 family tasks',test:()=>(S.famDone||0)>=10},
+ {id:'journal7',icon:'book',name:'Storyteller',desc:'Write 7 journal entries',test:()=>(S.jCount||0)>=7},
  {id:'top3',icon:'check',name:'Top 3 Done',desc:'All 3 work tasks in a day',test:()=>Object.values(S.history).some(r=>r.top&&r.top.filter(x=>x.t&&x.done).length===3)},
 ];
 
@@ -661,7 +714,7 @@ function renderAwards(){
  document.getElementById('week').innerHTML=html;
  document.getElementById('badges').innerHTML=BADGES.map(b=>{const g=S.badges.includes(b.id);return `<div class="badge ${g?'got':''}"><div class="bi">${ic(g?b.icon:'lock',g?26:20)}</div><b>${b.name}</b><span>${b.desc}</span></div>`}).join('');
  document.getElementById('badgeCount').textContent=S.badges.length+' / '+BADGES.length;
- document.getElementById('repBtn').innerHTML=ic('chart',18)+'View weekly report';document.getElementById('shopBtn').innerHTML=ic('gift',18)+'Prize shop · '+S.points+' points';
+ document.getElementById('repBtn').innerHTML=ic('chart',18)+'Review: weeks, months, years';document.getElementById('shopBtn').innerHTML=ic('gift',18)+'Prize shop · '+S.points+' points';
 }
 function renderPrizes(){
  document.getElementById('addPrize').innerHTML=ic('plus',16)+'Add';
@@ -672,7 +725,7 @@ function renderPrizes(){
 function renderSettings(){
  document.getElementById('cityBtn').innerHTML=ic('pin',15)+esc(S.city);
  document.getElementById('ptGrid').innerHTML=[['fajr','Fajr','sunrise'],['sunrise','Sunrise','sun'],['dhuhr','Dhuhr','sun'],['asr','Asr','cloudsun'],['maghrib','Maghrib','sunset'],['isha','Isha','moon']].map(([k,n,i])=>`<div>${ic(i,18)}<span>${n}</span><b>${fmt(PT[k])}</b></div>`).join('');
- document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';
+ document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
  document.getElementById('sndBtn').textContent=S.sound?'On':'Off';
 }
 
@@ -771,19 +824,19 @@ function openReport(){
 }
 
 // ================= ACTIONS =================
-function addPts(n,msg,icon){S.points+=n;S.earned+=n;save();chime();burst(40);if(msg)toast(msg+'  +'+n,icon);render();checkBadges()}
-function subPts(n,silent){S.points=Math.max(0,S.points-n);S.earned=Math.max(0,S.earned-n);save();if(!silent)render()}
+function addPts(n,msg,icon){S.points+=n;S.earned+=n;dayRec().pts=(dayRec().pts||0)+n;save();chime();burst(40);if(msg)toast(msg+'  +'+n,icon);render();checkBadges()}
+function subPts(n,silent){S.points=Math.max(0,S.points-n);S.earned=Math.max(0,S.earned-n);dayRec().pts=Math.max(0,(dayRec().pts||0)-n);save();if(!silent)render()}
 function toggle(id){
  const rec=dayRec(),t=S.tasks.find(x=>x.id===id);if(!t)return;
  const i=rec.done.indexOf(id);
  if(i>=0){rec.done.splice(i,1);subPts(t.pts);return}
- const before=pctOf(today());rec.done.push(id);S.points+=t.pts;S.earned+=t.pts;justDone=id;
+ const before=pctOf(today());rec.done.push(id);S.points+=t.pts;S.earned+=t.pts;rec.pts=(rec.pts||0)+t.pts;justDone=id;
  const now=new Date().toTimeString().slice(0,5);if(now<effTime(t))S.early=(S.early||0)+1;
  if(t.prayer==='fajr'){const [h,m]=t.time.split(':').map(Number),lim=new Date();lim.setHours(h+1,m);if(new Date()<=lim)S._fajr=true}
  const lvBefore=Math.floor((S.earned-t.pts)/250)+1;
  save();render();chime();
  const p=pctOf(today());
- if(p>=100&&before<100){burst(160);S.points+=50;S.earned+=50;save();render();setTimeout(()=>celebrate('trophy','Perfect day!','You completed every step of your route. +50 bonus points'),300)}
+ if(p>=100&&before<100){burst(160);S.points+=50;S.earned+=50;rec.pts=(rec.pts||0)+50;save();render();setTimeout(()=>celebrate('trophy','Perfect day!','You completed every step of your route. +50 bonus points'),300)}
  else{burst(40);toast(CHEERS[Math.floor(Math.random()*CHEERS.length)]+'  +'+t.pts,taskIcon(t))}
  if(level()>lvBefore)setTimeout(()=>celebrate('crown','Level '+level()+'!','You are now: '+LEVELS[Math.min(level()-1,LEVELS.length-1)]),p>=100?2600:600);
  checkBadges();
@@ -884,6 +937,201 @@ if(IS_NATIVE){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();scheduleNative()}});
  document.getElementById('notifTxt').textContent='Phone notifications for every prayer and step, even when the app is closed';
 }
+
+// ================= JOURNAL (private, on-device, optional PIN encryption) =================
+const MOODS=['😞','😕','😐','🙂','😄'];
+let JDB=null,JKEY=null,jEdit=null,jPendingMedia=[],jMood=3,jSearch='',jCache=null;const urlCache=new Map();
+function idb(){return JDB?Promise.resolve(JDB):new Promise((res,rej)=>{const r=indexedDB.open('mdr-journal',1);r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('entries',{keyPath:'id'});d.createObjectStore('media',{keyPath:'id'})};r.onsuccess=()=>{JDB=r.result;res(JDB)};r.onerror=()=>rej(r.error)})}
+async function tx(store,mode,fn){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(store,mode),st=t.objectStore(store);let out;Promise.resolve(fn(st)).then(v=>out=v);t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error)})}
+const idbAll=store=>tx(store,'readonly',st=>new Promise(r=>{const q=st.getAll();q.onsuccess=()=>r(q.result)}));
+const idbGet=(store,id)=>tx(store,'readonly',st=>new Promise(r=>{const q=st.get(id);q.onsuccess=()=>r(q.result)}));
+const idbPut=(store,v)=>tx(store,'readwrite',st=>{st.put(v)});
+const idbDel=(store,id)=>tx(store,'readwrite',st=>{st.delete(id)});
+const jLocked=()=>!!S.jLock;
+async function pinKey(pin,salt){const b=await crypto.subtle.importKey('raw',enc8.encode(pin),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:200000,hash:'SHA-256'},b,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function encBuf(key,buf){const iv=crypto.getRandomValues(new Uint8Array(12));return{iv:b64(iv),d:await crypto.subtle.encrypt({name:'AES-GCM',iv},key,buf)}}
+async function decBuf(key,o){return crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},key,o.d)}
+async function packEntry(e){const meta={id:e.id,date:e.date,at:e.at,media:e.media};if(!jLocked())return{...meta,body:{mood:e.mood,title:e.title,text:e.text}};return{...meta,enc:await encBuf(JKEY,enc8.encode(JSON.stringify({mood:e.mood,title:e.title,text:e.text})))}}
+async function unpackEntry(r){if(r.body)return{...r,...r.body};if(r.enc){if(!JKEY)return null;return{...r,...JSON.parse(dec8.decode(await decBuf(JKEY,r.enc)))}}return r}
+async function packMedia(m){if(!jLocked())return m;return{id:m.id,type:m.type,mime:m.mime,enc:await encBuf(JKEY,await m.blob.arrayBuffer()),tenc:m.thumb?await encBuf(JKEY,enc8.encode(m.thumb)):null}}
+async function unpackMedia(r){if(!r)return null;if(!r.enc)return r;if(!JKEY)return null;return{id:r.id,type:r.type,mime:r.mime,blob:new Blob([await decBuf(JKEY,r.enc)],{type:r.mime}),thumb:r.tenc?dec8.decode(await decBuf(JKEY,r.tenc)):null}}
+async function loadEntries(){const all=await idbAll('entries');const out=[];for(const r of all){try{const e=await unpackEntry(r);if(e)out.push(e)}catch(err){}}out.sort((a,b)=>b.date.localeCompare(a.date)||b.at-a.at);jCache=out;S.jCount=out.length;return out}
+async function thumbOf(id){if(urlCache.has('t'+id))return urlCache.get('t'+id);const m=await unpackMedia(await idbGet('media',id));const t=m&&m.thumb||'';urlCache.set('t'+id,t);return t}
+async function blobUrl(id){if(urlCache.has('b'+id))return urlCache.get('b'+id);const m=await unpackMedia(await idbGet('media',id));if(!m)return'';const u=URL.createObjectURL(m.blob);urlCache.set('b'+id,u);return u}
+function imgToJpeg(file,max,q){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const sc=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res({blob:b,dataUrl:max<=400?c.toDataURL('image/jpeg',q):null}),'image/jpeg',q)};im.onerror=rej;im.src=u})}
+function videoThumb(file){return new Promise(res=>{const v=document.createElement('video'),u=URL.createObjectURL(file);v.muted=true;v.playsInline=true;v.preload='metadata';v.src=u;let done=false;const fin=t=>{if(done)return;done=true;URL.revokeObjectURL(u);res(t)};
+ v.onloadeddata=()=>{try{v.currentTime=Math.min(1,(v.duration||2)/3)}catch(e){fin('')}};v.onseeked=()=>{try{const sc=300/Math.max(v.videoWidth,v.videoHeight),c=document.createElement('canvas');c.width=v.videoWidth*sc;c.height=v.videoHeight*sc;c.getContext('2d').drawImage(v,0,0,c.width,c.height);fin(c.toDataURL('image/jpeg',.7))}catch(e){fin('')}};v.onerror=()=>fin('');setTimeout(()=>fin(''),5000)})}
+async function addJMedia(files){for(const f of files){try{
+  if(f.type.startsWith('image/')){const big=await imgToJpeg(f,1800,.85),th=await imgToJpeg(f,300,.7);jPendingMedia.push({id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:'image',mime:'image/jpeg',blob:big.blob,thumb:th.dataUrl,isNew:true})}
+  else if(f.type.startsWith('video/')){if(f.size>150*1024*1024){toast('Video too large (max 150 MB)','alert');continue}jPendingMedia.push({id:'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:'video',mime:f.type,blob:f,thumb:await videoThumb(f),isNew:true})}
+ }catch(e){toast('Could not add one file','alert')}}renderJMediaEdit()}
+function renderJMediaEdit(){document.getElementById('jMediaEdit').innerHTML=jPendingMedia.map((m,i)=>`<div class="th" style="background-image:url('${m.thumb||''}')">${m.type==='video'?`<span class="vid">${ic('play',20,'',2)}</span>`:''}<button class="iconbtn" style="position:absolute;top:4px;right:4px;width:26px;height:26px;background:rgba(0,0,0,.6);color:#fff" onclick="jPendingMedia.splice(${i},1);renderJMediaEdit()">${ic('x',13)}</button></div>`).join('')}
+async function openJEditor(id){if(jLocked()&&!JKEY){askPin('unlock',()=>openJEditor(id));return}
+ const e=id?(jCache||[]).find(x=>x.id===id):null;jEdit=e?e.id:null;jMood=e?e.mood:3;jPendingMedia=[];
+ if(e)for(const mid of e.media||[]){const m=await unpackMedia(await idbGet('media',mid));if(m)jPendingMedia.push(m)}
+ document.getElementById('jEditTitle').textContent=e?'Edit entry':'New entry';document.getElementById('jDate').value=e?e.date:today();
+ document.getElementById('jTitle').value=e?e.title||'':'';document.getElementById('jText').value=e?e.text||'':'';
+ document.getElementById('jMoods').innerHTML=MOODS.map((m,i)=>`<button class="${i===jMood?'on':''}" onclick="jMood=${i};this.parentNode.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===${i}))">${m}</button>`).join('');
+ document.getElementById('jAddMedia').innerHTML=ic('plus',16)+'Add photos or videos';renderJMediaEdit();closeSheets();document.getElementById('jEditSheet').classList.add('on')}
+async function saveJEntry(){const text=document.getElementById('jText').value.trim(),title=document.getElementById('jTitle').value.trim();
+ if(!text&&!title&&!jPendingMedia.length){toast('Write something or add a photo','pen');return}
+ const btn=document.getElementById('jSaveBtn');btn.disabled=true;btn.textContent='Saving…';
+ try{const old=jEdit?(jCache||[]).find(x=>x.id===jEdit):null;const keep=new Set(jPendingMedia.map(m=>m.id));
+  for(const mid of (old&&old.media)||[])if(!keep.has(mid)){await idbDel('media',mid);urlCache.delete('t'+mid);urlCache.delete('b'+mid)}
+  for(const m of jPendingMedia)if(m.isNew){const {isNew,...rest}=m;await idbPut('media',await packMedia(rest))}
+  const e={id:jEdit||'j'+Date.now().toString(36),date:document.getElementById('jDate').value||today(),at:old?old.at:Date.now(),mood:jMood,title,text,media:jPendingMedia.map(m=>m.id)};
+  await idbPut('entries',await packEntry(e));const first=!old;closeSheets();await loadEntries();
+  if(first)addPts(10,'Journal saved','book');else toast('Entry updated','book');renderJournal();checkBadges()
+ }catch(err){toast('Could not save: '+err.message,'alert')}btn.disabled=false;btn.textContent='Save'}
+async function openJView(id){const e=(jCache||[]).find(x=>x.id===id);if(!e)return;
+ const thumbs=await Promise.all((e.media||[]).map(async mid=>({mid,t:await thumbOf(mid),v:(await idbGet('media',mid)||{}).type==='video'})));
+ document.getElementById('jViewBody').innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><span style="font-size:40px">${MOODS[e.mood??3]}</span><div><b style="font-size:18px">${esc(e.title||new Date(e.date+'T12:00').toLocaleDateString('en-US',{weekday:'long'}))}</b><div class="meta">${new Date(e.date+'T12:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div></div></div>
+  ${e.text?`<div style="white-space:pre-wrap;font-size:15px;line-height:1.65;color:#DDE3F0;margin-top:10px">${esc(e.text)}</div>`:''}
+  ${thumbs.length?`<div class="mgrid">${thumbs.map(x=>`<div class="th" style="background-image:url('${x.t}')" onclick="openViewer('${x.mid}')">${x.v?`<span class="vid">${ic('play',22,'',2)}</span>`:''}</div>`).join('')}</div>`:''}
+  <div class="row"><button class="btn red" onclick="delJEntry('${e.id}')">${ic('trash',15)}Delete</button><button class="btn ghost" onclick="openJEditor('${e.id}')">${ic('pen',15)}Edit</button></div>`;
+ closeSheets();document.getElementById('jViewSheet').classList.add('on')}
+async function delJEntry(id){const e=(jCache||[]).find(x=>x.id===id);if(!e)return;const b=event&&event.target.closest('button');if(b&&!b.dataset.sure){b.dataset.sure=1;b.innerHTML='Tap again to delete';return}
+ for(const mid of e.media||[])await idbDel('media',mid);await idbDel('entries',id);closeSheets();await loadEntries();renderJournal();toast('Entry deleted','trash')}
+async function openViewer(mid){const r=await idbGet('media',mid);const u=await blobUrl(mid);document.getElementById('viewerX').innerHTML=ic('x',18);
+ document.getElementById('viewerIn').innerHTML=r&&r.type==='video'?`<video src="${u}" controls autoplay playsinline></video>`:`<img src="${u}">`;document.getElementById('viewer').classList.add('on')}
+function closeViewer(){document.getElementById('viewer').classList.remove('on');document.getElementById('viewerIn').innerHTML=''}
+function openSearchJ(){jSearch=jSearch?'':' ';renderJournal();setTimeout(()=>{const i=document.getElementById('jSearchIn');if(i)i.focus()},50)}
+function lockJournalNow(){if(!jLocked()){journalLockSettings();return}JKEY=null;jCache=null;urlCache.forEach((v,k)=>{if(k[0]==='b')URL.revokeObjectURL(v)});urlCache.clear();renderJournal();toast('Journal locked','lock')}
+async function renderJournal(){const el=document.getElementById('jBody');if(!el)return;
+ document.getElementById('jLockBtn')&&(document.getElementById('jLockBtn').style.color=jLocked()?(JKEY?'var(--ok)':'var(--gold)'):'var(--mu)');
+ if(jLocked()&&!JKEY){el.innerHTML=`<div class="card" style="text-align:center;padding:30px 18px"><span class="ico c-violet" style="width:64px;height:64px;border-radius:22px;display:grid;place-items:center;margin:0 auto">${ic('lock',30,'draw')}</span><h3 style="justify-content:center;margin-top:14px">Journal is locked</h3><div class="sub">Your entries, photos and videos are encrypted with your PIN</div><button class="btn wide" onclick="askPin('unlock',renderJournal)">Unlock</button></div>`;return}
+ if(!window.indexedDB){el.innerHTML='<div class="empty">Journal storage is not available here.</div>';return}
+ const list=jCache||await loadEntries();const q=jSearch.trim().toLowerCase();
+ const md=today().slice(5),onThis=list.filter(e=>e.date.slice(5)===md&&e.date!==today());
+ const shown=q?list.filter(e=>((e.title||'')+' '+(e.text||'')).toLowerCase().includes(q)):list;
+ const todayDone=list.some(e=>e.date===today());
+ let html=`${jSearch?`<input id="jSearchIn" placeholder="Search your journal…" value="${esc(q)}" oninput="jSearch=this.value||' ';renderJournalList()" style="margin-bottom:12px">`:''}
+  <button class="btn wide" style="margin-bottom:14px" onclick="openJEditor()">${ic('pen',17)}${todayDone?'Write another entry':'Write about today'}</button>
+  ${onThis.length&&!q?`<div class="card" style="border-color:rgba(251,191,36,.35)"><h3><span class="ico c-amber">${ic('sparkles',18)}</span><span class="sp">On this day</span></h3>${onThis.map(e=>`<div class="li" onclick="openJView('${e.id}')" style="cursor:pointer"><span style="font-size:22px">${MOODS[e.mood??3]}</span><span class="t">${esc(e.title||e.text.slice(0,50)||'Memories')}</span><span class="meta">${e.date.slice(0,4)}</span></div>`).join('')}</div>`:''}
+  ${IS_NATIVE?'':`<div class="banner" style="border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)"><span class="ico" style="color:var(--gold)">${ic('alert',22)}</span><p>In this browser link, the journal is saved in this browser only and can be cleared by the browser. Use the phone app for a safe, permanent journal.</p></div>`}
+  <div id="jList"></div>`;
+ el.innerHTML=html;renderJournalList()}
+async function renderJournalList(){const box=document.getElementById('jList');if(!box)return;const list=jCache||[];const q=jSearch.trim().toLowerCase();
+ const shown=q?list.filter(e=>((e.title||'')+' '+(e.text||'')).toLowerCase().includes(q)):list;
+ if(!shown.length){box.innerHTML=`<div class="empty">${q?'No entries match your search.':`${ic('book',26)}<br>Your journal is empty.<br>Write your first entry: it stays private on this phone.`}</div><div class="meta" style="justify-content:center;flex-wrap:nowrap">${ic('lock',12)}<span>${jLocked()?'Encrypted with your PIN':'Tip: set a PIN in Settings to encrypt your journal'}</span></div>`;return}
+ let h='',lastM='';for(const e of shown){const m=e.date.slice(0,7);if(m!==lastM){h+=`<div class="sec" style="margin-top:14px"><h3 style="font-size:14px;color:var(--mu)">${new Date(e.date+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'})}</h3></div>`;lastM=m}
+  h+=`<div class="jcard" onclick="openJView('${e.id}')"><div class="jd"><span class="mood">${MOODS[e.mood??3]}</span><div style="flex:1;min-width:0"><b style="font-size:15px">${esc(e.title||new Date(e.date+'T12:00').toLocaleDateString('en-US',{weekday:'long'}))}</b><div class="meta">${new Date(e.date+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}${(e.media||[]).length?' · '+e.media.length+' '+(e.media.length>1?'files':'file'):''}</div></div></div>${e.text?`<div class="jt">${esc(e.text)}</div>`:''}<div class="thumbs" data-media="${(e.media||[]).slice(0,5).join(',')}" data-more="${Math.max(0,(e.media||[]).length-5)}"></div></div>`}
+ box.innerHTML=h;
+ for(const t of box.querySelectorAll('.thumbs')){const ids=t.dataset.media?t.dataset.media.split(','):[];if(!ids.length){t.remove();continue}
+  const parts=await Promise.all(ids.map(async id=>{const r=await idbGet('media',id);return`<span class="th" style="background-image:url('${await thumbOf(id)}')">${r&&r.type==='video'?`<span class="vid">${ic('play',16,'',2)}</span>`:''}</span>`}));t.innerHTML=parts.join('')+(+t.dataset.more?`<span class="th more">+${t.dataset.more}</span>`:'')}}
+
+// ---- PIN ----
+let pinBuf='',pinMode='',pinCb=null,pinFirst='';
+function askPin(mode,cb){pinMode=mode;pinCb=cb;pinBuf='';pinFirst='';drawPin();document.getElementById('pinSheet').classList.add('on')}
+function drawPin(msg){const t={unlock:'Enter your journal PIN',set:'Choose a 4–6 digit PIN',confirm:'Enter the PIN again',off:'Enter PIN to remove the lock',change:'Enter your current PIN'}[pinMode];
+ document.getElementById('pinBody').innerHTML=`<h3 style="justify-content:center">${ic('lock',20)}${t}</h3>${msg?`<div class="sub" style="text-align:center;color:var(--red)">${msg}</div>`:''}
+  <div class="pindots">${[0,1,2,3,4,5].map(i=>`<i class="${i<pinBuf.length?'on':''}" style="${i>=4&&pinBuf.length<=4&&i>=pinBuf.length?'opacity:.35':''}"></i>`).join('')}</div>
+  <div class="pinpad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="pinKey_(${n})">${n}</button>`).join('')}<button onclick="closeSheets()" style="font-size:14px">Cancel</button><button onclick="pinKey_(0)">0</button><button onclick="pinBuf=pinBuf.slice(0,-1);drawPin()">${ic('chevron',20)}</button></div>
+  <button class="btn wide" style="margin-top:14px" onclick="pinOk()" ${pinBuf.length<4?'disabled':''}>OK</button>
+  ${pinMode==='set'?'<div class="sub" style="text-align:center;margin-top:12px">If you forget this PIN, the journal cannot be recovered. Not even by Claude.</div>':''}`}
+function pinKey_(n){if(pinBuf.length<6)pinBuf+=n;drawPin()}
+async function pinOk(){const pin=pinBuf;if(pin.length<4)return;
+ if(pinMode==='set'){pinFirst=pin;pinMode='confirm';pinBuf='';drawPin();return}
+ if(pinMode==='confirm'){if(pin!==pinFirst){pinMode='set';pinBuf='';drawPin('PINs did not match, try again');return}drawPin();document.getElementById('pinBody').innerHTML='<div class="empty">Encrypting your journal…</div>';await enableLock(pin);closeSheets();pinCb&&pinCb();return}
+ document.getElementById('pinBody').innerHTML='<div class="empty">Checking…</div>';
+ try{const k=await pinKey(pin,S.jLock.salt);await decBuf(k,S.jLock.check);
+  if(pinMode==='unlock'){JKEY=k;closeSheets();await loadEntries();pinCb&&pinCb();renderJournal()}
+  else if(pinMode==='off'){JKEY=k;await disableLock();closeSheets();pinCb&&pinCb()}
+ }catch(e){pinBuf='';drawPin('Wrong PIN')}}
+async function enableLock(pin){const all=await loadEntries();const salt=b64(crypto.getRandomValues(new Uint8Array(16)));const k=await pinKey(pin,salt);
+ const medias=await idbAll('media');S.jLock={salt,check:null};JKEY=k;S.jLock.check=await encBuf(k,enc8.encode('ok'));
+ for(const m of medias){if(!m.enc)await idbPut('media',await packMedia(m))}for(const e of all)await idbPut('entries',await packEntry(e));
+ save();urlCache.clear();toast('Journal encrypted with your PIN','lock');renderSettings();renderJournal()}
+async function disableLock(){const all=await loadEntries();const medias=await idbAll('media');const dm=[];for(const r of medias)dm.push(await unpackMedia(r));
+ S.jLock=null;for(const m of dm)if(m)await idbPut('media',m);for(const e of all)await idbPut('entries',await packEntry(e));JKEY=null;save();toast('Journal lock removed','lock');renderSettings();renderJournal()}
+function journalLockSettings(){if(!(window.crypto&&crypto.subtle)){toast('Encryption not available here','alert');return}if(jLocked())askPin('off',()=>{});else askPin('set',()=>{})}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&jLocked())window._hidAt=Date.now();else if(window._hidAt&&Date.now()-window._hidAt>60000&&JKEY){JKEY=null;jCache=null;urlCache.clear();if(document.getElementById('v-journal').classList.contains('on'))renderJournal()}});
+
+// ================= REVIEW (week / month / year / all) =================
+let revMode='week',revOff=0;
+function openReview(mode){revMode=mode||revMode;revOff=0;go('review')}
+function revRange(){const n=new Date();n.setHours(0,0,0,0);let a,b,label;
+ if(revMode==='week'){const d=new Date(n);const dow=(d.getDay()+1)%7;d.setDate(d.getDate()-dow+revOff*7);a=new Date(d);b=new Date(d);b.setDate(b.getDate()+6);label=a.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+b.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+ else if(revMode==='month'){a=new Date(n.getFullYear(),n.getMonth()+revOff,1);b=new Date(a.getFullYear(),a.getMonth()+1,0);label=a.toLocaleDateString('en-US',{month:'long',year:'numeric'})}
+ else if(revMode==='year'){a=new Date(n.getFullYear()+revOff,0,1);b=new Date(a.getFullYear(),11,31);label=String(a.getFullYear())}
+ else{const ks=Object.keys(S.history).sort();a=ks.length?new Date(ks[0]+'T00:00'):new Date(n);b=new Date(n);label='All time'}
+ return{a,b,label}}
+function daysIn(a,b){const out=[];const d=new Date(a);while(d<=b){out.push(keyOf(d));d.setDate(d.getDate()+1)}return out}
+async function renderReview(){const el=document.getElementById('revBody');if(!el)return;const {a,b,label}=revRange();const days=daysIn(a,b),tk=today();
+ const pids=S.tasks.filter(t=>t.prayer).map(t=>t.id),quran=S.tasks.filter(t=>/quran/i.test(t.name)).map(t=>t.id);
+ let act=0,sum=0,perfect=0,pr=0,prT=0,qd=0,pts=0,deeds=0,fam=0,rates=[],best=null,bestP=-1,run=0,maxRun=0;const focus={project:0,work:0,study:0};
+ for(const k of days){const r=S.history[k];if(k>tk)break;prT+=pids.length;
+  if(!r){run=0;continue}const p=pctOf(k);if(r.done.length){act++;sum+=p}if(p>=100){perfect++;run++;maxRun=Math.max(maxRun,run)}else run=0;if(p>bestP){bestP=p;best=k}
+  pr+=pids.filter(id=>r.done.includes(id)).length;if(quran.some(id=>r.done.includes(id)))qd++;pts+=r.pts||0;if(r.deed)deeds++;fam+=r.famDone||0;if(r.review)rates.push(r.review.rating);
+  const f=r.focus||{};for(const c in focus)focus[c]+=(f[c]||0)}
+ const fh=(focus.project+focus.work+focus.study)/60,avg=act?Math.round(sum/act):0;
+ let jl=[];try{if(!(jLocked()&&!JKEY))jl=(jCache||await loadEntries()).filter(e=>e.date>=keyOf(a)&&e.date<=keyOf(b))}catch(e){}
+ const moods=jl.map(e=>e.mood??3);
+ const col=p=>p<=0?'rgba(255,255,255,.05)':`rgba(52,211,153,${.18+p/100*.75})`;
+ let heat='';
+ if(revMode==='week'){heat=`<div class="heat" style="grid-template-columns:repeat(7,1fr)">${days.map(k=>{const p=pctOf(k);return`<i style="background:${col(p)};aspect-ratio:.8;border-radius:10px;flex-direction:column;gap:2px;display:flex;align-items:center;justify-content:center"><span>${new Date(k+'T12:00').toLocaleDateString('en-US',{weekday:'narrow'})}</span><b style="color:#fff;font-size:11px">${k>tk?'':p+'%'}</b></i>`}).join('')}</div>`}
+ else if(revMode==='month'){const pad=(new Date(days[0]+'T12:00').getDay()+1)%7;heat=`<div class="heat" style="grid-template-columns:repeat(7,1fr)">${['S','S','M','T','W','T','F'].map(x=>`<i style="background:none;aspect-ratio:auto">${x}</i>`).join('')}${'<i style="background:none"></i>'.repeat(pad)}${days.map(k=>`<i style="background:${k>tk?'rgba(255,255,255,.02)':col(pctOf(k))};${k===tk?'outline:2px solid var(--a1)':''}">${+k.slice(8)}</i>`).join('')}</div>`}
+ else{const yd=revMode==='year'?days:days.slice(-371);const pad=(new Date(yd[0]+'T12:00').getDay()+1)%7;heat=`<div class="heat year" style="grid-template-columns:repeat(${Math.ceil((yd.length+pad)/7)},1fr)">${'<i style="background:none"></i>'.repeat(pad)}${yd.map(k=>`<i style="background:${k>tk?'rgba(255,255,255,.02)':col(pctOf(k))}" title="${k}"></i>`).join('')}</div><div class="meta" style="justify-content:flex-end;margin-top:6px">Less <i style="width:10px;height:10px;border-radius:2px;background:${col(0)};display:inline-block"></i><i style="width:10px;height:10px;border-radius:2px;background:${col(50)};display:inline-block"></i><i style="width:10px;height:10px;border-radius:2px;background:${col(100)};display:inline-block"></i> More</div>`}
+ // focus chart buckets
+ let buckets=[];if(revMode==='week')buckets=days.map(k=>[new Date(k+'T12:00').toLocaleDateString('en-US',{weekday:'short'}),[k]]);
+ else if(revMode==='month'){for(let i=0;i<days.length;i+=7)buckets.push(['W'+(i/7+1),days.slice(i,i+7)])}
+ else{const by={};days.forEach(k=>{const m=k.slice(0,7);(by[m]=by[m]||[]).push(k)});buckets=Object.entries(by).slice(-12).map(([m,ks])=>[new Date(m+'-15').toLocaleDateString('en-US',{month:'narrow'}),ks])}
+ const bv=buckets.map(([n,ks])=>[n,ks.reduce((s,k)=>{const f=(S.history[k]||{}).focus||{};return s+((f.project||0)+(f.work||0)+(f.study||0))/60},0)]);const mx=Math.max(1,...bv.map(x=>x[1]));
+ const memIds=jl.flatMap(e=>(e.media||[]).map(m=>[m,e.id])).slice(0,9);
+ const cell=(v,i,c,l)=>`<div><span class="ico c-${c}" style="width:28px;height:28px;border-radius:9px;display:grid;place-items:center;margin-bottom:6px">${ic(i,15)}</span><b>${v}</b><span>${l}</span></div>`;
+ el.innerHTML=`<div class="rtabs">${[['week','Week'],['month','Month'],['year','Year'],['all','All']].map(([m,n])=>`<button class="${revMode===m?'on':''}" onclick="revMode='${m}';revOff=0;renderReview()">${n}</button>`).join('')}</div>
+  <div class="rnav">${revMode!=='all'?`<button class="iconbtn" style="transform:rotate(180deg)" onclick="revOff--;renderReview()">${ic('chevron',18)}</button>`:'<span></span>'}<b>${label}</b>${revMode!=='all'?`<button class="iconbtn" ${revOff>=0?'disabled style="opacity:.3"':''} onclick="if(revOff<0){revOff++;renderReview()}">${ic('chevron',18)}</button>`:'<span></span>'}</div>
+  <div class="hero" style="margin-bottom:14px"><div class="ring"><svg width="92" height="92"><circle cx="46" cy="46" r="38" stroke="rgba(255,255,255,.1)" stroke-width="9" fill="none"/><circle cx="46" cy="46" r="38" stroke="url(#rg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="${238.8*(1-avg/100)}"/></svg><div class="pct">${avg}%</div></div>
+   <div><h2>${avg>=80?'Excellent, MashaAllah':avg>=50?'Good progress':act?'Keep building':'No data yet'}</h2><p>${act} active day${act===1?'':'s'} · ${perfect} perfect · best streak ${maxRun}${best&&bestP>0?'<br>Best day: '+new Date(best+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' ('+bestP+'%)':''}</p></div></div>
+  <div class="card">${heat}</div>
+  <div class="rep" style="margin-top:0">${cell((prT?Math.round(pr/prT*100):0)+'%','mosque','amber','Prayers on route')}${cell(qd+' days','book','green','Quran read')}
+   ${cell(fh.toFixed(1)+' h','clock','teal','Focus time')}${cell(pts,'star','violet','Points earned')}
+   ${cell(deeds,'heart','pink','Family good deeds')}${cell(fam,'users','rose','Family tasks done')}
+   ${cell(jl.length,'pen','blue','Journal entries')}${cell(moods.length?MOODS[Math.round(moods.reduce((x,y)=>x+y,0)/moods.length)]:(rates.length?(rates.reduce((x,y)=>x+y,0)/rates.length).toFixed(1)+'★':'—'),'sparkles','orange','Average mood')}</div>
+  <div class="card"><h3><span class="ico c-teal">${ic('chart',18)}</span><span class="sp">Focus hours</span><span class="meta">Project ${(focus.project/60).toFixed(1)} · Work ${(focus.work/60).toFixed(1)} · Study ${(focus.study/60).toFixed(1)}</span></h3>
+   <div class="chart">${bv.map(([n,h])=>`<div><b>${h?h.toFixed(1):''}</b><i style="height:${h/mx*78}%"></i>${n}</div>`).join('')}</div></div>
+  ${memIds.length?`<div class="card"><h3><span class="ico c-amber">${ic('sparkles',18)}</span><span class="sp">Memories</span></h3><div class="mgrid" id="revMem">${memIds.map(([m,e])=>`<div class="th" data-m="${m}" onclick="openJView('${e}')"></div>`).join('')}</div></div>`:''}
+  ${jLocked()&&!JKEY?`<div class="meta" style="justify-content:center">${ic('lock',12)}<span>Unlock your journal to include memories and mood</span></div>`:''}`;
+ for(const t of el.querySelectorAll('#revMem .th'))t.style.backgroundImage=`url('${await thumbOf(t.dataset.m)}')`}
+
+// ================= BACKUP & RESTORE (encrypted file) =================
+const FSP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.Filesystem)||(CAP.registerPlugin&&CAP.registerPlugin('Filesystem'))):null;
+const SHP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.Share)||(CAP.registerPlugin&&CAP.registerPlugin('Share'))):null;
+function openBackup(){document.getElementById('backupBody').innerHTML=`<h3>${ic('rotate',20)}Backup & restore</h3>
+ <div class="sub">One encrypted file with your route, points, history, goals, journal, photos and videos. Save it to Google Drive or send it to yourself.</div>
+ <label>Backup password</label><input id="bkPw" type="password" placeholder="At least 6 characters">
+ <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="bkVid" style="width:auto"> Include videos (bigger file)</label>
+ <button class="btn wide" style="margin-top:14px" onclick="makeBackup()" id="bkBtn">${ic('lock',16)}Create encrypted backup</button>
+ <div class="sec" style="margin-top:20px"><h3 style="font-size:15px">Restore</h3></div>
+ <div class="sub">Choose a backup file, then enter its password. This replaces the data on this phone.</div>
+ <input type="file" id="bkFile" accept=".mdr,.txt,application/octet-stream,text/plain" style="display:none" onchange="restoreBackup(this.files[0]);this.value=''">
+ <button class="btn ghost wide" onclick="if(document.getElementById('bkPw').value.length<6){toast('Enter the backup password first','lock');return}document.getElementById('bkFile').click()">Choose backup file</button>
+ <div class="meta" style="margin-top:12px;flex-wrap:nowrap">${ic('lock',12)}<span>Without the password the file cannot be opened by anyone.</span></div>`;
+ document.getElementById('backupSheet').classList.add('on')}
+async function bkKey(pw,salt){const b=await crypto.subtle.importKey('raw',enc8.encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:250000,hash:'SHA-256'},b,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function bkLine(key,obj,buf){const iv=crypto.getRandomValues(new Uint8Array(12));const payload=buf?buf:enc8.encode(JSON.stringify(obj));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload);return JSON.stringify({iv:b64(iv),d:b64(ct),...(buf?{m:obj}:{})})+'\n'}
+async function makeBackup(){const pw=document.getElementById('bkPw').value;if(pw.length<6){toast('Use at least 6 characters','lock');return}
+ if(jLocked()&&!JKEY){askPin('unlock',makeBackup);return}
+ if(!FSP){toast('Backup works in the phone app','alert');return}
+ const btn=document.getElementById('bkBtn');btn.disabled=true;btn.textContent='Preparing…';const vids=document.getElementById('bkVid').checked;
+ try{const salt=b64(crypto.getRandomValues(new Uint8Array(16))),key=await bkKey(pw,salt),name='MyDayRoute-'+today()+'.mdr';
+  await FSP.writeFile({path:name,directory:'CACHE',data:JSON.stringify({mdr:1,salt})+'\n',encoding:'utf8'});
+  const st={...S};delete st.ecdh;await FSP.appendFile({path:name,directory:'CACHE',data:await bkLine(key,{t:'state',S:st}),encoding:'utf8'});
+  const ents=await loadEntries();await FSP.appendFile({path:name,directory:'CACHE',data:await bkLine(key,{t:'entries',E:ents.map(e=>({id:e.id,date:e.date,at:e.at,media:e.media,mood:e.mood,title:e.title,text:e.text}))}),encoding:'utf8'});
+  let n=0;for(const r of await idbAll('media')){const m=await unpackMedia(r);if(!m)continue;if(m.type==='video'&&!vids)continue;btn.textContent='Saving media '+(++n)+'…';
+   await FSP.appendFile({path:name,directory:'CACHE',data:await bkLine(key,{t:'media',id:m.id,type:m.type,mime:m.mime,thumb:m.thumb},await m.blob.arrayBuffer()),encoding:'utf8'})}
+  const u=await FSP.getUri({path:name,directory:'CACHE'});closeSheets();await SHP.share({title:'My Day Route backup',text:'Encrypted backup '+today(),files:[u.uri]});toast('Backup ready. Save it to Drive','check')
+ }catch(e){if(!/cancel/i.test(e.message||''))toast('Backup failed: '+e.message,'alert')}btn.disabled=false}
+async function restoreBackup(file){if(!file)return;const pw=document.getElementById('bkPw').value;const btn=document.querySelector('#backupBody .btn.ghost');
+ try{btn.textContent='Reading…';const lines=(await file.text()).split('\n').filter(Boolean);const head=JSON.parse(lines[0]);if(!head.mdr)throw new Error('Not a My Day Route backup');
+  const key=await bkKey(pw,head.salt);const dec=async l=>{const o=JSON.parse(l);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},key,unb64(o.d));return o.m?{meta:o.m,buf:pt}:JSON.parse(dec8.decode(pt))};
+  let first;try{first=await dec(lines[1])}catch(e){throw new Error('Wrong password')}
+  const keepEcdh=S.ecdh;const ns=first.S;ns.ecdh=keepEcdh;ns.jLock=null;
+  const d=await idb();await tx('entries','readwrite',st=>st.clear());await tx('media','readwrite',st=>st.clear());
+  for(const l of lines.slice(2)){const o=await dec(l);if(o.t==='entries'){for(const e of o.E)await idbPut('entries',{id:e.id,date:e.date,at:e.at,media:e.media,body:{mood:e.mood,title:e.title,text:e.text}})}
+   else if(o.meta){await idbPut('media',{id:o.meta.id,type:o.meta.type,mime:o.meta.mime,thumb:o.meta.thumb,blob:new Blob([o.buf],{type:o.meta.mime})})}}
+  S=ns;JKEY=null;jCache=null;urlCache.clear();store.set(S);closeSheets();render();toast('Backup restored. Set your journal PIN again if you used one','check');setTimeout(()=>location.reload(),1800)
+ }catch(e){toast('Restore failed: '+e.message,'alert');btn.textContent='Choose backup file'}}
 
 // ================= AUTO-UPDATE =================
 const APP_VERSION=1;
@@ -999,7 +1247,7 @@ async function sendTask(){
 async function patchTask(t,plain,meta={}){const cur=await open_(t._e);return famRef().collection('tasks').doc(t.id).update({...meta,e:await seal({...cur,...plain})})}
 async function setFamTask(id,done){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;
  try{await patchTask(t,{doneByName:done?S.name:null},done?{status:'done',doneAt:SV(),doneBy:FB.uid}:{status:'open',doneAt:null,doneBy:null});
-  if(done){S.famDone=(S.famDone||0)+1;addPts(t.pts||15,'Done for '+nameOf(t.from,t.fromName),'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
+  if(done){S.famDone=(S.famDone||0)+1;dayRec().famDone=(dayRec().famDone||0)+1;addPts(t.pts||15,'Done for '+nameOf(t.from,t.fromName),'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
 async function tickItem(id,i){const t=FAM.tasks.find(x=>x.id===id);if(!t||!t.items)return;const items=t.items.map((x,j)=>j===i?{...x,done:!x.done,by:!x.done?S.name:null,byUid:!x.done?FB.uid:null}:x);
  try{await patchTask(t,{items});if(items.every(x=>x.done)&&t.status==='open')toast('Everything bought! Tap the check to finish','cart')}catch(e){toast('No connection, try again','alert')}}
 async function delFamTask(id){try{await famRef().collection('tasks').doc(id).delete()}catch(e){}}
@@ -1127,13 +1375,13 @@ function renderFamily(){
 }
 
 // ================= NAV & INIT =================
-const NAV=[['today','map','Today'],['goals','target','Goals'],['family','users','Family'],['awards','trophy','Awards'],['settings','settings','Settings']];
+const NAV=[['today','map','Today'],['goals','target','Goals'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];
 function go(v){document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');
- const b=document.querySelector('.nav button[data-v="'+(v==='prizes'?'awards':v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render()}
+ const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='review')renderReview()}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 hydrateIcons();
 render();checkBadges();if(IS_NATIVE)scheduleNative();fbInit();
-if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(openReport,1200);
+if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
 </body>
 </html>
