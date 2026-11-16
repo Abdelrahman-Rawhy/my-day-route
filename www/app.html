@@ -791,6 +791,13 @@ html[dir=rtl] .tc-h .iconbtn:last-child svg,html:not([dir=rtl]) .tc-h .iconbtn:f
 .seg2 button.on{background:var(--grad);color:#fff;border-color:transparent}
 #tdTodayN:empty{display:none}#tdTodayN{font-size:11px;padding:1px 7px;border-radius:99px;background:#ef4444;color:#fff;margin-inline-start:4px}
 .celebrate.on:not(.closing){animation:ovIn .22s ease}@keyframes ovIn{from{opacity:0}}
+
+/* v60 close animation finishes before the sheet is hidden */
+.sheet.closing{animation:fadeOut .24s ease forwards!important}
+.sheet.closing .panel{animation:sheetDown .24s cubic-bezier(.4,0,.9,.6) forwards!important}
+.sheet.swiped.closing .panel{animation:none!important}
+.celebrate.closing,#viewer.closing{animation:ovOut .24s ease forwards!important}
+.qreader.closing{animation:qrOut .24s ease-in forwards!important}
 </style>
 </head>
 <body>
@@ -3046,7 +3053,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=59;
+const APP_VERSION=60;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3438,7 +3445,7 @@ dtEnhance(document);new MutationObserver(ms=>{for(const m of ms)m.addedNodes.for
 
 // smooth close: sheets slide down before they hide
 {const R=DOMTokenList.prototype.remove,A=DOMTokenList.prototype.add;const own=new WeakMap();
- DOMTokenList.prototype.remove=function(...c){const el=own.get(this);if(el&&c.length===1&&c[0]==='on'&&this.contains('on')&&!this.contains('closing')&&!document.hidden){SFX('down');A.call(this,'closing');clearTimeout(el._ct);el._ct=setTimeout(()=>{R.call(this,'on','closing')},190);return}return R.apply(this,c)};
+ DOMTokenList.prototype.remove=function(...c){const el=own.get(this);if(el&&c.length===1&&c[0]==='on'&&this.contains('on')&&!this.contains('closing')&&!document.hidden){SFX('down');A.call(this,'closing');clearTimeout(el._ct);el._ct=setTimeout(()=>{R.call(this,'on','closing')},270);return}return R.apply(this,c)};
  DOMTokenList.prototype.add=function(...c){const el=own.get(this);if(el&&c.includes('on')){if(!this.contains('on')||this.contains('closing'))SFX('up');clearTimeout(el._ct);R.call(this,'closing')}return A.apply(this,c)};
  document.querySelectorAll('.sheet,#celebrate,#viewer').forEach(sh=>own.set(sh.classList,sh));window._smoothReg=el=>{if(el)own.set(el.classList,el)}}
 applyTheme();hydrateIcons();{const f=document.getElementById('micFab');if(f)f.innerHTML=ic('mic',26)}
