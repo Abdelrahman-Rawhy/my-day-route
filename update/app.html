@@ -112,7 +112,7 @@ html.light .nav{background:rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(22,2
 html.light .sheet .panel,html.light .toast,html.light .rbar{background:#fff;color:var(--tx)}html.light .sheet{background:rgba(20,24,40,.35)}html.light .mrow.them .bub{background:#E9ECF6}html.light .epanel{background:#F0F2F8}
 html.light .heat i,html.light .dsep span{background:rgba(22,26,60,.06)}html.light .hero p,html.light .banner p,html.light .quote .en,html.light .ftask .n{color:var(--mu)}html.light .node .num{background:#fff}
 html.light .tzc b,html.light .ram .big,html.light .btn.ghost,html.light .ram .tg button{color:var(--tx)}html.light .btn.ghost.on,html.light .occ .btn:not(.ghost){color:#fff}html.light .compass .dial{background:#fff}
-html[dir=rtl] body{font-family:'Plus Jakarta Sans','Segoe UI',Tahoma,system-ui,sans-serif}html[dir=rtl] .step:not(:last-child)::before{left:auto;right:27px}html[dir=rtl] .node .num{right:auto;left:-5px}html[dir=rtl] .fab{right:auto;left:18px}
+html[dir=rtl] body{font-family:'Plus Jakarta Sans','Segoe UI',Tahoma,system-ui,sans-serif}html[dir=rtl] .step:not(:last-child)::before{left:auto;right:27px}html[dir=rtl] .node .num{right:auto;left:-5px}
 html[dir=rtl] .edit-row{text-align:right}html[dir=rtl] .chip>svg:last-child,html[dir=rtl] .idea>svg:last-child,html[dir=rtl] .rnav .iconbtn svg{transform:scaleX(-1)}html[dir=rtl] .bub .tm{float:left;margin:6px 10px -2px 0}html[dir=rtl] .navdot{right:auto;left:calc(50% - 20px)}
 html[dir=rtl] .quote .en{display:none}html[dir=rtl] .hero h2,html[dir=rtl] .hero p{text-align:right}
 .calc{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:12px 14px;margin-bottom:12px}.calc h4{margin:0 0 8px;font-size:13px;display:flex;gap:8px;align-items:center;color:var(--mu)}.cev{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--bd)}.cev:first-of-type{border-top:0}.cev .tm{font-size:12px;font-weight:700;color:var(--a2,#22D3EE);width:64px;flex:none}.cev .n{flex:1;font-size:14px}.cev.done .n{text-decoration:line-through;color:var(--mu)}.cev .cb{width:26px;height:26px;border-radius:9px;border:2px solid var(--bd);display:grid;place-items:center;color:#fff;background:none}.cev.done .cb{background:var(--ok);border-color:var(--ok)}
@@ -724,7 +724,7 @@ const EMOJI2KEY={'🕌':'mosque','📿':'beads','📖':'book','🏃':'activity',
 const EXAMPLES=[['beads','Morning adhkar','05:10',10],['book','Read Quran','05:25',20],['activity','Exercise / walk','06:15',15],['coffee','Healthy breakfast','07:00',5],['briefcase','Assignment / deep work','08:00',25],['lightbulb','Learn something new','12:30',15],['phone','Calls & admin','15:30',10],['users','Family time','17:30',10],['clipboard','Plan tomorrow','21:30',10],['bed','Sleep early','22:30',10],['book','Surat Al-Kahf','09:30',20,[5]],['droplet','Ghusl, perfume & early to the mosque','10:45',15,[5]],['heart','Salawat on the Prophet ﷺ (100×)','16:00',15,[5]]];
 const DEFAULT_TASKS=[['mosque','Pray Fajr','04:50',20],['mosque','Pray Dhuhr','11:45',20],['mosque','Pray Asr','14:45',20],['mosque','Pray Maghrib','17:00',20],['mosque','Pray Isha','18:25',20]].map(([icon,name,time,pts])=>({id:uid(),icon,name,time,pts,prayer:prayerKey(name)}));
 const DEFAULT_REWARDS=[{id:uid(),icon:'coffee',name:'Special coffee',cost:80},{id:uid(),icon:'cake',name:'Favorite dessert',cost:150},{id:uid(),icon:'video',name:'Movie night',cost:300},{id:uid(),icon:'cart',name:'Buy something you want',cost:800}];
-let S=store.get()||{fri1:1,name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:false,sound:true,notified:{}};
+let S=store.get()||{fri1:1,lang:'ar',name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:false,sound:true,notified:{}};
 let save=()=>{store.set(S);if(typeof scheduleSync==='function')scheduleSync()};
 // migrations
 S.city=S.city||'Cairo';S.notified=S.notified||{};
@@ -1249,7 +1249,7 @@ setInterval(()=>{const e=document.getElementById('ramCd');if(!e||document.hidden
 function autoPQ(t){const now=new Date(),at=atTime(now,t.time);if(t.prayer==='fajr'&&PT.sunrise)return now<atTime(now,PT.sunrise)?'ontime':'late';return now-at<=60*6e4?'ontime':'late'}
 const SUNNAH={fajr:'2 before',dhuhr:'4 + 2',maghrib:'2 after',isha:'2 after'};
 function pqRow(t,rec){const k=t.prayer,q=(rec.pq||{})[k]||'ontime',sn=(rec.sun||{})[k];
- return `<div class="pq" onclick="event.stopPropagation()"><button class="${q==='jamaah'?'on':''}" onclick="setPQ('${k}','jamaah')">🕌 Jama'ah</button><button class="${q==='ontime'?'on':''}" onclick="setPQ('${k}','ontime')">⏰ On time</button><button class="${q==='late'?'on lt':''}" onclick="setPQ('${k}','late')">🐢 Late</button>${SUNNAH[k]?`<button class="${sn?'on':''}" onclick="togSun('${k}')">+ Sunnah ${SUNNAH[k]}</button>`:''}${k==='isha'?`<button class="${rec.witr?'on':''}" onclick="togSun('witr')">+ Witr</button>`:''}</div>`}
+ return `<div class="pq" onclick="event.stopPropagation()"><button class="${q==='jamaah'?'on':''}" onclick="setPQ('${k}','jamaah')">🕌 Jama'ah</button><button class="${q==='ontime'?'on':''}" onclick="setPQ('${k}','ontime')">⏰ On time</button><button class="${q==='late'?'on lt':''}" onclick="setPQ('${k}','late')">🐢 Late</button>${SUNNAH[k]?`<button class="${sn?'on':''}" onclick="togSun('${k}')">+ ${T('Sunnah '+SUNNAH[k])}</button>`:''}${k==='isha'?`<button class="${rec.witr?'on':''}" onclick="togSun('witr')">+ ${T('Witr')}</button>`:''}</div>`}
 function setPQ(k,v){const r=dayRec();r.pq=r.pq||{};const was=r.pq[k];r.pq[k]=v;if(v==='jamaah'&&was!=='jamaah')addPts(5,"Jama'ah: 27 times the reward",'users');else if(was==='jamaah'&&v!=='jamaah')subPts(5);else{save();render()}}
 function togSun(k){const r=dayRec();if(k==='witr'){r.witr=!r.witr;if(r.witr)return addPts(3,'Witr prayed','moon');return subPts(3)}r.sun=r.sun||{};r.sun[k]=!r.sun[k];if(r.sun[k])addPts(3,'Sunnah prayed. A house in Jannah','mosque');else subPts(3)}
 // ---- Faith view ----
@@ -1612,7 +1612,7 @@ const DAYS_AR={Sun:'أحد',Mon:'إثنين',Tue:'ثلاثاء',Wed:'أربعا�
 function trDays(x){return AR[x]||x.split(' ').map(w=>DAYS_AR[w]||w).join(' ')}
 function trS(x){if(AR[x])return AR[x];for(const [re,f] of AR_PAT){const m=x.match(re);if(m)return f(m)}return x.replace(/\b(\d{1,2}:\d\d) (AM|PM)\b/g,(a,t,ap)=>t+' '+(ap==='AM'?'ص':'م'))}
 const AR_SKIP='.bub,.idea .t,textarea,#recTxt,.code,.ar,.ar2,#jBody .jtext,script,style';
-function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(!p||p.closest(AR_SKIP))return;const raw=root.nodeValue,t=raw.trim();if(!t||!/[A-Za-z]/.test(t))return;const r=trS(t);if(r!==t)root.nodeValue=raw.replace(t,r);return}
+function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue;if(raw.includes('→')){raw=raw.replace(/→/g,'←');root.nodeValue=raw}const t=raw.trim();if(!t||!/[A-Za-z]/.test(t))return;const r=trS(t);if(r!==t)root.nodeValue=raw.replace(t,r);return}
  if(root.nodeType!==1||root.closest&&root.closest(AR_SKIP))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const L=[];let n;while(n=w.nextNode())L.push(n);L.forEach(trNode);
  (root.querySelectorAll?[root,...root.querySelectorAll('[placeholder],[title]')]:[]).forEach(e=>{if(e.placeholder&&/[A-Za-z]/.test(e.placeholder)){const r=trS(e.placeholder);if(r!==e.placeholder)e.placeholder=r}})}
 let arObs=null;
@@ -1988,7 +1988,7 @@ async function newRecovery(){if(!isAcct())return;if(jLocked()&&!JKEY){askPin('un
  try{await ensureJK();MK=MK||await impKey(S.mk);const k=(await uRef().get()).data().keys;const rc=genRecovery(),rsalt=b64(crypto.getRandomValues(new Uint8Array(16))),rk=await slowKey(rc.replace(/-/g,''),rsalt);
   await uRef().set({keys:{...k,rsalt,wMKr:await wrapKey(MK,rk),wJKr:await wrapKey(JKEY,rk)}},{merge:true});showRecovery(rc)}catch(e){toast('Could not create a new code: '+e.message,'alert')}}
 async function signOutAcct(){const b=event&&event.target.closest('button');if(b&&!b.dataset.sure){b.dataset.sure=1;b.textContent='Tap again: data stays in your account';return}
- await doSync();await firebase.auth().signOut();S={fri1:1,name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:true,sound:true,notified:{}};store.set(S);
+ await doSync();await firebase.auth().signOut();S={fri1:1,lang:'ar',name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:true,sound:true,notified:{}};store.set(S);
  try{await tx('entries','readwrite',x=>x.clear());await tx('media','readwrite',x=>x.clear())}catch(e){}location.reload()}
 function forgotPin(){if(!isAcct()){document.getElementById('pinBody').innerHTML=`<h3>${ic('lock',20)}Forgot PIN</h3><div class="sub">Without an account, a forgotten PIN cannot be reset: the journal is encrypted with it. Create an account in Settings so this never becomes a problem.</div><button class="btn wide" onclick="closeSheets()">OK</button>`;return}
  document.getElementById('pinBody').innerHTML=`<h3>${ic('lock',20)}Reset your PIN</h3><div class="sub">Enter your account password to unlock the journal and choose a new PIN.</div><input id="fpPw" type="password" placeholder="Account password"><button class="btn wide" style="margin-top:12px" onclick="resetPinWithPw()" id="fpBtn">Continue</button>`}
@@ -2149,7 +2149,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=6;
+const APP_VERSION=8;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
