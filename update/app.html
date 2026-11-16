@@ -2100,7 +2100,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
 
 // ================= AUTO-UPDATE =================
 const APP_VERSION=1;
-const UPD='https://raw.githubusercontent.com/Rawhy7/my-day-route/main/update/';
+const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 async function checkUpdate(){
  if(!IS_NATIVE)return;
  try{const j=await (await fetch(UPD+'version.json?t='+Date.now(),{cache:'no-store'})).json();
@@ -2225,7 +2225,7 @@ function openMember(id){const m=FAM.members.find(x=>x.id===id);if(!m)return;
  document.getElementById('memberSheet').classList.add('on')}
 function saveAlias(id){S.aliases=S.aliases||{};const v=document.getElementById('aliasIn').value.trim();if(v)S.aliases[id]=v;else delete S.aliases[id];save();closeSheets();renderFamily();render();toast(v?'Nickname saved':'Nickname removed','user')}
 function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
-function shareInvite(){openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on My Day Route 🤍\n\nFamily code: ${S.famCode}\n(Keep it private: it is the key that unlocks our family's tasks.)\n\nDownload the app: https://github.com/Rawhy7/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
+function shareInvite(){openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on My Day Route 🤍\n\nFamily code: ${S.famCode}\n(Keep it private: it is the key that unlocks our family's tasks.)\n\nDownload the app: https://github.com/Abdelrahman-Rawhy/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
 function copyCode(){try{navigator.clipboard.writeText(S.famCode).then(()=>toast('Code copied','check'),()=>toast(S.famCode,'users'))}catch(e){toast(S.famCode,'users')}}
 function tellWhatsApp(id){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;openExt('https://wa.me/?text='+encodeURIComponent(`📌 New task for you on My Day Route.\nOpen the app to see it.`))}
 // ---- CHAT (group + private, end-to-end encrypted) ----

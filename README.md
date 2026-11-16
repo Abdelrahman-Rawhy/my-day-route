@@ -4,7 +4,7 @@ A daily route app: prayers (auto times), Quran, work, graduation project, family
 
 ## Install on Android
 Download the latest APK:
-**https://github.com/Rawhy7/my-day-route/releases/latest/download/MyDayRoute.apk**
+**https://github.com/Abdelrahman-Rawhy/my-day-route/releases/latest/download/MyDayRoute.apk**
 
 Open it on your phone and allow "Install unknown apps" when Android asks. When the app opens, allow notifications, then tap **Settings → Exact-time alarms → Allow** so reminders ring on the minute.
 
