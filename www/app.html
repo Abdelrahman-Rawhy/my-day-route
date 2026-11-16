@@ -806,6 +806,38 @@ html[dir=rtl] .tc-h .iconbtn:last-child svg,html:not([dir=rtl]) .tc-h .iconbtn:f
 .sg-body>.setting,.setting{padding:16px 18px!important}
 .sg-body>.card{padding:18px!important}
 .setting .btn{flex:none}
+
+/* v63 Duolingo-style route path */
+.dpath{position:relative;display:flex;flex-direction:column;align-items:center;gap:34px;padding:18px 0 10px}
+.dp-line{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.dp-p{fill:none;stroke:rgba(255,255,255,.14);stroke-width:10;stroke-linecap:round;stroke-dasharray:2 18}
+html.light .dp-p{stroke:rgba(30,40,90,.13)}
+.dp-row{position:relative;display:flex;flex-direction:column;align-items:center;transform:translateX(var(--x));z-index:1;max-width:72%}
+.dp-n{position:relative;width:78px;height:78px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;color:#fff;cursor:pointer;
+ background:var(--nc,#6b7280);box-shadow:0 8px 0 var(--ns,#4b5563),0 12px 22px rgba(0,0,0,.35);transition:transform .12s,box-shadow .12s}
+.dp-n:active{transform:translateY(6px);box-shadow:0 2px 0 var(--ns,#4b5563),0 4px 10px rgba(0,0,0,.3)}
+.dp-face{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 35% 28%,rgba(255,255,255,.35),transparent 45%)}
+.dp-n.up{--nc:#3a4054;--ns:#262b3b;color:#9aa3b8}
+html.light .dp-n.up{--nc:#e3e6ef;--ns:#c6cbd8;color:#7a8299}
+.dp-n.late{--nc:#b4534f;--ns:#7f3431}
+.dp-n.done{--nc:#f5b628;--ns:#c98a07}
+.dp-n.cur{--nc:#7c5cff;--ns:#5636d6;width:88px;height:88px}
+.dp-n.cur.c-green,.dp-n.cur.c-teal{--nc:#22c55e;--ns:#15803d}.dp-n.cur.c-amber,.dp-n.cur.c-orange{--nc:#f59e0b;--ns:#b45309}.dp-n.cur.c-blue{--nc:#3b82f6;--ns:#1d4ed8}.dp-n.cur.c-pink,.dp-n.cur.c-red{--nc:#ec4899;--ns:#be185d}.dp-n.cur.c-indigo{--nc:#6366f1;--ns:#4338ca}
+.dp-ring{position:absolute;inset:-9px;border-radius:50%;border:4px solid rgba(124,92,255,.55);animation:dpPulse 1.6s ease-out infinite;pointer-events:none}
+@keyframes dpPulse{0%{transform:scale(.92);opacity:1}100%{transform:scale(1.18);opacity:0}}
+.dp-crown{position:absolute;top:-8px;inset-inline-end:-6px;width:26px;height:26px;border-radius:50%;background:#22c55e;display:grid;place-items:center;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.dp-l{margin-top:16px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.dp-l b{font-size:14.5px;font-weight:800;line-height:1.35}.dp-l span{font-size:12px;color:var(--mu)}
+.dp-row:has(.done) .dp-l b{opacity:.7}
+.dp-tip{position:relative;margin-bottom:16px;padding:10px 14px;border-radius:16px;background:#fff;color:#1b1f33;font-size:13.5px;font-weight:700;line-height:1.5;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.25);animation:tipIn .4s cubic-bezier(.2,1.3,.4,1);max-width:260px}
+.dp-tip::after{content:'';position:absolute;bottom:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes tipIn{from{opacity:0;transform:translateY(8px) scale(.9)}}
+.dp-chest{width:84px;height:84px;border-radius:24px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#8b5cf6,#ec4899);box-shadow:0 8px 0 #7c2d92,0 12px 22px rgba(0,0,0,.35);opacity:.6}
+.dp-chest.open{opacity:1;background:linear-gradient(135deg,#f5b628,#f97316);box-shadow:0 8px 0 #b45309,0 12px 22px rgba(0,0,0,.35);animation:pop .6s}
+.dp-pop{text-align:center;padding-top:6px}.dp-pop .ico{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;margin:0 auto 10px}
+.dp-pop h3{margin-bottom:4px!important;text-align:center;justify-content:center}.dp-pop .sub{text-align:center}
+.dp-mot{display:flex;gap:8px;align-items:flex-start;text-align:start;margin-top:14px;padding:12px 14px;border-radius:16px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);font-size:14.5px;font-weight:600;line-height:1.6}
+.dp-mot svg{flex:none;color:#f6c453;margin-top:3px}
 </style>
 </head>
 <body>
@@ -830,7 +862,7 @@ html[dir=rtl] .tc-h .iconbtn:last-child svg,html:not([dir=rtl]) .tc-h .iconbtn:f
   <div id="projChip"></div>
   <div id="calCard"></div>
   <div id="rescue"></div>
-  <div class="sec"><h3 id="routeH"></h3><span style="display:flex;gap:12px"><button class="link" onclick="openQuick()" id="qaLink"></button><button class="link" onclick="openEdit()" id="editLink"></button></span></div>
+  <div class="sec"><h3 id="routeH"></h3><span style="display:flex;gap:12px"><button class="link" onclick="setRouteView(S.routeView==='list'?'path':'list')" id="rvLink"></button><button class="link" onclick="openQuick()" id="qaLink"></button><button class="link" onclick="openEdit()" id="editLink"></button></span></div>
   <div id="route"></div>
   <div id="skipped"></div>
   <div id="guide"></div>
@@ -1273,13 +1305,13 @@ function render(){
  const now=new Date().toTimeString().slice(0,5);
  document.getElementById('routeH').innerHTML=ic('map',20)+(isFri()?"Friday route":"Today's route");
  document.getElementById('editLink').innerHTML=ic('pen',15)+'Edit';document.getElementById('qaLink').innerHTML=ic('plus',15)+'Add';
- document.getElementById('route').innerHTML=list.map((t,i)=>{
+ document.getElementById('route').innerHTML=S.routeView!=='list'?routePathHtml(list,rec,next,now):(list.map((t,i)=>{
   const d=rec.done.includes(t.id),nx=next&&next.id===t.id,late=!d&&effTime(t)<now&&!nx,moved=rec.resched&&rec.resched[t.id],k=taskIcon(t);
   return `<div class="step ${d?'done':''} ${nx?'next':''}" data-id="${t.id}" style="animation-delay:${firstPaint?i*40:0}ms">
    <div class="node ${col(k)}" onclick="openStep('${t.id}')">${ic(d?'check':k,24,firstPaint||t.id===justDone?'draw':'')}<span class="num">${i+1}</span></div>
    <div class="body" onclick="toggle('${t.id}')"><div class="info"><b>${esc(tName(t))}</b>
    <div class="meta">${ic('clock',12)}${moved?`<s style="opacity:.6">${fmt(t.time)}</s> → `:''}${fmt(effTime(t))} · +${t.pts} pts ${t.prayer?'<span class="tag auto">AUTO</span>':''}${t.date?'<span class="tag sub">ONCE</span>':''}${t.days&&t.days.length===1&&t.days[0]===5?'<span class="tag fri">FRIDAY</span>':''}${t.subs&&t.subs.length?`<span class="tag sub">☑ ${subDone(t,rec)}/${t.subs.length}</span>`:''}${t.note?'<span class="tag sub">📝</span>':''}${t.links&&t.links.length?'<span class="tag sub">🔗 '+t.links.length+'</span>':''}${moved?'<span class="tag auto">MOVED TODAY</span>':''}${nx?(effTime(t)<=now?'<span class="tag">NOW</span>':'<span class="tag">NEXT</span>'):''}${late?'<span class="tag late">MISSED</span>':''}</div>${t.prayer&&d?pqRow(t,rec):''}</div>
-   <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>';
+   <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>');if(S.routeView!=='list')requestAnimationFrame(drawPathLine);{const rv=document.getElementById('rvLink');if(rv)rv.innerHTML=S.routeView==='list'?ic('map',15)+(S.lang==='ar'?'مسار':'Path'):ic('list',15)+(S.lang==='ar'?'قائمة':'List')}
  const q=QUOTES[(new Date().getDate()+new Date().getMonth()*31)%QUOTES.length];
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
  renderGuide();{const sk=(rec.skip||[]).filter(id=>S.tasks.some(t=>t.id===id));document.getElementById('skipped').innerHTML=sk.length?`<button class="link" style="margin:6px auto 0;display:flex" onclick="unskip()">${ic('rotate',14)}${sk.length} skipped today · restore</button>`:''}
@@ -2060,6 +2092,45 @@ function tdSubAdd(){const i=document.getElementById('tdSubIn'),v=i.value.trim();
 function tdDel(){const x=tdCur();askConfirm(L('حذف المهمة؟','Delete this task?'),L('حذف','Delete'),()=>{TD().items=TD().items.filter(y=>y.id!==x.id);save();document.getElementById('tdSheet').classList.remove('on');renderTasks()},true)}
 function tdClose(){const x=tdCur();if(x._new){delete x._new;if(!x.t.trim())TD().items=TD().items.filter(y=>y!==x)}save();document.getElementById('tdSheet').classList.remove('on');renderTasks()}
 
+
+// ===== Duolingo-style path for the daily route + a motivation line for each step =====
+const MOTIV={
+ fajr:[['«ركعتا الفجر خيرٌ من الدنيا وما فيها»','“The two rakahs of Fajr are better than the world and all it contains.”'],['اللي يصلي الفجر في ذمة الله طول اليوم','Whoever prays Fajr is under Allah’s protection all day.']],
+ dhuhr:[['استراحة لقلبك وسط زحمة اليوم','A pause for your heart in the middle of the day.'],['«أرِحنا بها يا بلال»','“Give us rest through it, O Bilal.”']],
+ asr:[['«من ترك صلاة العصر فقد حبط عمله»، حافظ عليها','Guard Asr — the Prophet ﷺ stressed it.'],['دقايق تحفظ لك يومك كله','A few minutes that protect your whole day.']],
+ maghrib:[['وقت المغرب قصير، اغتنمه أوله','Maghrib time is short — catch it early.'],['اختم نهارك بسجدة شكر','Close your day with a prostration of thanks.']],
+ isha:[['«من صلى العشاء في جماعة فكأنما قام نصف الليل»','“Isha in jama‘ah is like praying half the night.”'],['آخر خطوة إيمانية في يومك، خلّيها أحلى واحدة','Your last faith step today — make it your best.']],
+ quran:[['حرف بعشر حسنات، والله يضاعف لمن يشاء','Each letter is ten rewards, and Allah multiplies more.'],['صفحة واحدة النهارده أحسن من ولا حاجة','One page today beats none.']],
+ sport:[['جسمك أمانة، ٢٠ دقيقة تفرق','Your body is a trust — 20 minutes makes a difference.'],['المؤمن القوي خير وأحب إلى الله','The strong believer is better and more beloved to Allah.']],
+ study:[['ساعة تركيز حقيقية أحسن من ٣ ساعات تشتيت','One focused hour beats three distracted ones.'],['«من سلك طريقًا يلتمس فيه علمًا سهّل الله له طريقًا إلى الجنة»','“Whoever seeks knowledge, Allah eases his path to Paradise.”']],
+ work:[['ابدأ بأصعب جزء، والباقي هيمشي','Start with the hardest part; the rest will follow.'],['«إن الله يحب إذا عمل أحدكم عملًا أن يتقنه»','“Allah loves that when one of you works, he does it well.”']],
+ family:[['«خيركم خيركم لأهله»','“The best of you are the best to their families.”'],['وقت حلو مع أهلك هو أحسن استثمار','Good time with family is the best investment.']],
+ sleep:[['نام بدري عشان تصحى للفجر بنشاط','Sleep early to wake up fresh for Fajr.'],['اقرأ أذكار النوم وسيب الموبايل','Read the sleep adhkar and put the phone away.']],
+ plan:[['٥ دقايق تخطيط توفر ساعة بكرة','Five minutes of planning saves an hour tomorrow.']],
+ any:[['خطوة صغيرة كل يوم = تغيير كبير','Small steps every day add up to big change.'],['ابدأ دلوقتي، الحماس بييجي بعد البداية','Start now — motivation comes after you begin.'],['انت أقرب مما تتخيل، كمّل','You are closer than you think. Keep going.'],['كل خطوة بتقربك من نسخة أحسن منك','Every step brings you closer to a better you.']]};
+function motivFor(t,i){const n=(t.name||'').toLowerCase();let k=t.prayer||(/quran|قرآن|قران|مصحف/.test(n)?'quran':/gym|run|walk|sport|workout|رياض|جيم|مشي|تمرين/.test(n)?'sport':/study|read|learn|ذاكر|مذاكر|قراءة|اقرأ|تعلم|كورس/.test(n)?'study':/work|focus|task|شغل|عمل|مهمة|مكتب/.test(n)?'work':/family|عائل|أهل|اهل|أولاد/.test(n)?'family':/sleep|نوم|النوم/.test(n)?'sleep':/plan|خطط|تخطيط/.test(n)?'plan':'any');
+ const L2=MOTIV[k]||MOTIV.any,m=L2[(new Date().getDate()+(i||0))%L2.length];return S.lang==='ar'?m[0]:m[1]}
+const POFF=[0,62,92,62,0,-62,-92,-62];
+function routePathHtml(list,rec,next,now){if(!list.length)return'<div class="empty">No steps yet. Tap Edit to add your route.</div>';const ar=S.lang==='ar';
+ let h='<div class="dpath"><svg class="dp-line" aria-hidden="true"></svg>';
+ list.forEach((t,i)=>{const d=rec.done.includes(t.id),nx=next&&next.id===t.id,late=!d&&!nx&&effTime(t)<now,k=taskIcon(t),off=POFF[i%POFF.length]*(ar?-1:1);
+  const st=d?'done':nx?'cur':late?'late':'up';
+  h+=`<div class="dp-row" style="--x:${off}px">${nx?`<div class="dp-tip">${esc(motivFor(t,i))}</div>`:''}
+   <button class="pnode dp-n ${st} ${col(k)}" data-id="${t.id}" onclick="pathTap('${t.id}')" aria-label="${esc(tName(t))}"><span class="dp-face">${ic(d?'check':k,30,'',d?3:2)}</span>${nx?'<i class="dp-ring"></i>':''}${t.prayer&&d&&(rec.pq||{})[t.prayer]==='jamaah'?'<b class="dp-crown">'+ic('crown',14)+'</b>':''}</button>
+   <div class="dp-l"><b>${esc(tName(t))}</b><span>${fmt(effTime(t))} · +${t.pts}</span></div></div>`});
+ const all=list.length&&list.every(t=>rec.done.includes(t.id));
+ h+=`<div class="dp-row" style="--x:0px"><div class="dp-chest ${all?'open':''}">${ic(all?'trophy':'gift',34)}</div><div class="dp-l"><b>${all?(ar?'خلّصت مسار النهارده! 🎉':'Route complete! 🎉'):(ar?'جايزة آخر المسار':'Reward at the end')}</b><span>${ar?'+٢٠ نقطة عند إكمال كل الخطوات':'+20 points for finishing every step'}</span></div></div></div>`;
+ return h}
+function drawPathLine(){const P=document.querySelector('#route .dpath');if(!P)return;const svg=P.querySelector('.dp-line'),pr=P.getBoundingClientRect();const pts=[...P.querySelectorAll('.dp-n,.dp-chest')].map(n=>{const r=n.getBoundingClientRect();return[r.left+r.width/2-pr.left,r.top+r.height/2-pr.top]});
+ if(pts.length<2){svg.innerHTML='';return}svg.setAttribute('width',pr.width);svg.setAttribute('height',pr.height);let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=1;i<pts.length;i++){const [x0,y0]=pts[i-1],[x1,y1]=pts[i],my=(y0+y1)/2;d+=` C${x0},${my} ${x1},${my} ${x1},${y1}`}
+ const doneN=P.querySelectorAll('.dp-n.done').length;svg.innerHTML=`<path d="${d}" class="dp-p"/>`}
+function pathTap(id){if(window._lpFired)return;const t=S.tasks.find(x=>x.id===id);if(!t)return;const rec=dayRec(),d=rec.done.includes(id),i=dayTasks().findIndex(x=>x.id===id),ar=S.lang==='ar',P=document.getElementById('askPanel');
+ P.innerHTML=`<div class="dp-pop"><span class="ico ${col(taskIcon(t))}">${ic(taskIcon(t),26)}</span><h3>${esc(tName(t))}</h3><div class="sub">${fmt(effTime(t))} · +${t.pts} ${ar?'نقطة':'pts'}</div><div class="dp-mot">${ic('sparkles',16)}<span>${esc(motivFor(t,i))}</span></div></div>
+ <div class="row"><button class="btn ghost" onclick="closeAsk();openStep('${id}')">${ic('clipboard',16)}${ar?'التفاصيل':'Details'}</button><button class="btn" onclick="closeAsk();${t.prayer&&!d?`openOpts('${id}')`:`toggle('${id}')`}">${d?(ar?'رجّعها':'Undo'):t.prayer?(ar?'سجّل الصلاة':'Log prayer'):(ar?'تمّت ✓':'Done ✓')}</button></div>`;
+ document.getElementById('askSheet').classList.add('on')}
+function setRouteView(v){S.routeView=v;save();render();setTimeout(drawPathLine,60)}
+
+addEventListener('resize',()=>drawPathLine());
 const SGROUPS=[['sg-faith','Prayer & faith','mosque','amber'],['sg-alerts','Reminders & sounds','bell','violet'],['sg-day','My day','map','green'],['sg-look','Appearance','sparkles','violet'],['sg-privacy','Privacy & security','lock','indigo'],['sg-data','Account & backup','user','blue'],['sg-about','About','rocket','violet']];
 function settingsMenu(){openMenu(T('Choose a section'),SGROUPS.map(([k,n,i,c])=>({k,label:T(n),icon:i,c})),k=>{const e=document.getElementById(k);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})})}
 function faithMenu(){openMenu(S.lang==='ar'?'اختر القسم':'Choose a section',FTABS.map(([k,n,i,c])=>({k,label:T(n),icon:i,c,on:k===fTab})),k=>{fTab=k;renderFaith()})}
@@ -2489,7 +2560,7 @@ try{matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{i
 // ================= LONG-PRESS STEP OPTIONS =================
 (function(){const R=document.getElementById('route');if(!R)return;let tm=null,sx=0,sy=0,el=null;
  const cancel=()=>{clearTimeout(tm);tm=null;if(el)el.classList.remove('lp');el=null};
- R.addEventListener('pointerdown',e=>{const st=e.target.closest('.step');if(!st||e.target.closest('.pq'))return;el=st;sx=e.clientX;sy=e.clientY;st.classList.add('lp');
+ R.addEventListener('pointerdown',e=>{const st=e.target.closest('.step,.pnode');if(!st||e.target.closest('.pq'))return;el=st;sx=e.clientX;sy=e.clientY;st.classList.add('lp');
   tm=setTimeout(()=>{window._lpFired=true;setTimeout(()=>window._lpFired=false,700);buzz(false);const id=st.dataset.id;cancel();openOpts(id)},480)});
  R.addEventListener('pointermove',e=>{if(tm&&(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10))cancel()});
  ['pointerup','pointercancel','pointerleave'].forEach(ev=>R.addEventListener(ev,()=>{if(tm)cancel()}));
@@ -3061,7 +3132,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=62;
+const APP_VERSION=63;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
