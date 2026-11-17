@@ -17,8 +17,8 @@
                     <TextView android:id="@+id/w_s_pts" android:layout_width="match_parent" android:layout_height="wrap_content" android:textDirection="firstStrong"
                         android:text="" android:textColor="#FFFBBF24" android:textSize="13sp"/>
                 </LinearLayout>
-                <TextView android:id="@+id/w_s_check" android:layout_width="56dp" android:layout_height="56dp" android:layout_marginStart="10dp"
-                    android:gravity="center" android:text="✓" android:textColor="#FFFFFFFF" android:textSize="28sp" android:textStyle="bold" android:background="@drawable/widget_check_btn"/>
+                <ImageView android:id="@+id/w_s_check" android:layout_width="56dp" android:layout_height="56dp" android:layout_marginStart="10dp"
+                    android:padding="14dp" android:scaleType="fitCenter" android:src="@drawable/ic_w_check" android:contentDescription="done" android:background="@drawable/widget_check_btn"/>
             </LinearLayout>
             <ProgressBar android:id="@+id/w_s_bar" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="6dp"
                 android:layout_marginTop="10dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/widget_progress"/>

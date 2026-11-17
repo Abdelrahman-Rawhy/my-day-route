@@ -191,6 +191,11 @@ public class WidgetConfigActivity extends Activity {
                     : new String[][] { { "☐", "Medicine", "9:00 PM" }, { "☐", "Send the memo", "Overdue" }, { "☐", "Call the client", "" } };
                 numColor = 0x99FFFFFF;
                 break;
+            case "FaithWidget":
+                rows = ar ? new String[][] { { "📿", "أذكار الصباح", "٧/١٩" }, { "📖", "ورد القرآن", "٢/٤" }, { "📿", "التسبيح", "١٠٠" } }
+                    : new String[][] { { "📿", "Morning adhkar", "7/19" }, { "📖", "Quran today", "2/4" }, { "📿", "Tasbih", "100" } };
+                numColor = Color.WHITE;
+                break;
             case "HabitsWidget":
                 rows = ar ? new String[][] { { "💧", "اشرب مية", "٣ / ١٠" }, { "🌙", "النوم بدري", "٠ / ١" } }
                     : new String[][] { { "💧", "Drink water", "3 / 10" }, { "🌙", "Early to bed", "0 / 1" } };

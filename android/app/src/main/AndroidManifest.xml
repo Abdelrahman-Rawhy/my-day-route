@@ -75,6 +75,12 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_cd_info" />
         </receiver>
+        <receiver android:name=".FaithWidget" android:exported="false" android:label="@string/w_faith_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_faith_info" />
+        </receiver>
         <activity android:name=".WidgetConfigActivity" android:exported="true" android:theme="@android:style/Theme.DeviceDefault.NoActionBar" android:excludeFromRecents="true" android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />

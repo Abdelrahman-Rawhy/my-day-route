@@ -16,4 +16,6 @@
     <string name="w_route_desc">العد التنازلي للصلاة والخطوة الجاية مع تقدّم اليوم</string>
     <string name="w_prayer_desc">العد التنازلي للصلاة الجاية</string>
     <string name="w_step_desc">خطوتك الحالية مع زرار علامة صح</string>
+    <string name="w_faith_label">إيمانيات اليوم</string>
+    <string name="w_faith_desc">أذكار الوقت، ورد القرآن النهارده، والتسبيح؛ اضغط على أي صف يفتحه</string>
 </resources>

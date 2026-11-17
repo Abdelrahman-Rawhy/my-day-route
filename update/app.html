@@ -775,6 +775,18 @@ html.light .upd{background:#fff;color:var(--tx);border-color:rgba(124,92,255,.35
 .mx-r em{display:block;font-style:normal;font-size:11px;color:#ef4444;font-weight:700}
 .mx-add{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:4px;min-height:38px;border-radius:12px;border:1px dashed var(--bd);color:var(--mu);font-size:12.5px;font-weight:700;background:none}
 html.light .mx-r{background:rgba(0,0,0,.035)}
+/* professional switches */
+input.sw{appearance:none;-webkit-appearance:none;flex:none;width:54px;height:32px;margin:0;border-radius:99px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.12);position:relative;cursor:pointer;transition:background .25s,border-color .25s}
+input.sw::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:inset-inline-start .25s cubic-bezier(.3,1.3,.5,1),transform .25s}
+input.sw:checked{background:linear-gradient(135deg,#7C5CFF,#22D3EE);border-color:transparent}input.sw:checked::after{inset-inline-start:25px}
+input.sw:active::after{transform:scale(.9)}html.light input.sw{background:rgba(0,0,0,.14)}html.light input.sw:checked{background:linear-gradient(135deg,#7C5CFF,#22D3EE)}
+button.swb{font-size:0!important;width:54px!important;min-width:54px;height:32px!important;min-height:32px!important;padding:0!important;border-radius:99px!important;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.12)!important;position:relative;box-shadow:none!important;flex:none;transition:background .25s}
+button.swb::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:inset-inline-start .25s cubic-bezier(.3,1.3,.5,1)}
+button.swb.on{background:linear-gradient(135deg,#7C5CFF,#22D3EE)!important;border-color:transparent!important}button.swb.on::after{inset-inline-start:25px}html.light button.swb{background:rgba(0,0,0,.14)!important}
+.wg-y input[type=checkbox]{appearance:none;-webkit-appearance:none;width:46px!important;height:28px!important;border-radius:99px;background:rgba(255,255,255,.16);position:relative;transition:background .25s;flex:none}
+.wg-y input[type=checkbox]::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:inset-inline-start .25s}
+.wg-y input[type=checkbox]:checked{background:linear-gradient(135deg,#7C5CFF,#22D3EE)}.wg-y input[type=checkbox]:checked::after{inset-inline-start:21px}
+
 /* smooth bars everywhere (CSS for in-place changes; JS tween below for re-rendered ones) */
 .adk-pb>i,.bar>i,.g-xp>i,.gq-bar>i,.pbar>i,.mini-bar>i,.kh-today>i,.kh-fill,.apk-bar>i,i.bar{transition:width .55s cubic-bezier(.22,.8,.24,1)}
 svg circle[stroke-dasharray]{transition:stroke-dashoffset .6s cubic-bezier(.22,.8,.24,1)}
@@ -1073,7 +1085,7 @@ html[dir=rtl] .g-xp i,html[dir=rtl] .gq-bar i{margin-left:auto;background:linear
   <div class="sgroup" id="sg-about"><div class="sg-h"><span class="ico c-violet" data-i="rocket" data-s="15"></span>About</div><div class="sg-body">
   <div class="about-card"><div class="ab-logo"></div><div class="ab-t"><b>Yawmi</b><span id="verTxt">Version</span></div></div>
   <div class="setting upd-one"><span class="ico c-violet" data-i="rocket"></span><div class="info" style="flex:1"><b>Updates</b><p id="updAllTxt">Checks the app and the phone version together</p></div><button class="btn" id="updAllBtn" onclick="updateAll()">Update</button></div>
-  <label class="upd-auto"><input type="checkbox" id="autoUpdChk" onchange="setAutoUpd(this.checked)"><span>Update automatically in the background</span></label>
+  <div class="setting"><span class="ico c-green" data-i="rotate"></span><div class="info" style="flex:1"><b>Automatic updates</b><p>Download and install new versions in the background</p></div><input type="checkbox" class="sw" id="autoUpdChk" aria-label="automatic updates" onchange="setAutoUpd(this.checked)"></div>
   <div class="setting" onclick="showWhatsNew()" style="cursor:pointer"><span class="ico c-amber" data-i="sparkles"></span><div class="info" style="flex:1"><b>What's new</b><p>Changes in the latest update</p></div><span data-i="chevron" data-s="16" style="color:var(--mu);display:flex;transform:scaleX(-1)"></span></div>
   </div></div>
   <p style="color:var(--mu);font-size:12px;line-height:1.6;margin-top:14px">Reminders ring on your phone for every prayer and step, even when the app is closed. Your progress is saved on this phone only.</p>
@@ -1435,7 +1447,7 @@ function renderSettings(){
  document.getElementById('cityBtn').innerHTML=ic('pin',15)+esc(S.city);
  document.getElementById('ptGrid').innerHTML=[['fajr','Fajr','sunrise'],['sunrise','Sunrise','sun'],['dhuhr','Dhuhr','sun'],['asr','Asr','cloudsun'],['maghrib','Maghrib','sunset'],['isha','Isha','moon']].map(([k,n,i])=>`<div>${ic(i,18)}<span>${n}</span><b>${fmt(PT[k])}</b></div>`).join('');
  document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const ac=document.getElementById('acctCard');if(ac)ac.innerHTML=acctCardHtml();const br=document.getElementById('bioRow');if(br){br.style.display=bioOK?'flex':'none';document.getElementById('appLockRow').style.display=bioOK?'flex':'none';document.getElementById('bioBtn').textContent=S.bio?'On':'Turn on';document.getElementById('appLockBtn').textContent=S.appLock?'On':'Turn on'}const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
- document.getElementById('sndBtn').textContent=S.sound?'On':'Off';{const vt=document.getElementById('verTxt');if(vt&&typeof verLabel==='function')vt.textContent=verLabel()}{const pb=document.getElementById('pcBtn');if(pb&&typeof pcLabel==='function')pb.textContent=pcLabel()}{const tb=document.getElementById('tapBtn');if(tb)tb.textContent=S.tapSnd===false?'Off':'On'}{const ac=document.getElementById('autoUpdChk');if(ac)ac.checked=S.autoUpd!==false;setTimeout(updAllLabel,0)}{const vb=document.getElementById('vibBtn');if(vb)vb.textContent=S.vib===false?'Off':'On'}drawAppearance();
+ document.getElementById('sndBtn').textContent=S.sound?'On':'Off';{const vt=document.getElementById('verTxt');if(vt&&typeof verLabel==='function')vt.textContent=verLabel()}{const pb=document.getElementById('pcBtn');if(pb&&typeof pcLabel==='function')pb.textContent=pcLabel()}{const tb=document.getElementById('tapBtn');if(tb)tb.textContent=S.tapSnd===false?'Off':'On'}{const ac=document.getElementById('autoUpdChk');if(ac)ac.checked=S.autoUpd!==false;setTimeout(updAllLabel,0)}setTimeout(swSync,0);{const vb=document.getElementById('vibBtn');if(vb)vb.textContent=S.vib===false?'Off':'On'}drawAppearance();
  const ps=S.psound||'bell';document.getElementById('psBtn').textContent={off:'Off',bell:'Bell',file:'My adhan'}[ps];document.getElementById('psTxt').textContent=ps==='off'?'Silent prayer reminders':ps==='bell'?'A soft bell with each prayer notification':'Plays your adhan in the app · bell in notifications';document.getElementById('psFileRow').style.display=ps==='file'?'flex':'none';document.getElementById('psFileTxt').textContent=S.adhanName?'Using: '+S.adhanName:'Pick an audio file from your phone';
  document.getElementById('calTxt').textContent=S.cal&&S.cal.url?(S.cal.err?'⚠ '+S.cal.err:(S.cal.ev||[]).length+' upcoming events · synced '+ago(S.cal.fetched)):'Show your calendar events in today\'s route';document.getElementById('calBtn').textContent=S.cal&&S.cal.url?'Manage':'Connect';
  document.getElementById('hjTxt').textContent=(hijriTxt()||'—')+(S.hijriAdj?' (adjusted '+(S.hijriAdj>0?'+':'')+S.hijriAdj+')':'');document.getElementById('ramBtn').textContent={auto:'Auto',on:'On',off:'Off'}[S.ramadan||'auto'];
@@ -3341,7 +3353,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=83;
+const APP_VERSION=85;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3408,9 +3420,15 @@ async function apkManual(){const b=document.getElementById('apkBtn');if(b){b.dis
  catch(e){if(b){b.disabled=false;b.innerHTML=L('حاول تاني','Try again')}toast(L('تعذّر الفحص، تأكد من الإنترنت','Could not check. Check your internet.'),'alert')}}
 async function apkVerLabel(){const t=document.getElementById('apkVerTxt');if(!t)return;const inf=await apkInfo();if(inf&&inf.name)t.textContent=L('النسخة المثبتة: ','Installed: ')+inf.name}
 
+/* switches */
+// on/off buttons in Settings look and act like switches
+const SW_STATE={notifBtn:()=>!!S.notif,sndBtn:()=>!!S.sound,tapBtn:()=>S.tapSnd!==false,vibBtn:()=>S.vib!==false,bioBtn:()=>!!S.bio,appLockBtn:()=>!!S.appLock};
+function swSync(){for(const id in SW_STATE){const b=document.getElementById(id);if(!b)continue;b.classList.add('swb');const on=SW_STATE[id]();b.classList.toggle('on',on);b.setAttribute('role','switch');b.setAttribute('aria-checked',on?'true':'false')}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button.swb');if(b){setTimeout(swSync,60);setTimeout(swSync,600)}},true);
+
 // ===== one button for every update: the app part and the phone version =====
 async function updAllLabel(){const t=document.getElementById('updAllTxt');if(!t)return;const ar=S.lang==='ar',inf=await apkInfo();
- const sep=ar?'، ':' · ';t.textContent=(ar?'الإصدار '+arNum(APP_VERSION):'Version '+APP_VERSION)+(inf&&inf.name?sep+(ar?'نسخة الموبايل ':'phone ')+inf.name:'')+sep+(S.autoUpd!==false?(ar?'تلقائي':'automatic'):(ar?'يدوي':'manual'))}
+ const nm=inf&&inf.name?(ar?String(inf.name).replace(/\d/g,x=>'٠١٢٣٤٥٦٧٨٩'[x]).replace('.','٫'):inf.name):'';t.textContent=(ar?'إصدار '+arNum(APP_VERSION):'Version '+APP_VERSION)+(nm?(ar?' — موبايل ':' — phone ')+nm:'')}
 function setAutoUpd(on){S.autoUpd=!!on;save();if(APKU&&APKU.setAuto)APKU.setAuto({on:!!on}).catch(()=>{});updAllLabel();toast(on?L('التحديث التلقائي اشتغل','Automatic updates on'):L('التحديث التلقائي اتقفل','Automatic updates off'),'rocket')}
 async function updateAll(){const b=document.getElementById('updAllBtn'),ar=S.lang==='ar';const set=(h,dis)=>{if(b){b.innerHTML=h;b.disabled=!!dis}};set(ic('rotate',16)+L('بنفحص…','Checking…'),1);
  try{const j=await (await updFetch('version.json')).json();
@@ -3760,6 +3778,10 @@ function widgetExtra(){const out={wg:WG()},ar=S.lang==='ar';
  try{// habits
   out.habits=(S.goals||[]).filter(g=>g.type==='habit'&&!g.archived).slice(0,6).map(g=>({id:g.id,n:g.title,c:habitCount(g),tg:g.target||1,u:g.unit||'',e:KEY2EMOJI[gIcon(g)]||'✅',w:g.period==='day'?0:1}))}catch(e){}
  try{out.cds=widgetCountdowns().slice(0,6)}catch(e){}
+ try{// faith today: adhkar for now, today's Quran pages, tasbih
+  const cat=adkDefault(),L2=adhkarList(cat),c=(adkState()[cat])||{},dn=L2.filter((x,i)=>(c[i]||0)>=x.n).length,A=ADK_CATS.find(x=>x[0]===cat)||ADK_CATS[0],K=kh(),r=dayRec(),tg=khTarget();
+  out.faith={adk:{n:A[1],d:dn,t:L2.length},kh:{qp:r.qp||0,tg,pg:K.page},tz:r.tasbih||0};
+  out.faithL={adk:ar?'الأذكار':'Adhkar',kh:ar?'ورد القرآن':'Quran today',tz:ar?'التسبيح':'Tasbih',pages:ar?'صفحة':'pages',khatma:ar?'الختمة':'Khatma',today:ar?'النهارده':'today',done:ar?'تمّت ✓':'Done ✓'}}catch(e){}
  return out}
 // countdowns: your own dates + goal deadlines + the next Islamic occasions
 function widgetCountdowns(){const ar=S.lang==='ar',L2=[],t0=new Date(new Date().toDateString());const dd=k=>{const [y,m,d]=k.split('-').map(Number);return Math.round((new Date(y,m-1,d)-t0)/864e5)};
@@ -3796,12 +3818,14 @@ function wgCdDel(i){(S.cds||[]).splice(i,1);save();pushWidget();openWidgetSet()}
 // links from the widgets: com.rawhy.mydayroute://open/<where>
 function openFromLink(u){if(!u)return;const m=String(u).match(/:\/\/open\/([a-z]+)/);if(!m)return;const w=m[1];closeSheets&&closeSheets();
  if(w==='tasks'||w==='add'){go('tasks');tdMode='list';tdView='today';renderTasks();if(w==='add')setTimeout(()=>{const i=document.getElementById('tdIn');if(i)i.focus()},400)}
- else if(w==='prayers'){go('faith');fTab='prayers';renderFaith()}else if(w==='habits')go('goals');else if(w==='cds')openWidgetSet();else if(w==='today')go('today')}
-let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);wT=setTimeout(()=>{try{const now=new Date(),rec=dayRec();
+ else if(w==='prayers'){go('faith');fTab='prayers';renderFaith()}else if(w==='adhkar'){openAdhkar()}else if(w==='mushaf'){go('faith');fTab='quran';renderFaith();setTimeout(()=>{try{qContinue()}catch(e){}},300)}else if(w==='tasbih'){go('faith');fTab='tasbih';renderFaith()}else if(w==='habits')go('goals');else if(w==='cds')openWidgetSet();else if(w==='today')go('today')}
+let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);const run=()=>{try{const now=new Date(),rec=dayRec();
  const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted(d).filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>{const ms=atTime(d,i?t.time:effTime(t)).getTime();steps.push({id:i?'':t.id,n:T(t.name),t:ms,tt:wTT(ms)})})}
  const list=sorted(),done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
  const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:T(tName(t)),t:atTime(now,effTime(t)).getTime(),tt:wTT(atTime(now,effTime(t)).getTime()),pts:t.pts,p:t.prayer?1:0}));
- WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:T(p.n),t:p.t,tt:wTT(p.t)})),L:widgetLabels(),rtl:S.lang==='ar',...widgetExtra(),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}},600)}
+ WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:T(p.n),t:p.t,tt:wTT(p.t)})),L:widgetLabels(),rtl:S.lang==='ar',...widgetExtra(),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}};if(document.hidden)run();else wT=setTimeout(run,600)}
+// leaving the app always hands the latest data to the widgets
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pushWidget()});
 
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['faith','mosque','Faith'],['tasks','check','Tasks'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];

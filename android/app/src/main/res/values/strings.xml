@@ -20,4 +20,6 @@
     <string name="w_habits_desc">Your habits; tap a card to add one</string>
     <string name="w_cd_label">Countdown</string>
     <string name="w_cd_desc">Days left to your dates, goals, Ramadan and Eid</string>
+    <string name="w_faith_label">Faith today</string>
+    <string name="w_faith_desc">Adhkar for now, today\'s Quran pages and tasbih; tap a row to open it</string>
 </resources>
