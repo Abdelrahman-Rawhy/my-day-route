@@ -18,11 +18,13 @@ public class CountdownWidget extends AppWidgetProvider {
     };
     // ids carry the number of rows; 0 = the single big-number layout
     private static final RouteWidgetBase.Variant[] VARIANTS = {
-        new RouteWidgetBase.Variant(R.layout.widget_cd_s, 40f, 40f, 0),
-        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 50f, 2),
-        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 150f, 3),
-        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 220f, 4),
-        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 290f, 6),
+        new RouteWidgetBase.Variant(R.layout.widget_cd_s, 100f, 100f, 0),
+        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 80f, 1),
+        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 140f, 2),
+        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 195f, 3),
+        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 250f, 4),
+        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 305f, 5),
+        new RouteWidgetBase.Variant(R.layout.widget_cd, 200f, 360f, 6),
     };
 
     /** Days from today, recomputed on every refresh so it stays right after midnight. */

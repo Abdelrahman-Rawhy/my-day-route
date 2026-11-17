@@ -20,10 +20,12 @@ public class TasksWidget extends AppWidgetProvider {
         { R.id.w_t4, R.id.w_t4_cb, R.id.w_t4_n, R.id.w_t4_d }, { R.id.w_t5, R.id.w_t5_cb, R.id.w_t5_n, R.id.w_t5_d },
     };
     private static final RouteWidgetBase.Variant[] VARIANTS = {
-        new RouteWidgetBase.Variant(R.layout.widget_tasks, 110f, 50f, 1),
-        new RouteWidgetBase.Variant(R.layout.widget_tasks, 110f, 150f, 3),
-        new RouteWidgetBase.Variant(R.layout.widget_tasks, 110f, 220f, 4),
-        new RouteWidgetBase.Variant(R.layout.widget_tasks, 110f, 290f, 6),
+        new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 110f, 1),
+        new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 160f, 2),
+        new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 210f, 3),
+        new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 260f, 4),
+        new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 310f, 5),
+        new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 360f, 6),
     };
 
     private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data) {

@@ -20,9 +20,9 @@ public class HabitsWidget extends AppWidgetProvider {
         { R.id.w_h4, R.id.w_h4_e, R.id.w_h4_n, R.id.w_h4_s }, { R.id.w_h5, R.id.w_h5_e, R.id.w_h5_n, R.id.w_h5_s },
     };
     private static final RouteWidgetBase.Variant[] VARIANTS = {
-        new RouteWidgetBase.Variant(R.layout.widget_habits, 110f, 50f, 1),
-        new RouteWidgetBase.Variant(R.layout.widget_habits, 110f, 150f, 2),
-        new RouteWidgetBase.Variant(R.layout.widget_habits, 110f, 230f, 3),
+        new RouteWidgetBase.Variant(R.layout.widget_habits, 250f, 90f, 1),
+        new RouteWidgetBase.Variant(R.layout.widget_habits, 250f, 175f, 2),
+        new RouteWidgetBase.Variant(R.layout.widget_habits, 250f, 260f, 3),
     };
 
     private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data) {

@@ -2819,7 +2819,7 @@ function _noise(){const a=_ac();if(_nz)return _nz;const b=a.createBuffer(1,a.sam
 function _sweepNoise(f0,f1,dur,vol,q=1.2,type='bandpass'){const a=_ac(),t=a.currentTime,src=a.createBufferSource(),bp=a.createBiquadFilter(),g=a.createGain();src.buffer=_noise();bp.type=type;bp.Q.value=q;bp.frequency.setValueAtTime(f0,t);bp.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+dur*.45);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(bp);bp.connect(g);g.connect(a.destination);src.start(t,Math.random()*.5);src.stop(t+dur+.02)}
 function _osc(type,f0,f1,dur,vol,delay=0){const a=_ac(),t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+Math.min(.015,dur/4));g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.02)}
 let _lastTouch=0;addEventListener('pointerdown',()=>{_lastTouch=Date.now()},true);addEventListener('touchend',()=>{_lastTouch=Date.now()},true);
-function SFX(k){if(!S.sound||document.hidden)return;const n=Date.now();if(n-_lastTouch>1500)return;if(n-(_sfxLast[k]||0)<60)return;_sfxLast[k]=n;try{
+function SFX(k){if(document.hidden)return;if(k==='click'?S.tapSnd===false:!S.sound)return;const n=Date.now();if(n-_lastTouch>1500)return;if(n-(_sfxLast[k]||0)<60)return;_sfxLast[k]=n;try{
  if(k==='click'){if(S.tapSnd===false)return;_osc('sine',1900,1200,.035,.05);_sweepNoise(5000,3000,.025,.03,.8,'highpass')}
  else if(k==='up'){_sweepNoise(350,2600,.26,.16,1.4)}
  else if(k==='down'){_sweepNoise(2200,320,.2,.1,1.4)}
@@ -3312,7 +3312,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=74;
+const APP_VERSION=75;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}

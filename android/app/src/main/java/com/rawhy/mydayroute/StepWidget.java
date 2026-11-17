@@ -26,7 +26,7 @@ public class StepWidget extends AppWidgetProvider {
         new RouteWidgetBase.Variant(R.layout.widget_step, 200f, 90f,
             R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title,
             R.id.w_s_label, R.id.w_s_progress, R.id.w_s_pts, R.id.w_s_next, R.id.w_s_bar, R.id.w_c_name, R.id.w_c_next),
-        new RouteWidgetBase.Variant(R.layout.widget_step_l, 200f, 140f,
+        new RouteWidgetBase.Variant(R.layout.widget_step_l, 200f, 250f,
             R.id.w_flip, R.id.w_step_body, R.id.w_s_name, R.id.w_s_check, R.id.w_c_title,
             R.id.w_s_label, R.id.w_s_progress, R.id.w_s_pts, R.id.w_s_bar, R.id.w_s_uplabel, R.id.w_c_name, R.id.w_c_next,
             R.id.w_r1, R.id.w_r1_n, R.id.w_r1_t, R.id.w_r2, R.id.w_r2_n, R.id.w_r2_t, R.id.w_r3, R.id.w_r3_n, R.id.w_r3_t),

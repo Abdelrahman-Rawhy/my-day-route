@@ -2,5 +2,5 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp" android:minHeight="180dp" android:targetCellWidth="4" android:targetCellHeight="3"
     android:updatePeriodMillis="1800000" android:initialLayout="@layout/widget_tasks" android:previewLayout="@layout/widget_tasks"
-    android:minResizeWidth="110dp" android:minResizeHeight="50dp" android:maxResizeWidth="700dp" android:maxResizeHeight="700dp"
+    android:minResizeWidth="180dp" android:minResizeHeight="110dp" android:maxResizeWidth="700dp" android:maxResizeHeight="700dp"
     android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen" android:description="@string/w_tasks_desc" />
