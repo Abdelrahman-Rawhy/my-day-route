@@ -28,9 +28,25 @@ public class PrayerDayWidget extends AppWidgetProvider {
         JSONArray pd = data.optJSONArray("pday");
         boolean fresh = pd != null && WidgetKit.todayKey().equals(data.optString("day"));
         long nextAt = Long.MAX_VALUE;
+        final long[] nextOut = { Long.MAX_VALUE };
         for (int id : ids) {
-            RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_pday, R.layout.widget_pday_rtl));
+            final int wid = id;
+            mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> buildOne(ctx, data, v.layout == R.layout.widget_pday_tall, wid, now, pd, fresh, nextOut), mgr, id));
+        }
+        nextAt = nextOut[0];
+        schedule(ctx, nextAt == Long.MAX_VALUE ? now + 30 * 60 * 1000L : Math.min(nextAt + 1500L, now + 30 * 60 * 1000L));
+    }
+
+
+    private static final RouteWidgetBase.Variant[] VARIANTS = {
+        new RouteWidgetBase.Variant(R.layout.widget_pday, 250f, 150f),
+        new RouteWidgetBase.Variant(R.layout.widget_pday_tall, 250f, 300f),
+    };
+
+    private RemoteViews buildOne(Context ctx, JSONObject data, boolean tall, int id, long now, JSONArray pd, boolean fresh, long[] nextOut) {
+            RemoteViews rv = new RemoteViews(ctx.getPackageName(), tall ? WidgetKit.layout(data, R.layout.widget_pday_tall, R.layout.widget_pday_tall_rtl) : WidgetKit.layout(data, R.layout.widget_pday, R.layout.widget_pday_rtl));
             WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, id);
+            if (tall) rv.setTextViewText(R.id.w_pd_at, "");
             rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "prayers", 2100));
             rv.setTextViewText(R.id.w_pd_date, fresh ? data.optString("dateG") : RouteWidgetBase.L(data, "openApp", "Open the app"));
             rv.setTextViewText(R.id.w_pd_hijri, fresh ? data.optString("dateH") : RouteWidgetBase.L(data, "loadPrayers", "to load prayer times"));
@@ -45,11 +61,12 @@ public class PrayerDayWidget extends AppWidgetProvider {
                     long t = p.optLong("t");
                     if (i == 0) first = t;
                     last = t;
-                    if (next < 0 && t > now && !"sunrise".equals(p.optString("k"))) { next = i; nextT = t; nextName = p.optString("n"); }
+                    if (next < 0 && t > now && !"sunrise".equals(p.optString("k"))) { next = i; nextT = t; nextName = p.optString("n"); nextTT = p.optString("tt"); }
                 }
                 if (next < 0 && data.optLong("fajrTom") > now) {
                     nextT = data.optLong("fajrTom");
                     nextName = pd.length() > 0 ? pd.optJSONObject(0).optString("n") : "";
+                    nextTT = data.optString("fajrTomTT");
                 }
             }
             for (int i = 0; i < COLS.length; i++) {
@@ -67,7 +84,8 @@ public class PrayerDayWidget extends AppWidgetProvider {
                 rv.setTextViewText(R.id.w_pd_next, RouteWidgetBase.L(data, "nextP", "Next") + " · " + nextName);
                 rv.setChronometer(R.id.w_pd_cd, SystemClock.elapsedRealtime() + (nextT - now), null, true);
                 if (Build.VERSION.SDK_INT >= 24) rv.setChronometerCountDown(R.id.w_pd_cd, true);
-                nextAt = Math.min(nextAt, nextT);
+                nextOut[0] = Math.min(nextOut[0], nextT);
+                if (tall) rv.setTextViewText(R.id.w_pd_at, nextTT);
             } else {
                 rv.setTextViewText(R.id.w_pd_next, "");
                 rv.setChronometer(R.id.w_pd_cd, SystemClock.elapsedRealtime(), "", false);
@@ -75,10 +93,8 @@ public class PrayerDayWidget extends AppWidgetProvider {
             int prog = 0;
             if (fresh && last > first) prog = (int) Math.max(0, Math.min(1000, (now - first) * 1000 / (last - first)));
             rv.setProgressBar(R.id.w_pd_bar, 1000, prog, false);
-            mgr.updateAppWidget(id, rv);
-        }
-        schedule(ctx, nextAt == Long.MAX_VALUE ? now + 30 * 60 * 1000L : Math.min(nextAt + 1500L, now + 30 * 60 * 1000L));
-    }
+            return rv;
+            }
 
     /** "4:52 ص" stays; "4:52 AM" → "4:52" to keep the row tidy. */
     private static String shortTime(String tt) {
