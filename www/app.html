@@ -926,6 +926,51 @@ html[dir=rtl] .g-xp i,html[dir=rtl] .gq-bar i{margin-left:auto;background:linear
 
 
 
+
+/* v92 Hisn al-Muslim style adhkar */
+.adk-srch{position:relative;margin:0 0 14px}.adk-srch input{width:100%;min-height:52px;padding-inline:46px 46px;border-radius:18px;font-size:16px}
+.adk-si{position:absolute;inset-inline-start:15px;top:50%;transform:translateY(-50%);color:var(--mu);display:flex;pointer-events:none}
+.adk-sx{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:42px;height:42px;display:grid;place-items:center;color:var(--mu)}
+.adk-grid{grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 16px}
+.adk-grid button{padding:14px 6px 12px;gap:6px;font-size:13px;min-height:104px;justify-content:flex-start}
+.adk-grid button b{font-size:13.5px;line-height:1.35;text-align:center}.adk-grid button i{font-size:11.5px;display:flex;align-items:center;gap:3px}
+.adk-grid .ico{width:42px;height:42px;border-radius:14px}
+.adk-grid button.done{border-color:rgba(52,211,153,.55)}.adk-grid button.done i{color:var(--ok);font-weight:700}
+.adk-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.adk-row{display:flex;align-items:center;gap:6px;padding:4px 4px 4px 4px;border-radius:18px;background:var(--s1);border:1px solid var(--bd)}
+.adk-rm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:10px 12px;text-align:start}
+.adk-rm b{font-size:15px;font-weight:700;line-height:1.5}.adk-rm small{font-size:12.5px;color:var(--mu)}
+.adk-row.ok .adk-rm b{color:var(--mu)}
+.adk-hrt{flex:none;width:44px;height:44px;display:grid;place-items:center;color:var(--mu);border-radius:14px}
+.adk-hrt.on{color:#E11D48}.adk-hrt.on svg{fill:currentColor}
+html.light .adk-row{background:#fff}
+.adkr{position:fixed;inset:0;z-index:47;display:none;flex-direction:column;background:var(--bg);padding:calc(env(safe-area-inset-top) + 8px) 16px calc(max(env(safe-area-inset-bottom),12px) + 12px)}
+.adkr.on{display:flex;animation:fadeIn .2s}.adkr.closing{animation:qrOut .22s ease-in forwards!important;pointer-events:none}
+body.adkreading .nav,body.adkreading .fab{display:none!important}
+.adkr-top{display:flex;align-items:center;gap:10px;min-height:50px}.adkr-top b{flex:1;font-size:18px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adkr-top .adk-tm{flex:none}
+html[dir=rtl] .adkr-back svg{transform:none!important}html:not([dir=rtl]) .adkr-back svg{transform:scaleX(-1)!important}
+.adkr-tools{display:flex;align-items:center;gap:8px;margin:6px 0 12px}.adkr-tools .sp{flex:1}
+.adkr-tools .iconbtn.on{color:var(--a1);border-color:var(--a1)}.adkr-tools .adk-hrt.on{color:#E11D48}
+.adkr-stage{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;border-radius:26px;background:var(--s1);border:1px solid var(--bd);padding:24px 20px}
+html.light .adkr-stage{background:#fff}
+.adkr-cat{font-size:12.5px;color:var(--mu);text-align:center;font-weight:700;margin-bottom:6px}
+.adkr .adk-h{text-align:center;justify-content:center}
+.adkr-t{font-size:24px;line-height:2.1;text-align:center;margin:10px 0 16px}
+.adkr .adk-src{text-align:center}
+.adkr-bot{display:grid;grid-template-columns:48px 1fr auto 1fr 48px;align-items:center;gap:6px;padding-top:16px}
+.adkr-rep,.adkr-pos{font-size:14.5px;font-weight:800;color:var(--mu);text-align:center}
+.adkr-btn{position:relative;width:108px;height:108px;border-radius:50%;display:grid;place-items:center;background:var(--s2);font-size:34px;font-weight:900;color:var(--tx);touch-action:manipulation}
+.adkr-btn>svg{position:absolute;inset:0;width:100%;height:100%}.adkr-btn span{position:relative;display:flex}
+.adkr-tr{fill:none;stroke:var(--bd2);stroke-width:6}.adkr-fl{fill:none;stroke:var(--a1);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .25s}
+.adkr-btn.ok{background:var(--ok);color:#fff}.adkr-btn.ok .adkr-fl,.adkr-btn.ok .adkr-tr{stroke:transparent}
+.adkr-tap{font-size:16px;font-weight:800;color:var(--mu)}.adkr-btn.pop{animation:adkPop .18s}@keyframes adkPop{50%{transform:scale(.92)}}
+html[dir=rtl] .adkr-nav:not(.nx) svg{transform:none!important}html[dir=rtl] .adkr-nav.nx svg{transform:scaleX(-1)!important}
+html:not([dir=rtl]) .adkr-nav:not(.nx) svg{transform:scaleX(-1)!important}html:not([dir=rtl]) .adkr-nav.nx svg{transform:none!important}
+.adkr-card.sl-n{animation:adkSlN .22s ease-out}.adkr-card.sl-p{animation:adkSlP .22s ease-out}
+@keyframes adkSlN{from{opacity:0;transform:translateX(-26px)}}@keyframes adkSlP{from{opacity:0;transform:translateX(26px)}}
+html.glass .adkr-stage,html.glass .adk-row{background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.03));border-color:rgba(255,255,255,.13)}
+html.glass.light .adkr-stage,html.glass.light .adk-row{background:rgba(255,255,255,.75);border-color:rgba(22,26,60,.10)}
 </style>
 </head>
 <body>
@@ -1922,7 +1967,93 @@ const NAAS='قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِ�
 const BAQARA_END='آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ ۚ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ ۚ وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ ۝ لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ ۖ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا ۚ أَنتَ مَوْلَانَا فَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ';
 const TAHLIL='لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ';
 const MAS=(m,a)=>m?a[0]:a[1];
-function adhkarList(cat){const m=cat==='morning';
+const ADK_MORE={
+ prayer:[
+  {t:'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، وَتَبَارَكَ اسْمُكَ، وَتَعَالَىٰ جَدُّكَ، وَلَا إِلَٰهَ غَيْرُكَ',n:1,h:'دعاء الاستفتاح',s:'رواه أبو داود والترمذي'},
+  {t:'سُبْحَانَ رَبِّيَ الْعَظِيمِ',n:3,h:'في الركوع',s:'رواه مسلم'},
+  {t:'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ، رَبَّنَا وَلَكَ الْحَمْدُ',n:1,h:'عند الرفع من الركوع',s:'رواه البخاري'},
+  {t:'سُبْحَانَ رَبِّيَ الْأَعْلَىٰ',n:3,h:'في السجود',s:'رواه مسلم',d:'أقرب ما يكون العبد من ربه وهو ساجد، فأكثر فيه الدعاء.'},
+  {t:'رَبِّ اغْفِرْ لِي، رَبِّ اغْفِرْ لِي',n:1,h:'بين السجدتين',s:'رواه أبو داود وابن ماجه'},
+  {t:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، وَمِنْ عَذَابِ جَهَنَّمَ، وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ، وَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ',n:1,h:'بعد التشهد الأخير وقبل السلام',s:'رواه البخاري ومسلم'},
+  {t:'اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ، فَإِنَّكَ تَقْدِرُ وَلَا أَقْدِرُ، وَتَعْلَمُ وَلَا أَعْلَمُ، وَأَنْتَ عَلَّامُ الْغُيُوبِ. اللَّهُمَّ إِنْ كُنْتَ تَعْلَمُ أَنَّ هَٰذَا الْأَمْرَ (وتسمّي حاجتك) خَيْرٌ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي فَاقْدُرْهُ لِي وَيَسِّرْهُ لِي ثُمَّ بَارِكْ لِي فِيهِ، وَإِنْ كُنْتَ تَعْلَمُ أَنَّ هَٰذَا الْأَمْرَ شَرٌّ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي فَاصْرِفْهُ عَنِّي وَاصْرِفْنِي عَنْهُ، وَاقْدُرْ لِيَ الْخَيْرَ حَيْثُ كَانَ ثُمَّ أَرْضِنِي بِهِ',n:1,h:'دعاء الاستخارة · بعد ركعتين من غير الفريضة',s:'رواه البخاري',d:'فوّض الأمر لمن يعلم العواقب، ثم امضِ مطمئنًا.'}
+ ],
+ mosque:[
+  {t:'اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا، وَفِي بَصَرِي نُورًا، وَفِي سَمْعِي نُورًا، وَعَنْ يَمِينِي نُورًا، وَعَنْ يَسَارِي نُورًا، وَفَوْقِي نُورًا، وَتَحْتِي نُورًا، وَأَمَامِي نُورًا، وَخَلْفِي نُورًا، وَاجْعَلْ لِي نُورًا',n:1,h:'عند الذهاب إلى المسجد',s:'رواه مسلم'},
+  {t:'أَعُوذُ بِاللَّهِ الْعَظِيمِ، وَبِوَجْهِهِ الْكَرِيمِ، وَسُلْطَانِهِ الْقَدِيمِ، مِنَ الشَّيْطَانِ الرَّجِيمِ',n:1,h:'عند دخول المسجد',s:'رواه أبو داود'},
+  {t:'بِسْمِ اللَّهِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَىٰ رَسُولِ اللَّهِ، اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',n:1,h:'عند دخول المسجد · يقدّم رجله اليمنى',s:'رواه مسلم وأبو داود'},
+  {t:'بِسْمِ اللَّهِ، وَالصَّلَاةُ وَالسَّلَامُ عَلَىٰ رَسُولِ اللَّهِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ',n:1,h:'عند الخروج من المسجد · يقدّم رجله اليسرى',s:'رواه مسلم وأبو داود'},
+  {t:'يقول مثل ما يقول المؤذن، إلا في «حي على الصلاة» و«حي على الفلاح» فيقول: لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',n:1,h:'عند سماع الأذان',s:'رواه البخاري ومسلم'},
+  {t:'اللَّهُمَّ رَبَّ هَٰذِهِ الدَّعْوَةِ التَّامَّةِ، وَالصَّلَاةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ',n:1,h:'بعد الأذان · بعد الصلاة على النبي ﷺ',f:'من قالها حين يسمع النداء حلّت له شفاعة النبي ﷺ يوم القيامة.',s:'رواه البخاري'}
+ ],
+ wudu:[
+  {t:'بِسْمِ اللَّهِ',n:1,h:'قبل الوضوء',s:'رواه أبو داود'},
+  {t:'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ',n:1,h:'بعد الوضوء',f:'فُتحت له أبواب الجنة الثمانية، يدخل من أيها شاء.',s:'رواه مسلم'},
+  {t:'اللَّهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ، وَاجْعَلْنِي مِنَ الْمُتَطَهِّرِينَ',n:1,h:'بعد الوضوء',s:'رواه الترمذي'},
+  {t:'بِسْمِ اللَّهِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',n:1,h:'عند دخول الخلاء',s:'رواه البخاري ومسلم'},
+  {t:'غُفْرَانَكَ',n:1,h:'عند الخروج من الخلاء',s:'رواه أبو داود والترمذي'}
+ ],
+ food:[
+  {t:'بِسْمِ اللَّهِ',n:1,h:'قبل الطعام',s:'رواه أبو داود والترمذي'},
+  {t:'بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ',n:1,h:'إذا نسي التسمية في أوله',s:'رواه أبو داود والترمذي'},
+  {t:'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَٰذَا، وَرَزَقَنِيهِ، مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ',n:1,h:'بعد الطعام',f:'غُفر له ما تقدّم من ذنبه.',s:'رواه أبو داود والترمذي'},
+  {t:'اللَّهُمَّ بَارِكْ لَهُمْ فِيمَا رَزَقْتَهُمْ، وَاغْفِرْ لَهُمْ وَارْحَمْهُمْ',n:1,h:'دعاء الضيف لصاحب الطعام',s:'رواه مسلم'},
+  {t:'ذَهَبَ الظَّمَأُ، وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ',n:1,h:'عند الإفطار',s:'رواه أبو داود'}
+ ],
+ clothes:[
+  {t:'الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَٰذَا الثَّوْبَ وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ',n:1,h:'عند لبس الثوب',s:'رواه أبو داود والترمذي'},
+  {t:'اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ كَسَوْتَنِيهِ، أَسْأَلُكَ مِنْ خَيْرِهِ وَخَيْرِ مَا صُنِعَ لَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّهِ وَشَرِّ مَا صُنِعَ لَهُ',n:1,h:'عند لبس الثوب الجديد',s:'رواه أبو داود والترمذي'},
+  {t:'تُبْلِي وَيُخْلِفُ اللَّهُ تَعَالَىٰ',n:1,h:'لمن لبس ثوبًا جديدًا',s:'رواه أبو داود'},
+  {t:'بِسْمِ اللَّهِ',n:1,h:'عند خلع الثوب',s:'رواه الترمذي'}
+ ],
+ travel:[
+  {t:'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَىٰ رَبِّنَا لَمُنْقَلِبُونَ',n:1,h:'عند ركوب السيارة أو أي وسيلة',s:'رواه مسلم'},
+  {t:'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَٰذَا الْبِرَّ وَالتَّقْوَىٰ، وَمِنَ الْعَمَلِ مَا تَرْضَىٰ، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَٰذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الْأَهْلِ',n:1,h:'دعاء السفر',s:'رواه مسلم'},
+  {t:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',n:1,h:'إذا نزل منزلًا',f:'لم يضرّه شيء حتى يرتحل من منزله ذلك.',s:'رواه مسلم'},
+  {t:'أَسْتَوْدِعُ اللَّهَ دِينَكَ، وَأَمَانَتَكَ، وَخَوَاتِيمَ عَمَلِكَ',n:1,h:'توديع المسافر',s:'رواه أبو داود والترمذي'},
+  {t:'آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ',n:1,h:'عند الرجوع من السفر',s:'رواه مسلم'}
+ ],
+ worry:[
+  {t:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ، وَغَلَبَةِ الرِّجَالِ',n:1,h:'دعاء الهم والحزن',s:'رواه البخاري'},
+  {t:'لَا إِلَٰهَ إِلَّا اللَّهُ الْعَظِيمُ الْحَلِيمُ، لَا إِلَٰهَ إِلَّا اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لَا إِلَٰهَ إِلَّا اللَّهُ رَبُّ السَّمَاوَاتِ وَرَبُّ الْأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ',n:1,h:'دعاء الكرب',s:'رواه البخاري ومسلم'},
+  {t:'اللَّهُمَّ رَحْمَتَكَ أَرْجُو، فَلَا تَكِلْنِي إِلَىٰ نَفْسِي طَرْفَةَ عَيْنٍ، وَأَصْلِحْ لِي شَأْنِي كُلَّهُ، لَا إِلَٰهَ إِلَّا أَنْتَ',n:1,h:'دعاء المكروب',s:'رواه أبو داود'},
+  {t:'اللَّهُ اللَّهُ رَبِّي لَا أُشْرِكُ بِهِ شَيْئًا',n:1,h:'عند الكرب',s:'رواه أبو داود'},
+  {t:'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',n:1,h:'إذا صعب عليه أمر',s:'رواه ابن حبان'},
+  {t:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',n:1,h:'عند الخوف',s:'رواه البخاري',d:'قالها إبراهيم عليه السلام حين أُلقي في النار، وقالها النبي ﷺ حين قيل له إن الناس قد جمعوا لكم.'}
+ ],
+ sick:[
+  {t:'لَا بَأْسَ، طَهُورٌ إِنْ شَاءَ اللَّهُ',n:1,h:'عند زيارة المريض',s:'رواه البخاري'},
+  {t:'أَسْأَلُ اللَّهَ الْعَظِيمَ، رَبَّ الْعَرْشِ الْعَظِيمِ، أَنْ يَشْفِيَكَ',n:7,h:'الدعاء للمريض',f:'ما من عبد مسلم يعود مريضًا لم يحضر أجله فيقولها سبع مرات إلا عوفي.',s:'رواه أبو داود والترمذي'},
+  {t:'اللَّهُمَّ رَبَّ النَّاسِ، أَذْهِبِ الْبَأْسَ، اشْفِ أَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا',n:1,h:'رقية المريض',s:'رواه البخاري ومسلم'},
+  {t:'بِسْمِ اللَّهِ',n:3,h:'عند الألم · يضع يده على موضع الألم',s:'رواه مسلم'},
+  {t:'أَعُوذُ بِاللَّهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ',n:7,h:'عند الألم · بعد التسمية',s:'رواه مسلم'},
+  {t:'إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي، وَأَخْلِفْ لِي خَيْرًا مِنْهَا',n:1,h:'عند المصيبة',f:'إلا أخلف الله له خيرًا منها.',s:'رواه مسلم'},
+  {t:'إِنَّ لِلَّهِ مَا أَخَذَ، وَلَهُ مَا أَعْطَىٰ، وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمًّى، فَلْتَصْبِرْ وَلْتَحْتَسِبْ',n:1,h:'التعزية',s:'رواه البخاري ومسلم'},
+  {t:'السَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللَّهُ بِكُمْ لَلَاحِقُونَ، نَسْأَلُ اللَّهَ لَنَا وَلَكُمُ الْعَافِيَةَ',n:1,h:'عند زيارة القبور',s:'رواه مسلم'}
+ ],
+ nature:[
+  {t:'اللَّهُمَّ صَيِّبًا نَافِعًا',n:1,h:'عند نزول المطر',s:'رواه البخاري'},
+  {t:'مُطِرْنَا بِفَضْلِ اللَّهِ وَرَحْمَتِهِ',n:1,h:'بعد نزول المطر',s:'رواه البخاري ومسلم'},
+  {t:'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا',n:1,h:'عند هبوب الريح',s:'رواه أبو داود'},
+  {t:'سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ وَالْمَلَائِكَةُ مِنْ خِيفَتِهِ',n:1,h:'عند سماع الرعد',s:'رواه مالك في الموطأ عن عبد الله بن الزبير'},
+  {t:'اللَّهُ أَكْبَرُ، اللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْأَمْنِ وَالْإِيمَانِ، وَالسَّلَامَةِ وَالْإِسْلَامِ، وَالتَّوْفِيقِ لِمَا تُحِبُّ رَبَّنَا وَتَرْضَىٰ، رَبُّنَا وَرَبُّكَ اللَّهُ',n:1,h:'عند رؤية الهلال',s:'رواه الترمذي والدارمي'}
+ ],
+ manners:[
+  {t:'الْحَمْدُ لِلَّهِ',n:1,h:'عند العطاس · ويقول له أخوه: يَرْحَمُكَ اللَّهُ',s:'رواه البخاري'},
+  {t:'يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ',n:1,h:'ردّ العاطس على من شمّته',s:'رواه البخاري'},
+  {t:'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',n:1,h:'عند الغضب',s:'رواه البخاري ومسلم'},
+  {t:'جَزَاكَ اللَّهُ خَيْرًا',n:1,h:'لمن صنع إليك معروفًا',f:'فقد أبلغ في الثناء.',s:'رواه الترمذي'},
+  {t:'مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ',n:1,h:'إذا رأى ما يعجبه',s:'سورة الكهف: ٣٩'},
+  {t:'بَارَكَ اللَّهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ',n:1,h:'التهنئة بالزواج',s:'رواه أبو داود والترمذي'},
+  {t:'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ',n:1,h:'كفارة المجلس',f:'غُفر له ما كان في مجلسه ذلك.',s:'رواه أبو داود والترمذي'}
+ ],
+ hajj:[
+  {t:'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ',n:1,h:'التلبية',s:'رواه البخاري ومسلم'},
+  {t:'اللَّهُ أَكْبَرُ',n:1,h:'عند الحجر الأسود · كلما أتى عليه',s:'رواه البخاري'},
+  {t:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',n:1,h:'بين الركن اليماني والحجر الأسود',s:'رواه أبو داود'},
+  {t:'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ',n:1,h:'يوم عرفة',f:'خير الدعاء دعاء يوم عرفة.',s:'رواه الترمذي'}
+ ]
+};
+function adhkarList(cat){if(ADK_MORE[cat])return ADK_MORE[cat];const m=cat==='morning';
  const KURSI_F={f:m||cat==='evening'?'من قالها حين يصبح أُجير من الجن حتى يمسي، ومن قالها حين يمسي أُجير منهم حتى يصبح.':'',s:'رواه الحاكم والنسائي في الكبرى',d:'تأمّل صفات الله: الحي القيوم الذي لا ينام، وسع كرسيه السماوات والأرض. استشعر أنك في حفظ من لا يغفل.'};
  if(cat==='morning'||cat==='evening')return[
   {t:AYAT_KURSI,n:1,h:'آية الكرسي',...KURSI_F},
@@ -1972,15 +2103,16 @@ function adhkarList(cat){const m=cat==='morning';
   {t:TAHLIL,n:100,f:'من قالها في يوم مائة مرة كانت له عدل عشر رقاب، وكُتبت له مائة حسنة، ومُحيت عنه مائة سيئة، وكانت له حرزًا من الشيطان يومه ذلك حتى يمسي.',s:'رواه البخاري ومسلم'},
   {t:'لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',n:7,h:'دعوة ذي النون (عند الكرب)',f:'لم يدعُ بها رجل مسلم في شيء قط إلا استجاب الله له.',s:'رواه الترمذي',d:'توحيد ثم تنزيه ثم اعتراف: مفتاح الفرج.'},
   {t:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',n:3,f:'كان أكثر دعاء النبي ﷺ.',s:'رواه البخاري ومسلم'}]}
-const ADK_CATS=[['morning','أذكار الصباح','sunrise'],['evening','أذكار المساء','sunset'],['salah','بعد الصلاة','mosque'],['sleep','أذكار النوم','moon'],['wake','الاستيقاظ','sun'],['home','البيت','map'],['general','أذكار عامة','sparkles']];
+const ADK_CATS=[['morning','أذكار الصباح','sunrise'],['evening','أذكار المساء','sunset'],['salah','بعد الصلاة','beads'],['sleep','أذكار النوم','moon'],['wake','الاستيقاظ','sun'],['prayer','الصلاة','target'],['mosque','المسجد والأذان','mosque'],['wudu','الوضوء','droplet'],['home','البيت','map'],['food','الطعام والشراب','utensils'],['clothes','اللباس','tag'],['travel','السفر','plane'],['worry','الهم والكرب','hands'],['sick','المرض والمصيبة','pill'],['nature','المطر والطبيعة','cloudsun'],['manners','الآداب والتعامل','users'],['hajj','الحج والعمرة','flag'],['general','أذكار عامة','sparkles']];
 let adkCat=null;
+function adkGuide(){return `<details class="card adk-guide"><summary><span class="ico c-amber">${ic('lightbulb',18)}</span><div class="gs"><b>كيف تتدبّر الذكر؟</b><small>٦ خطوات بسيطة تحضر بها قلبك</small></div><span class="gch">${ic('chevron',18)}</span></summary><ol class="gl"><li><span class="gn">١</span><p>تمهّل، ولا تجعل همّك سرعة العدّ؛ ذكرٌ قليل بقلب حاضر خير من كثير بلسان غافل.</p></li><li><span class="gn">٢</span><p>افهم المعنى قبل أن تقول: افتح «تدبّر» تحت الذكر واقرأه مرة.</p></li><li><span class="gn">٣</span><p>استحضر أنك تخاطب الله، وأن الله يذكر من يذكره: <q class="ar2">﴿فَاذْكُرُونِي أَذْكُرْكُمْ﴾</q>.</p></li><li><span class="gn">٤</span><p>صدّق بالفضل وأنت تقول، فاليقين سبب للأجر كما في سيد الاستغفار.</p></li><li><span class="gn">٥</span><p>اربط الذكر بحالك: الاستعاذة عند الخوف، والحمد عند النعمة، والاستغفار عند التقصير.</p></li><li><span class="gn">٦</span><p>اختم بدعاء لنفسك ولوالديك، فالذكر مفتاح الدعاء.</p></li></ol></details>`}
 function adkDefault(){const h=new Date().getHours(),m=new Date().getMinutes(),now=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');if(h>=22||h<3)return'sleep';if(PT.asr&&now>=PT.asr)return'evening';return'morning'}
 const ADK_OPEN={},ADK_HIST=[];
 function adkState(){const r=dayRec();r.adk=r.adk||{};return r.adk}
 function adkHtml(){const cat=adkCat||(adkCat=adkDefault()),L=adhkarList(cat),st=adkState(),c=st[cat]||{},done=L.filter((x,i)=>(c[i]||0)>=x.n).length;
  return `${(()=>{const A=ADK_CATS.find(x=>x[0]===cat)||ADK_CATS[0];return `<button class="fsel" onclick="adkMenu()"><span class="ico c-${COLOR[A[2]]||'violet'}">${ic(A[2],20)}</span><span class="fs-t"><small>${S.lang==='ar'?'الأذكار':'Adhkar'} · ${done}/${L.length}</small><b>${A[1]}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>`})()}
  <div class="adk-top"><div class="pbar"><i style="width:${done/L.length*100}%"></i></div><span>${done}/${L.length}</span><button class="adk-tm ${(()=>{const t=(st._t||{})[cat];return t&&!t.e&&(t.acc==null||!t.run)?'paused':''})()}" id="adkTm" dir="ltr" onclick="adkToggleTimer()">${ic('clock',13)}<b>${adkTimeTxt(cat)}</b><i class="adk-pz">❚❚</i></button>${ADK_HIST.some(h=>h.cat===cat)?`<button class="link adk-ul" onclick="adkUndoLast()">${ic('rotate',13)}${S.lang==='ar'?'تراجع':'Undo'}</button>`:''}<button class="link" onclick="adkReset()">${T('Reset')}</button></div>${adkStatsHtml(cat)}
- <div class="sub" style="margin:0 2px 10px">${T('Tap a card to count. It closes when you finish its count.')} ${S.lang==='ar'?'الوقت بيقف لوحده لما تخرج من الأذكار، وبيكمّل لما تعدّ تاني.':'The timer pauses when you leave the adhkar and continues when you count again.'}</div><details class="card adk-guide"><summary><span class="ico c-amber">${ic('lightbulb',18)}</span><div class="gs"><b>كيف تتدبّر الذكر؟</b><small>٦ خطوات بسيطة تحضر بها قلبك</small></div><span class="gch">${ic('chevron',18)}</span></summary><ol class="gl"><li><span class="gn">١</span><p>تمهّل، ولا تجعل همّك سرعة العدّ؛ ذكرٌ قليل بقلب حاضر خير من كثير بلسان غافل.</p></li><li><span class="gn">٢</span><p>افهم المعنى قبل أن تقول: افتح «تدبّر» تحت الذكر واقرأه مرة.</p></li><li><span class="gn">٣</span><p>استحضر أنك تخاطب الله، وأن الله يذكر من يذكره: <q class="ar2">﴿فَاذْكُرُونِي أَذْكُرْكُمْ﴾</q>.</p></li><li><span class="gn">٤</span><p>صدّق بالفضل وأنت تقول، فاليقين سبب للأجر كما في سيد الاستغفار.</p></li><li><span class="gn">٥</span><p>اربط الذكر بحالك: الاستعاذة عند الخوف، والحمد عند النعمة، والاستغفار عند التقصير.</p></li><li><span class="gn">٦</span><p>اختم بدعاء لنفسك ولوالديك، فالذكر مفتاح الدعاء.</p></li></ol></details>
+ <div class="sub" style="margin:0 2px 10px">${T('Tap a card to count. It closes when you finish its count.')} ${S.lang==='ar'?'الوقت بيقف لوحده لما تخرج من الأذكار، وبيكمّل لما تعدّ تاني.':'The timer pauses when you leave the adhkar and continues when you count again.'}</div>${adkGuide()}
  ${L.map((x,i)=>{const k=c[i]||0,ok=k>=x.n;return `<div class="adk ${ok?'ok':''}" onclick="adkTap(${i})">${x.h?`<div class="adk-h">${x.h}</div>`:''}<div class="ar2 adk-t">${x.t}</div>${(x.f||x.d)&&!ok?`<details class="adk-x" ${ADK_OPEN[cat+':'+i]?'open':''} onclick="event.stopPropagation()" ontoggle="ADK_OPEN['${cat}:${i}']=this.open"><summary>${x.f?'الفضل':''}${x.f&&x.d?' · ':''}${x.d?'تدبّر':''}</summary>${x.f?`<div class="ar2 adk-box fadl"><span class="adk-lbl">${ic('star',13)} الفضل</span><p>${x.f}</p>${x.s?`<small>${x.s}</small>`:''}</div>`:''}${x.d?`<div class="ar2 adk-box tdb"><span class="adk-lbl">${ic('lightbulb',13)} تدبّر</span><p>${x.d}</p>${!x.f&&x.s?`<small>${x.s}</small>`:''}</div>`:''}</details>`:x.s&&!ok?`<div class="adk-src ar2">${x.s}</div>`:''}<div class="adk-f">${k>0?`<button class="adk-un" onclick="event.stopPropagation();adkUndo(${i})" aria-label="undo">${ic('rotate',14)}<span>${S.lang==='ar'?'تراجع':'Undo'}</span></button>`:''}<span class="adk-n" dir="ltr">${ok?ic('check',14,'',3):k+' / '+x.n}</span>${x.n>1&&!ok?`<span class="adk-pb"><i style="width:${k/x.n*100}%"></i></span>`:''}<span class="adk-c">${x.n>1?(S.lang==='ar'?'التكرار: ':'Repeat: ')+x.n:''}</span></div></div>`}).join('')}
  ${done===L.length?`<div class="card" style="text-align:center"><b>${T('Done. May Allah accept it')} 🤍</b></div>`:''}`}
 function adkTap(i){const cat=adkCat,L=adhkarList(cat),st=adkState();st[cat]=st[cat]||{};const c=st[cat],x=L[i];if(!x)return;if((c[i]||0)>=x.n){return}
@@ -1990,11 +2122,11 @@ function adkTap(i){const cat=adkCat,L=adhkarList(cat),st=adkState();st[cat]=st[c
   const re=cat==='morning'?/morning adhkar|أذكار الصباح/i:cat==='evening'?/evening adhkar|أذكار المساء/i:null;const t=re&&sorted().find(z=>re.test(z.name)),rec=dayRec();
   if(t&&!rec.done.includes(t.id)){toggle(t.id)}else addPts(10,T('Adhkar complete'),'beads');
   celebrate('beads',(ADK_CATS.find(z=>z[0]===cat)||[])[1]||'',T('Done. May Allah accept it')+(st._t[cat]&&st._t[cat].e?' · '+durTxt(adkDur(st._t[cat])):''))}
- renderFaith();if(fin&&!all){setTimeout(()=>{const nx=document.querySelectorAll('#faithBody .adk:not(.ok)')[0];if(nx)nx.scrollIntoView({behavior:'smooth',block:'center'})},120)}}
+ if(document.body.classList.contains('adkreading')){adkRDraw();return}renderFaith();if(fin&&!all){setTimeout(()=>{const nx=document.querySelectorAll('#faithBody .adk:not(.ok)')[0];if(nx)nx.scrollIntoView({behavior:'smooth',block:'center'})},120)}}
 // undo: take back one count (a finished card opens again). Rewards already given for finishing the list stay, and aren't given twice.
 function adkUndo(i,fromLast){const cat=adkCat,st=adkState(),c=st[cat];if(!c||!(c[i]>0))return;c[i]--;if(!c[i])delete c[i];
  if(!fromLast){for(let j=ADK_HIST.length-1;j>=0;j--){if(ADK_HIST[j].cat===cat&&ADK_HIST[j].i===i){ADK_HIST.splice(j,1);break}}}
- save();try{const H=HAP();if(H)H.impact({style:'LIGHT'})}catch(e){}SFX('down');renderFaith();
+ save();try{const H=HAP();if(H)H.impact({style:'LIGHT'})}catch(e){}SFX('down');if(document.body.classList.contains('adkreading')){adkRDraw();return}renderFaith();
  setTimeout(()=>{const el=document.querySelectorAll('#faithBody .adk')[i];if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},80)}
 function adkUndoLast(){for(let j=ADK_HIST.length-1;j>=0;j--){if(ADK_HIST[j].cat===adkCat){const h=ADK_HIST.splice(j,1)[0];adkUndo(h.i,true);return}}}
 function durTxt(ms){const t=Math.max(0,Math.floor(ms/1000)),m=Math.floor(t/60),sec=t%60,ar=S.lang==='ar';return m?(ar?m+' د'+(sec?' '+sec+' ث':''):m+'m'+(sec?' '+sec+'s':'')):(ar?sec+' ث':sec+'s')}
@@ -2014,11 +2146,85 @@ function adkStatsHtml(cat){const t=(adkState()._t||{})[cat];const hist=[];for(le
  return parts.length?`<div class="adk-st">${parts.map(x=>`<span>${x}</span>`).join('')}</div>`:''}
 let adkTick=null;
 // pause the moment you leave: another page, another tab in Faith, another list, or the app goes to the background
-const adkHere=()=>!document.hidden&&fTab==='adhkar'&&(document.querySelector('.view.on')||{}).id==='v-faith';
+const adkHere=()=>!document.hidden&&document.body.classList.contains('adkreading');
 setInterval(()=>{const st=adkState(),T2=st._t||{};let ch=0;for(const k in T2){const t=T2[k];if(t&&!t.e&&(t.run||t.acc==null)&&(!adkHere()||k!==adkCat||adkIdle(t))){adkClose(t);ch=1}}if(ch)save();if(adkHere())adkTmPaint()},1000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)adkPauseAll()});
 function adkReset(){const st=adkState();delete st[adkCat];if(st._done)delete st._done[adkCat];if(st._t)delete st._t[adkCat];save();renderFaith()}
-function openAdhkar(cat){adkCat=cat||adkDefault();go('faith');fTab='adhkar';renderFaith()}
+function openAdhkar(cat){go('faith');fTab='adhkar';renderFaith();if(cat)adkOpen(cat)}
+// ---- Hisn al-Muslim style: category grid home, search, favorites, one-dhikr-per-screen reader ----
+let adkQ='',ADKR=null;
+const ADK_TILE_C={morning:'orange',evening:'rose',salah:'amber',sleep:'indigo',wake:'amber',prayer:'green',mosque:'amber',wudu:'blue',home:'teal',food:'orange',clothes:'violet',travel:'blue',worry:'pink',sick:'red',nature:'teal',manners:'green',hajj:'amber',general:'violet'};
+function adkKey(cat,x){let h=5381;const s=x.t;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return cat+':'+(h>>>0).toString(36)}
+function adkFavs(){S.adkFav=S.adkFav||[];return S.adkFav}
+function adkIsFav(cat,i){const x=adhkarList(cat)[i];return !!x&&adkFavs().includes(adkKey(cat,x))}
+function adkFavRefs(){const out=[];ADK_CATS.forEach(([c])=>adhkarList(c).forEach((x,i)=>{if(adkFavs().includes(adkKey(c,x)))out.push({c,i})}));return out}
+function adkNorm(s){return String(s||'').replace(/[ً-ٰٟۖ-ۭـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').toLowerCase()}
+function adkCatName(c){return (ADK_CATS.find(z=>z[0]===c)||[])[1]||''}
+function adkSearchRefs(q){const n=adkNorm(q).trim();if(!n)return[];const out=[];ADK_CATS.forEach(([c,name])=>adhkarList(c).forEach((x,i)=>{if(adkNorm(x.t+' '+(x.h||'')+' '+name).includes(n))out.push({c,i})}));return out}
+function adkTitle(c,i){const x=adhkarList(c)[i];if(!x)return'';if(x.h)return x.h.split(' · ')[0];const w=adkNorm(x.t).split(/\s+/).slice(0,6).join(' ');return w+'…'}
+function adkProg(c){const L=adhkarList(c),cc=adkState()[c]||{};return [L.filter((x,j)=>(cc[j]||0)>=x.n).length,L.length]}
+function adkHomeHtml(){const ar=S.lang==='ar',cur=adkDefault(),[cd,ct]=adkProg(cur),fv=adkFavRefs().length;
+ return `<div class="adk-srch"><span class="adk-si">${ic('search',18)}</span><input id="adkQIn" placeholder="${ar?'ابحث في الأذكار والأدعية':'Search adhkar and duas'}" value="${esc(adkQ)}" oninput="adkQ=this.value;adkResPaint()">${adkQ?`<button class="adk-sx" onclick="adkQ='';renderFaith()" aria-label="clear">${ic('x',16)}</button>`:''}</div>
+ <div id="adkRes">${adkResHtml()}</div>`}
+function adkResHtml(){const ar=S.lang==='ar';if(adkQ.trim()){const R=adkSearchRefs(adkQ);if(!R.length)return `<div class="empty">${ar?'مفيش نتايج. جرّب كلمة تانية.':'No results. Try another word.'}</div>`;
+  window._adkSR=R;return `<div class="sub" style="margin:0 2px 8px">${ar?arNum(R.length)+' نتيجة':R.length+' results'}</div><div class="adk-list">${R.slice(0,80).map((r,k)=>adkRowHtml(r,`adkOpenRefs(window._adkSR,${k},'${ar?'نتائج البحث':'Search results'}')`)).join('')}</div>`}
+ const cur=adkDefault(),[cd,ct]=adkProg(cur),fv=adkFavRefs().length;
+ return `<button class="fsel" onclick="adkOpen('${cur}')"><span class="ico c-${ADK_TILE_C[cur]||'violet'}">${ic((ADK_CATS.find(z=>z[0]===cur)||[])[2]||'sun',20)}</span><span class="fs-t"><small>${ar?'وقتها دلوقتي':'Right now'} · ${ar?arNum(cd)+'/'+arNum(ct):cd+'/'+ct}</small><b>${adkCatName(cur)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
+ <button class="fsel" onclick="adkOpenFav()"><span class="ico c-red">${ic('heart',20)}</span><span class="fs-t"><small>${ar?arNum(fv)+' ذكر':fv+' saved'}</small><b>${ar?'المفضلة':'Favorites'}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
+ <div class="adk-cats adk-grid">${ADK_CATS.map(([k,n,i])=>{const [d,t]=adkProg(k),rem=(S.adkRem||{})[k];return `<button onclick="adkOpen('${k}')" class="${d===t&&t?'done':''}"><span class="ico c-${ADK_TILE_C[k]||'violet'}">${ic(i,20)}</span><b>${n}</b><i>${d===t&&t?'✓ ':''}${d&&d<t?(ar?arNum(d)+'/'+arNum(t):d+'/'+t):(ar?arNum(t)+' ذكر':t+' items')}${rem?' · '+ic('bell',10):''}</i></button>`}).join('')}</div>
+ ${adkGuide()}${adkStatsHtml(cur)}`}
+function adkResPaint(){const el=document.getElementById('adkRes');if(el)el.innerHTML=adkResHtml()}
+function adkRowHtml(r,on){const x=adhkarList(r.c)[r.i],fav=adkIsFav(r.c,r.i),cc=(adkState()[r.c]||{})[r.i]||0,ok=cc>=x.n;
+ return `<div class="adk-row ${ok?'ok':''}"><button class="adk-rm" onclick="${on}"><b>${esc(adkTitle(r.c,r.i))}</b><small>${adkCatName(r.c)}${x.n>1?' · '+adkRep(x.n):''}${ok?' · ✓':''}</small></button><button class="adk-hrt ${fav?'on':''}" onclick="adkFavToggle('${r.c}',${r.i});adkResPaint()" aria-label="favorite">${ic('heart',18)}</button></div>`}
+function adkRep(n){if(S.lang!=='ar')return n===1?'once':n+' times';return n===1?'مرة واحدة':n===2?'مرتين':n<=10?arNum(n)+' مرات':arNum(n)+' مرة'}
+function adkFavToggle(c,i){const x=adhkarList(c)[i];if(!x)return;const k=adkKey(c,x),F=adkFavs(),j=F.indexOf(k);if(j>=0)F.splice(j,1);else F.push(k);save();try{const H=HAP();H&&H.impact({style:'LIGHT'})}catch(e){}
+ toast(j>=0?(S.lang==='ar'?'اتشال من المفضلة':'Removed from favorites'):(S.lang==='ar'?'اتضاف للمفضلة':'Added to favorites'),'heart');if(ADKR)adkRDraw()}
+function adkOpen(cat){const L=adhkarList(cat),cc=adkState()[cat]||{};let k=L.findIndex((x,j)=>(cc[j]||0)<x.n);if(k<0)k=0;adkOpenRefs(L.map((x,i)=>({c:cat,i})),k,adkCatName(cat),cat)}
+function adkOpenFav(){const R=adkFavRefs();if(!R.length){toast(S.lang==='ar'?'اضغط ♡ على أي ذكر عشان يتضاف هنا':'Tap ♡ on any dhikr to save it here','heart');return}adkOpenRefs(R,0,S.lang==='ar'?'المفضلة':'Favorites')}
+function adkOpenRefs(refs,k,title,cat){if(!refs||!refs.length)return;ADKR={refs:refs.slice(),k:Math.max(0,Math.min(refs.length-1,k||0)),title,cat:cat||null,started:false};adkCat=ADKR.refs[ADKR.k].c;
+ let R=document.getElementById('adkR');
+ if(!R){R=document.createElement('div');R.id='adkR';R.className='adkr';R.innerHTML=`<div class="adkr-top"><button class="iconbtn adkr-back" onclick="adkRExit()" aria-label="back">${ic('chevron',18)}</button><b id="adkRTitle"></b><button class="adk-tm" id="adkTm" dir="ltr" onclick="adkToggleTimer()">${ic('clock',13)}<b></b><i class="adk-pz">❚❚</i></button></div>
+  <div class="adkr-tools"><button class="iconbtn" onclick="adkRShare()" aria-label="share">${ic('share',18)}</button><button class="iconbtn" id="adkRBell" onclick="adkRBell()" aria-label="reminder">${ic('bell',18)}</button><button class="iconbtn adk-hrt" id="adkRFav" onclick="adkRFav()" aria-label="favorite">${ic('heart',18)}</button><span class="sp"></span><button class="link" id="adkRUndo" onclick="adkRUndo()">${ic('rotate',14)}<span></span></button></div>
+  <div class="adkr-stage" id="adkRStage"><div class="adkr-card" id="adkRCard"></div></div>
+  <div class="adkr-bot"><button class="iconbtn adkr-nav" onclick="adkRGo(-1)" aria-label="previous">${ic('chevron',18)}</button><span class="adkr-rep" id="adkRRep"></span><button class="adkr-btn" id="adkRBtn" onclick="adkRCount()" aria-label="count"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="adkr-tr"/><circle cx="50" cy="50" r="44" class="adkr-fl" id="adkRRing" stroke-dasharray="276.5" stroke-dashoffset="276.5" transform="rotate(-90 50 50)"/></svg><span id="adkRNum"></span></button><span class="adkr-pos" id="adkRPos"></span><button class="iconbtn adkr-nav nx" onclick="adkRGo(1)" aria-label="next">${ic('chevron',18)}</button></div>`;
+  document.body.appendChild(R);adkRSwipe(document.getElementById('adkRStage'));window._smoothReg&&window._smoothReg(R)}
+ if(!R.classList.contains('on'))SFX('up');R.classList.add('on');document.body.classList.add('adkreading');adkRDraw()}
+function adkRRef(){return ADKR&&ADKR.refs[ADKR.k]}
+function adkRDraw(){const R=document.getElementById('adkR');if(!R||!ADKR)return;const ar=S.lang==='ar',r=adkRRef(),L=adhkarList(r.c),x=L[r.i],cc=(adkState()[r.c]||{})[r.i]||0,ok=cc>=x.n;adkCat=r.c;
+ document.getElementById('adkRTitle').textContent=ADKR.title;
+ const op=ADK_OPEN[r.c+':'+r.i];
+ document.getElementById('adkRCard').innerHTML=`${!ADKR.cat?`<div class="adkr-cat">${adkCatName(r.c)}</div>`:''}${x.h?`<div class="adk-h">${x.h}</div>`:''}<div class="ar2 adkr-t selok">${x.t}</div>${x.s?`<div class="adk-src ar2">${x.s}</div>`:''}${x.f||x.d?`<details class="adk-x" ${op?'open':''} ontoggle="ADK_OPEN['${r.c}:${r.i}']=this.open"><summary>${x.f?'الفضل':''}${x.f&&x.d?' · ':''}${x.d?'تدبّر':''}</summary>${x.f?`<div class="ar2 adk-box fadl"><span class="adk-lbl">${ic('star',13)} الفضل</span><p>${x.f}</p></div>`:''}${x.d?`<div class="ar2 adk-box tdb"><span class="adk-lbl">${ic('lightbulb',13)} تدبّر</span><p>${x.d}</p></div>`:''}</details>`:''}`;
+ document.getElementById('adkRStage').scrollTop=0;
+ document.getElementById('adkRRep').textContent=adkRep(x.n);
+ document.getElementById('adkRPos').textContent=ar?arNum(ADKR.k+1)+' / '+arNum(ADKR.refs.length):(ADKR.k+1)+' / '+ADKR.refs.length;
+ const B=document.getElementById('adkRBtn');B.classList.toggle('ok',ok);document.getElementById('adkRNum').innerHTML=ok?ic('check',30,'',3):cc?(ar?arNum(cc):String(cc)):`<small class="adkr-tap">${ar?'اضغط':'Tap'}</small>`;
+ document.getElementById('adkRRing').setAttribute('stroke-dashoffset',String(276.5*(1-Math.min(1,cc/x.n))));
+ document.getElementById('adkRFav').classList.toggle('on',adkIsFav(r.c,r.i));
+ document.getElementById('adkRBell').classList.toggle('on',!!(S.adkRem||{})[r.c]);
+ const U=document.getElementById('adkRUndo');U.style.visibility=cc>0?'visible':'hidden';U.querySelector('span').textContent=ar?'تراجع':'Undo';
+ R.querySelectorAll('.adkr-nav')[0].style.visibility=ADKR.k>0?'visible':'hidden';R.querySelectorAll('.adkr-nav')[1].style.visibility=ADKR.k<ADKR.refs.length-1?'visible':'hidden';
+ adkTmPaint();const tm=document.getElementById('adkTm');if(tm){const t=(adkState()._t||{})[r.c];tm.style.display=t?'':'none'}}
+let _adkAdv=null;
+function adkRCount(){const r=adkRRef();if(!r)return;const L=adhkarList(r.c),x=L[r.i],st=adkState();if(((st[r.c]||{})[r.i]||0)>=x.n){adkRGo(1);return}
+ ADKR.started=true;adkCat=r.c;adkTap(r.i);const B=document.getElementById('adkRBtn');if(B){B.classList.remove('pop');void B.offsetWidth;B.classList.add('pop')}
+ const now=(adkState()[r.c]||{})[r.i]||0;if(now>=x.n&&ADKR.k<ADKR.refs.length-1){clearTimeout(_adkAdv);const k0=ADKR.k;_adkAdv=setTimeout(()=>{if(ADKR&&ADKR.k===k0)adkRGo(1)},450)}}
+function adkRGo(d){if(!ADKR)return;const k=ADKR.k+d;if(k<0||k>=ADKR.refs.length)return;ADKR.k=k;SFX('click');const c=document.getElementById('adkRCard');if(c){c.classList.remove('sl-n','sl-p');void c.offsetWidth;c.classList.add(d>0?'sl-n':'sl-p')}adkRDraw()}
+function adkRUndo(){const r=adkRRef();if(!r)return;adkCat=r.c;adkUndo(r.i)}
+function adkRFav(){const r=adkRRef();if(r)adkFavToggle(r.c,r.i)}
+function adkRShare(){const r=adkRRef();if(!r)return;const x=adhkarList(r.c)[r.i];const txt=(x.h?x.h+'\n\n':'')+x.t.replace(/<[^>]+>/g,'')+(x.s?'\n\n'+x.s:'')+'\n\n'+T('Yawmi');adkShareText(txt)}
+async function adkShareText(txt){try{if(IS_NATIVE&&SHP){await SHP.share({text:txt,dialogTitle:S.lang==='ar'?'مشاركة الذكر':'Share'});return}}catch(e){if(/cancel/i.test(String(e&&e.message||e)))return}
+ try{if(navigator.share){await navigator.share({text:txt});return}}catch(e){if(e&&e.name==='AbortError')return}
+ try{await navigator.clipboard.writeText(txt);toast(T('Copied'),'check')}catch(e){toast(T('Copied'),'check')}}
+function adkRBell(){const r=adkRRef();if(!r)return;const ar=S.lang==='ar',c=r.c,cur=(S.adkRem||{})[c];
+ const set=v=>{S.adkRem=S.adkRem||{};if(v)S.adkRem[c]=v;else delete S.adkRem[c];save();scheduleNative();adkRDraw();toast(v?(ar?'هنفكّرك بـ'+adkCatName(c)+' كل يوم '+fmt(v):'Daily reminder at '+fmt(v)):(ar?'التذكير اتشال':'Reminder removed'),'bell');if(v&&!S.notif)setTimeout(()=>toast(ar?'شغّل التذكيرات من الإعدادات عشان توصلك':'Turn on reminders in Settings so it reaches you','bell'),1800)};
+ if(cur){openMenu(adkCatName(c),[{k:'ch',label:ar?'غيّر الوقت':'Change time',sub:fmt(cur),icon:'clock'},{k:'off',label:ar?'شيل التذكير':'Remove reminder',icon:'x',c:'red'}],k=>{if(k==='off')set(null);else askTime(adkCatName(c),cur,v=>set(v))});return}
+ const def=c==='morning'?'06:30':c==='evening'?'17:00':c==='sleep'?'22:30':'09:00';askTime(ar?'تذكير يومي: '+adkCatName(c):'Daily reminder: '+adkCatName(c),def,v=>set(v))}
+function adkRDoneAll(){if(!ADKR)return true;return ADKR.refs.every(r=>((adkState()[r.c]||{})[r.i]||0)>=adhkarList(r.c)[r.i].n)}
+function adkRExit(force){if(!ADKR){adkRClose();return}if(!force&&ADKR.started&&!adkRDoneAll()){askConfirm(S.lang==='ar'?'لسه ماكمّلتش الأذكار. تخرج؟':'You haven’t finished these adhkar yet. Leave?',S.lang==='ar'?'اخرج':'Leave',()=>adkRClose());return}adkRClose()}
+function adkRClose(){const R=document.getElementById('adkR');if(R&&R.classList.contains('on'))SFX('down');if(R)R.classList.remove('on');document.body.classList.remove('adkreading');ADKR=null;adkPauseAll();if(fTab==='adhkar')renderFaith()}
+function adkRSwipe(el){let x0=0,y0=0,t0=0,on=false;el.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();on=!e.target.closest('summary,details[open] .adk-box')},{passive:true});
+ el.addEventListener('touchend',e=>{if(!on)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4&&Date.now()-t0<800){adkRGo((dx>0)===(S.lang==='ar')?1:-1)}},{passive:true})}
+
 // ================= MUSHAF READER (King Fahd Complex Hafs v13 text) =================
 const SURAH_AR=["الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس", "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه", "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم", "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق", "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج", "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس", "التكوير", "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد", "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص", "الفلق", "الناس"];
 let QD=null,qLoading=null,qView={s:null},qSearch='';
@@ -2366,7 +2572,7 @@ function dhikrMenu(){const Z=tz();openMenu(S.lang==='ar'?'اختر الذكر':'
 function renderFaith(){document.getElementById('fHijri').textContent=hijriTxt()||'Faith';
  {const F=FTABS.find(x=>x[0]===fTab)||FTABS[0];document.getElementById('fTabs').innerHTML=`<button class="fsel" onclick="faithMenu()"><span class="ico c-${F[3]}">${ic(F[2],20)}</span><span class="fs-t"><small>${S.lang==='ar'?'القسم':'Section'}</small><b>${T(F[1])}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>`}
  const el=document.getElementById('faithBody');if(fTab!=='qibla')stopCompass();
- if(fTab==='adhkar')el.innerHTML=adkHtml();else if(fTab==='mushaf')el.innerHTML=mushafHtml();else if(fTab==='tasbih')el.innerHTML=tasbihHtml();else if(fTab==='quran')el.innerHTML=khatmaHtml();else if(fTab==='qibla'){el.innerHTML=qiblaHtml();startCompass()}else el.innerHTML=prayerStatsHtml()}
+ if(fTab==='adhkar')el.innerHTML=adkHomeHtml();else if(fTab==='mushaf')el.innerHTML=mushafHtml();else if(fTab==='tasbih')el.innerHTML=tasbihHtml();else if(fTab==='quran')el.innerHTML=khatmaHtml();else if(fTab==='qibla'){el.innerHTML=qiblaHtml();startCompass()}else el.innerHTML=prayerStatsHtml()}
 // ---- tasbih ----
 const DHIKR=[['SubhanAllah','سُبْحَانَ اللّٰه',33],['Alhamdulillah','الْحَمْدُ لِلّٰه',33],['Allahu Akbar','اللّٰهُ أَكْبَر',34],['Astaghfirullah','أَسْتَغْفِرُ اللّٰه',100],['La ilaha illa Allah','لَا إِلٰهَ إِلَّا اللّٰه',100],['Salawat','اللّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّد',100],['SubhanAllahi wa bihamdih','سُبْحَانَ اللّٰهِ وَبِحَمْدِه',100]];
 function tz(){S.tz=S.tz||{i:0,c:0};return S.tz}
@@ -2936,6 +3142,7 @@ async function doSchedule(){
      out.push({id:50000+d*10+j,channelId:'route',actionTypeId:'pcheck',extra:{pc:t.prayer,tid:t.id,day:keyOf(day)},title:pcTitle(t.prayer,day),body:S.lang==='ar'?'سجّلها: 👥 جماعة · ✅ في وقتها · ⏰ متأخرة':'Log it: 👥 Jama\'ah · ✅ On time · ⏰ Late',schedule:{at,allowWhileIdle:true}})})}}
   (((S.todo||{}).items)||[]).filter(x=>x.status!=='done'&&x.due&&x.time&&x.rem!=null).slice(0,900).forEach((x,i)=>{const [h,m]=x.time.split(':').map(Number),at=new Date(x.due+'T00:00');at.setHours(h,m-(x.rem||0),0,0);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:60000+i,channelId:'route',title:(x.pri>=3?'❗ ':'')+x.t,body:S.lang==='ar'?('مهمة · '+fmt(x.time)+(x.rem?' · بعد '+(x.rem>=1440?'يوم':x.rem>=60?'ساعة':x.rem+' دقيقة'):'')):('Task · '+fmt(x.time)),schedule:{at,allowWhileIdle:true}})});
   ((S.cal&&S.cal.ev)||[]).forEach((e,i)=>{if(e.allDay)return;const at=new Date(e.at-10*6e4);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:80000+i,channelId:'route',title:'📅 '+e.t,body:'In 10 minutes · '+clock12(e.at),schedule:{at,allowWhileIdle:true}})});
+  Object.entries(S.adkRem||{}).forEach(([cat,tm])=>{const ci=ADK_CATS.findIndex(z=>z[0]===cat);if(ci<0||!tm)return;const [h,m]=tm.split(':').map(Number);for(let d=0;d<14;d++){const at=new Date();at.setHours(0,0,0,0);at.setDate(at.getDate()+d);at.setHours(h,m,0,0);if(at.getTime()<=now+20000)continue;if(d===0&&((rec.adk||{})._done||{})[cat])continue;out.push({id:75000+ci*20+d,channelId:'route',title:'📿 '+adkCatName(cat),body:S.lang==='ar'?'وقت '+adkCatName(cat)+'. افتح يومي وابدأ.':'Time for '+adkCatName(cat),schedule:{at,allowWhileIdle:true}})}});
   out.sort((a,b)=>a.schedule.at-b.schedule.at);
   if(out.length)await LN.schedule({notifications:out.slice(0,300)});
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();document.getElementById('exactRow').style.display=ex.exact_alarm==='granted'?'none':'flex'}
@@ -3368,7 +3575,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=91;
+const APP_VERSION=92;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3833,7 +4040,7 @@ function wgCdDel(i){(S.cds||[]).splice(i,1);save();pushWidget();openWidgetSet()}
 // links from the widgets: com.rawhy.mydayroute://open/<where>
 function openFromLink(u){if(!u)return;const m=String(u).match(/:\/\/open\/([a-z]+)/);if(!m)return;const w=m[1];closeSheets&&closeSheets();
  if(w==='tasks'||w==='add'){go('tasks');tdMode='list';tdView='today';renderTasks();if(w==='add')setTimeout(()=>{const i=document.getElementById('tdIn');if(i)i.focus()},400)}
- else if(w==='prayers'){go('faith');fTab='prayers';renderFaith()}else if(w==='adhkar'){openAdhkar()}else if(w==='mushaf'){go('faith');fTab='quran';renderFaith();setTimeout(()=>{try{qContinue()}catch(e){}},300)}else if(w==='tasbih'){go('faith');fTab='tasbih';renderFaith()}else if(w==='habits')go('goals');else if(w==='cds')openWidgetSet();else if(w==='today')go('today')}
+ else if(w==='prayers'){go('faith');fTab='prayers';renderFaith()}else if(w==='adhkar'){openAdhkar(adkDefault())}else if(w==='mushaf'){go('faith');fTab='quran';renderFaith();setTimeout(()=>{try{qContinue()}catch(e){}},300)}else if(w==='tasbih'){go('faith');fTab='tasbih';renderFaith()}else if(w==='habits')go('goals');else if(w==='cds')openWidgetSet();else if(w==='today')go('today')}
 let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);const run=()=>{try{const now=new Date(),rec=dayRec();
  const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted(d).filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>{const ms=atTime(d,i?t.time:effTime(t)).getTime();steps.push({id:i?'':t.id,n:T(t.name),t:ms,tt:wTT(ms)})})}
  const list=sorted(),done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
@@ -3849,7 +4056,7 @@ let setFrom='today';function go(v){{const cur=document.querySelector('.view.on')
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 // ---- phone back button: close what is open, then go to Today, then press twice to leave ----
 const APPP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.App)||null):null;let backAt=0;
-function handleBack(){if(document.body.classList.contains('reading')&&!document.querySelector('.sheet.on:not(.closing)')){closeReader();return}document.querySelectorAll('.sheet.closing').forEach(x=>x.classList.remove('closing','on'));const cel=document.getElementById('celebrate');if(cel&&cel.classList.contains('on')){cel.classList.remove('on');return}const vw=document.getElementById('viewer');if(vw&&vw.classList.contains('on')&&typeof closeViewer==='function'){closeViewer();return}const open=[...document.querySelectorAll('.sheet.on:not(.closing)')];
+function handleBack(){if(document.body.classList.contains('adkreading')&&!document.querySelector('.sheet.on:not(.closing)')&&!(document.getElementById('celebrate')||{classList:{contains:()=>0}}).classList.contains('on')){adkRExit();return}if(document.body.classList.contains('reading')&&!document.querySelector('.sheet.on:not(.closing)')){closeReader();return}document.querySelectorAll('.sheet.closing').forEach(x=>x.classList.remove('closing','on'));const cel=document.getElementById('celebrate');if(cel&&cel.classList.contains('on')){cel.classList.remove('on');return}const vw=document.getElementById('viewer');if(vw&&vw.classList.contains('on')&&typeof closeViewer==='function'){closeViewer();return}const open=[...document.querySelectorAll('.sheet.on:not(.closing)')];
  if(document.getElementById('pickSheet').classList.contains('on')){closePick();return}
  if(document.getElementById('dtSheet').classList.contains('on')){closeDT();return}if(document.getElementById('askSheet').classList.contains('on')){closeAsk();return}
  if(open.length){const top=open[open.length-1];if(top.id==='recSheet'&&typeof stopRec==='function')stopRec();else if(top.id==='scanSheet')stopScan();else closeSheets();return}
