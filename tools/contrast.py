@@ -17,7 +17,7 @@ function bgs(e){let layers=[];for(let n=e;n&&n.nodeType===1;n=n.parentElement){c
   const c=P(cs.backgroundColor);if(c&&c[3]>0)layers.push({c});
   if(c&&c[3]>=1&&!(bi&&bi.includes('gradient')))break}
   let outs=[root];for(let i=layers.length-1;i>=0;i--){const l=layers[i];if(l.c)outs=outs.map(b=>over(l.c,b));else outs=outs.flatMap(b=>l.g.map(g=>over(g,b)))}return outs}
-const out=[];document.querySelectorAll('.view.on *, .sheet.on *').forEach(e=>{
+const out=[];document.querySelectorAll('.view.on *, .sheet.on *, #chatScreen.on *, .adkr.on *').forEach(e=>{
   if(![...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()))return;
   const r=e.getBoundingClientRect();if(!r.width||!r.height||r.bottom<0||r.top>innerHeight)return;
   const cs=getComputedStyle(e);if(cs.visibility==='hidden'||+cs.opacity<.2)return;

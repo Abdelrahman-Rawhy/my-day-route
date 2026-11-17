@@ -21,6 +21,7 @@ STEPS=[
  ("settings","go('settings')"),("city","openCity()"),("backup","closeSheets();openBackup()"),("account","closeSheets();openAccount()"),("cal","closeSheets();openCalSet()"),
  ("family create","closeSheets();window.firebase=window.firebase||{};FB.ok=true;S.famCode=null;S.famId=null;famTab='create';go('family')"),("family join","famTab='join';renderFamily()"),
  ("family in","S.famCode='ABCD-EFGH-JK23';S.famId='f1';FB.uid='u1';FAM.family={name:'عائلة'};FAM.members=[{id:'u1',name:'أحمد',color:'#7C5CFF'},{id:'u2',name:'ماما',color:'#F472B6'}];FAM.tasks=[{id:'t1',title:'عيش',type:'shopping',from:'u2',to:'u1',status:'open',pts:10,items:[{t:'لبن',done:false}],fromName:'ماما'}];famView='tasks';famTab='mine';renderFamily()"),
+ ("chat open","FAM.members=[{id:'u1',name:'أحمد',color:'#8A5A2B'},{id:'u2',name:'Baba',color:'#F472B6',online:true,pub:1}];openChat('u2')"),("chat close","closeChat()"),
  ("family sent","famTab='sent';renderFamily()"),("family chats","famView='chats';renderFamily()"),("send sheet","openSend(null,'home')"),("qr","closeSheets();showFamQR()"),
  ("update banner","closeSheets();go('today');showUpdate('تجربة')"),("back x3","handleBack();handleBack();handleBack()"),
 ]
