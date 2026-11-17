@@ -23,6 +23,7 @@ import org.json.JSONObject;
 public class WidgetConfigActivity extends Activity {
     private int widgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private boolean ar = true, listType = false;
+    private String kind = "";
     private String style = "glass";
     private int op = 2, rad = 3, pad = 2;
     private boolean scroll = false;
@@ -46,6 +47,7 @@ public class WidgetConfigActivity extends Activity {
         AppWidgetProviderInfo info = AppWidgetManager.getInstance(this).getAppWidgetInfo(widgetId);
         String cls = info == null ? "" : info.provider.getClassName();
         listType = cls.endsWith("CountdownWidget") || cls.endsWith("TasksWidget");
+        kind = cls.substring(cls.lastIndexOf('.') + 1);
         JSONObject look = WidgetKit.look(this, data, widgetId);
         style = look.optString("s", "glass");
         op = look.optInt("o", 2);
@@ -180,18 +182,46 @@ public class WidgetConfigActivity extends Activity {
         wall.setLayoutParams(wp);
         previewBox = new LinearLayout(this);
         previewBox.setOrientation(LinearLayout.VERTICAL);
-        String[][] rows = ar ? new String[][] { { "🌙", "رمضان", "٨٣" }, { "🎉", "عيد الفطر", "١١٢" }, { "🎂", "عيد ميلادي", "٢٤٩" } }
-            : new String[][] { { "🌙", "Ramadan", "83" }, { "🎉", "Eid al-Fitr", "112" }, { "🎂", "My birthday", "249" } };
+        // preview rows that look like the widget being edited
+        String[][] rows;
+        int numColor = 0xFF6B8CFF;
+        switch (kind) {
+            case "TasksWidget":
+                rows = ar ? new String[][] { { "☐", "الدواء", "٩:٠٠ م" }, { "☐", "تسليم المذكرة", "متأخرة" }, { "☐", "اتصل بالموكل", "" } }
+                    : new String[][] { { "☐", "Medicine", "9:00 PM" }, { "☐", "Send the memo", "Overdue" }, { "☐", "Call the client", "" } };
+                numColor = 0x99FFFFFF;
+                break;
+            case "HabitsWidget":
+                rows = ar ? new String[][] { { "💧", "اشرب مية", "٣ / ١٠" }, { "🌙", "النوم بدري", "٠ / ١" } }
+                    : new String[][] { { "💧", "Drink water", "3 / 10" }, { "🌙", "Early to bed", "0 / 1" } };
+                numColor = 0xB3FFFFFF;
+                break;
+            case "PrayerDayWidget":
+            case "PrayerWidget":
+            case "RouteWidget":
+                rows = ar ? new String[][] { { "🕌", "الصلاة الجاية · العصر", "١:٢٤:١٠" }, { "", "الفجر ٤:٥٢   الظهر ١١:٤١   المغرب ٤:٥٨", "" } }
+                    : new String[][] { { "🕌", "Next · Asr", "1:24:10" }, { "", "Fajr 4:52   Dhuhr 11:41   Maghrib 4:58", "" } };
+                numColor = 0xFFFBBF24;
+                break;
+            case "StepWidget":
+                rows = ar ? new String[][] { { "✓", "أذكار الصباح", "١ / ١٥" }, { "", "بعدها: قراءة القرآن · ٥:٢٥ ص", "" } }
+                    : new String[][] { { "✓", "Morning adhkar", "1/15" }, { "", "Then: Read Quran · 5:25 AM", "" } };
+                numColor = 0xB3FFFFFF;
+                break;
+            default:
+                rows = ar ? new String[][] { { "🌙", "رمضان", "٨٣" }, { "🎉", "عيد الفطر", "١١٢" }, { "🎂", "عيد ميلادي", "٢٤٩" } }
+                    : new String[][] { { "🌙", "Ramadan", "83" }, { "🎉", "Eid al-Fitr", "112" }, { "🎂", "My birthday", "249" } };
+        }
         for (String[] r : rows) {
             LinearLayout row = new LinearLayout(this);
             row.setGravity(Gravity.CENTER_VERTICAL);
             row.setPadding(0, dp(6), 0, dp(6));
             TextView e = text(r[0], 18, Color.WHITE, false);
-            TextView n = text(r[1], 16, Color.WHITE, true);
-            n.setPadding(dp(12), 0, dp(12), 0);
+            TextView n = text(r[1], r[0].isEmpty() ? 13 : 16, r[0].isEmpty() ? 0xB3FFFFFF : Color.WHITE, !r[0].isEmpty());
+            n.setPadding(r[0].isEmpty() ? 0 : dp(12), 0, dp(12), 0);
             n.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            TextView d = text(r[2], 22, 0xFF6B8CFF, true);
-            row.addView(e);
+            TextView d = text(r[2], 20, numColor, true);
+            if (!r[0].isEmpty()) row.addView(e);
             row.addView(n);
             row.addView(d);
             previewBox.addView(row);
