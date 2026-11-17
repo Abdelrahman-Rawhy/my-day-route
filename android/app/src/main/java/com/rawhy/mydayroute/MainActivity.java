@@ -10,5 +10,18 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(SpeechBridge.class);
         registerPlugin(ApkUpdater.class);
         super.onCreate(savedInstanceState);
+        SelfUpdate.schedule(getApplicationContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SelfUpdate.foreground = true;
+    }
+
+    @Override
+    public void onPause() {
+        SelfUpdate.foreground = false;
+        super.onPause();
     }
 }

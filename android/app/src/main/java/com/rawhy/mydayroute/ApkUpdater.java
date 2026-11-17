@@ -104,16 +104,11 @@ public class ApkUpdater extends Plugin {
         }).start();
     }
 
-    /** Opens the installer. If Android hasn't allowed this app to install updates yet, opens that setting instead. */
+    /** Installs the downloaded APK through PackageInstaller (no prompt on Android 12+ once this app is the installer). */
     @PluginMethod
     public void install(PluginCall call) {
         Context c = getContext();
         JSObject r = new JSObject();
-        File f = apkFile();
-        if (!f.exists()) {
-            call.reject("no file");
-            return;
-        }
         if (Build.VERSION.SDK_INT >= 26 && !c.getPackageManager().canRequestPackageInstalls()) {
             Intent s = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + c.getPackageName()));
             s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -122,12 +117,42 @@ public class ApkUpdater extends Plugin {
             call.resolve(r);
             return;
         }
-        Uri uri = FileProvider.getUriForFile(c, c.getPackageName() + ".fileprovider", f);
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setDataAndType(uri, "application/vnd.android.package-archive");
-        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-        c.startActivity(i);
-        r.put("started", true);
-        call.resolve(r);
+        new Thread(() -> {
+            try {
+                SelfUpdate.install(c);
+                r.put("started", true);
+                call.resolve(r);
+            } catch (Exception e) {
+                // fall back to the classic installer screen
+                try {
+                    Uri uri = FileProvider.getUriForFile(c, c.getPackageName() + ".fileprovider", apkFile());
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setDataAndType(uri, "application/vnd.android.package-archive");
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    c.startActivity(i);
+                    r.put("started", true);
+                    call.resolve(r);
+                } catch (Exception e2) {
+                    call.reject(e2.getMessage() == null ? "install failed" : e2.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    /** Background updates on/off (default on). */
+    @PluginMethod
+    public void setAuto(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", true));
+        SelfUpdate.prefs(getContext()).edit().putBoolean("auto", on).apply();
+        SelfUpdate.schedule(getContext());
+        call.resolve();
+    }
+
+    /** Run the background check now (used when the app opens). */
+    @PluginMethod
+    public void checkNow(PluginCall call) {
+        final Context c = getContext().getApplicationContext();
+        new Thread(() -> SelfUpdate.runCheck(c)).start();
+        call.resolve();
     }
 }
