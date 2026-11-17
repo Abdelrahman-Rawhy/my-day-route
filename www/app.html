@@ -971,6 +971,7 @@ html:not([dir=rtl]) .adkr-nav:not(.nx) svg{transform:scaleX(-1)!important}html:n
 @keyframes adkSlN{from{opacity:0;transform:translateX(-26px)}}@keyframes adkSlP{from{opacity:0;transform:translateX(26px)}}
 html.glass .adkr-stage,html.glass .adk-row{background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.03));border-color:rgba(255,255,255,.13)}
 html.glass.light .adkr-stage,html.glass.light .adk-row{background:rgba(255,255,255,.75);border-color:rgba(22,26,60,.10)}
+.dp-l .dp-pts{display:inline-block;margin-top:5px;font-style:normal;font-size:12px;font-weight:800;padding:2px 10px;border-radius:99px;color:var(--gold);background:rgba(251,191,36,.13);border:1px solid rgba(251,191,36,.3)}
 </style>
 </head>
 <body>
@@ -2474,7 +2475,7 @@ function routePathHtml(list,rec,next,now){if(!list.length)return'<div class="emp
   const st=d?'done':nx?'cur':late?'late':'up';
   h+=`<div class="dp-row" style="--x:${off}px">${nx?`<div class="dp-tip">${esc(motivFor(t,i))}</div>`:''}
    <button class="pnode dp-n ${st} ${col(k)}" data-id="${t.id}" onclick="pathTap('${t.id}')" aria-label="${esc(tName(t))}"><span class="dp-face">${ic(d?'check':k,30,'',d?3:2)}</span>${nx?'<i class="dp-ring"></i>':''}${t.prayer&&d&&(rec.pq||{})[t.prayer]==='jamaah'?'<b class="dp-crown">'+ic('crown',14)+'</b>':''}</button>
-   <div class="dp-l"><b>${esc(tName(t))}</b><span>${fmt(effTime(t))} · +${t.pts}</span></div></div>`});
+   <div class="dp-l"><b>${esc(tName(t))}</b><span>${fmt(effTime(t))}</span><em class="dp-pts">+${ar?arNum(t.pts):t.pts} ${ar?'نقطة':'pts'}</em></div></div>`});
  const all=list.length&&list.every(t=>rec.done.includes(t.id));
  h+=`<div class="dp-row" style="--x:0px"><div class="dp-chest ${all?'open':''}">${ic(all?'trophy':'gift',34)}</div><div class="dp-l"><b>${all?(ar?'خلّصت مسار النهارده! 🎉':'Route complete! 🎉'):(ar?'جايزة آخر المسار':'Reward at the end')}</b><span>${ar?'+٢٠ نقطة عند إكمال كل الخطوات':'+20 points for finishing every step'}</span></div></div></div>`;
  return h}
@@ -2909,7 +2910,7 @@ const AR_PAT=[
  [/^From (.+?) ·  ?· (.*)$/,m=>'من '+m[1]+' · '+trS(m[2].trim()).replace(/(\d+)\/(\d+) bought/,'$1/$2 تم شراؤها')],[/^To (?!sort)(.+?) ·  ?· (.*)$/,m=>'إلى '+m[1]+' · '+trS(m[2].trim()).replace(/(\d+)\/(\d+) bought/,'$1/$2 تم شراؤها')],
  [/^Next: (.+) at (.+)$/,m=>'التالي: '+trS(m[1])+' الساعة '+m[2]],
  [/^(\d+) steps? slipped\.$/,m=>'فاتتك '+m[1]+(m[1]==='1'?' خطوة.':' خطوات.')],
- [/^(.+) · Today's reminder$/,m=>m[1].replace('Quran','القرآن')+' · تذكير اليوم'],
+ [/^(.+) · Today's reminder$/,m=>{const x=trS(m[1]);return(x!==m[1]?x:m[1].replace('Quran','القرآن'))+' · تذكير اليوم'}],
  [/^(\d+) skipped today · restore$/,m=>m[1]+' متخطاة اليوم · استعادة'],[/^Moved to (.+)$/,m=>'نُقلت إلى '+m[1]],
  [/^Sunnah (.+)$/,m=>'السنة '+m[1].replace('before','قبلها').replace('after','بعدها')],
  [/^Back to (.+)$/,m=>'رجوع إلى '+m[1]],
@@ -2975,10 +2976,13 @@ const DAYS_AR={Sun:'أحد',Mon:'إثنين',Tue:'ثلاثاء',Wed:'أربعا�
 function trDays(x){return AR[x]||x.split(' ').map(w=>DAYS_AR[w]||w).join(' ')}
 function trS(x){if(AR[x])return AR[x];{const y=x.replace(/←/g,'→');if(y!==x&&AR[y])return AR[y].replace(/→/g,'←')}for(const [re,f] of AR_PAT){const m=x.match(re);if(m){const r=f(m);if(r!=null)return r}}return x.replace(/\b(\d{1,2}:\d\d) (AM|PM)\b/g,(a,t,ap)=>t+' '+(ap==='AM'?'ص':'م'))}
 const AR_SKIP='.bub,.idea .t,textarea,#recTxt,.code,.ar,.ar2,#jBody .jtext,script,style';
-function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue;if(raw.includes('→')){raw=raw.replace(/→/g,'←');root.nodeValue=raw}const t=raw.trim();if(!t||!/[A-Za-z]/.test(t))return;const r=trS(t);if(r!==t)root.nodeValue=raw.replace(t,r);return}
+function arSep(x){return S.lang==='ar'&&typeof x==='string'?x.replace(/ ?· ?/g,'، ').replace(/، $/,''):x}
+function arSepN(o){if(S.lang==='ar'&&o&&o.notifications)o.notifications.forEach(n=>{n.title=arSep(n.title);n.body=arSep(n.body)});return o}
+function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue,o=raw;if(raw.includes('→'))raw=raw.replace(/→/g,'←');const t=raw.trim();if(t&&/[A-Za-z]/.test(t)){const r=trS(t);if(r!==t)raw=raw.replace(t,r)}if(raw.includes('·')&&!/[A-Za-z]{3}/.test(raw.replace(/pts|AM|PM/g,''))&&!p.closest('.mushaf,.qreader,.qr-inner'))raw=raw.trim()==='·'?raw.replace('·','،'):raw.replace(/ ?· ?/g,'، ');if(raw!==o)root.nodeValue=raw;return}
  if(root.nodeType===1&&root.querySelectorAll){const ph=[...(root.matches&&root.matches('[placeholder]')?[root]:[]),...root.querySelectorAll('[placeholder]')];ph.forEach(e=>{const v=e.getAttribute('placeholder');if(v&&/[A-Za-z]/.test(v)&&!e.dataset.phAr){const r=trS(v);if(r!==v){e.setAttribute('placeholder',r);e.dataset.phAr=1}}})}if(root.nodeType!==1||root.closest&&root.closest(AR_SKIP))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const L=[];let n;while(n=w.nextNode())L.push(n);L.forEach(trNode);
  (root.querySelectorAll?[root,...root.querySelectorAll('[placeholder],[title]')]:[]).forEach(e=>{if(e.placeholder&&/[A-Za-z]/.test(e.placeholder)){const r=trS(e.placeholder);if(r!==e.placeholder)e.placeholder=r}})}
 let arObs=null;
+try{const _ft=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...r){return _ft.call(this,arSep(String(t)),...r)};const _mt=CanvasRenderingContext2D.prototype.measureText;CanvasRenderingContext2D.prototype.measureText=function(t){return _mt.call(this,arSep(String(t)))}}catch(e){}
 function applyLang(){const ar=S.lang==='ar';document.documentElement.lang=ar?'ar':'en';document.documentElement.dir=ar?'rtl':'ltr';if(!ar){if(arObs){arObs.disconnect();arObs=null}return}
  trNode(document.body);if(!arObs){arObs=new MutationObserver(ms=>{arObs.disconnect();for(const m of ms){if(m.type==='characterData')trNode(m.target);else m.addedNodes.forEach(trNode)}arObs.observe(document.body,{childList:true,subtree:true,characterData:true})});arObs.observe(document.body,{childList:true,subtree:true,characterData:true})}}
 const CREAM_MAP=[[/#FBBF24/gi,'#8B5E0A'],[/%237C5CFF/gi,'%237A4E24'],[/%2322D3EE/gi,'%238F6430'],[/%23A78BFA/gi,'%23B08050'],[/#A78BFA/gi,'#B08050'],[/167,\s*139,\s*250/g,'176,128,80'],[/#7C5CFF/gi,'#7A4E24'],[/#22D3EE/gi,'#8F6430'],[/124,\s*92,\s*255/g,'138,90,43'],[/34,\s*211,\s*238/g,'201,160,99'],[/#F472B6/gi,'#D9A86C'],[/22,\s*26,\s*60/g,'70,45,20'],[/20,\s*24,\s*40/g,'60,40,20'],[/246,\s*247,\s*255/g,'255,250,240'],[/#F4F5FA/gi,'#F6EFE2'],[/#EEF0FA/gi,'#F3EADA'],[/#f6f7fb/gi,'#FBF5EA'],[/#eef0f7/gi,'#F3EADA'],[/#F0F2F8/gi,'#F6EFE2'],[/#E9ECF6/gi,'#F1E6D3'],[/#161A2E/gi,'#3B2A1A'],[/#1b1f33/gi,'#3B2A1A'],[/#5E667C/gi,'#7A6247']];
@@ -3144,7 +3148,7 @@ async function doSchedule(){
   ((S.cal&&S.cal.ev)||[]).forEach((e,i)=>{if(e.allDay)return;const at=new Date(e.at-10*6e4);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:80000+i,channelId:'route',title:'📅 '+e.t,body:'In 10 minutes · '+clock12(e.at),schedule:{at,allowWhileIdle:true}})});
   Object.entries(S.adkRem||{}).forEach(([cat,tm])=>{const ci=ADK_CATS.findIndex(z=>z[0]===cat);if(ci<0||!tm)return;const [h,m]=tm.split(':').map(Number);for(let d=0;d<14;d++){const at=new Date();at.setHours(0,0,0,0);at.setDate(at.getDate()+d);at.setHours(h,m,0,0);if(at.getTime()<=now+20000)continue;if(d===0&&((rec.adk||{})._done||{})[cat])continue;out.push({id:75000+ci*20+d,channelId:'route',title:'📿 '+adkCatName(cat),body:S.lang==='ar'?'وقت '+adkCatName(cat)+'. افتح يومي وابدأ.':'Time for '+adkCatName(cat),schedule:{at,allowWhileIdle:true}})}});
   out.sort((a,b)=>a.schedule.at-b.schedule.at);
-  if(out.length)await LN.schedule({notifications:out.slice(0,300)});
+  if(out.length)await LN.schedule(arSepN({notifications:out.slice(0,300)}));
   if(LN.checkExactNotificationSetting){const ex=await LN.checkExactNotificationSetting();document.getElementById('exactRow').style.display=ex.exact_alarm==='granted'?'none':'flex'}
  }catch(e){console.log('schedule error',e)}
 }
@@ -3174,7 +3178,7 @@ if(LN&&LN.addListener){try{LN.addListener('localNotificationActionPerformed',a=>
  if(x.day!==today()){toast(S.lang==='ar'?'هذا التذكير ليوم سابق':'That reminder was for an earlier day','clock');return}
  if(['jamaah','ontime','late'].includes(a.actionId)){setTimeout(()=>pcLog(x.tid,a.actionId),400)}else{const t=S.tasks.find(y=>y.id===x.tid);if(t)setTimeout(()=>pcShow({t}),600)}})}catch(e){}}
 async function allowExact(){try{await LN.changeExactNotificationSetting();setTimeout(scheduleNative,1500)}catch(e){}}
-async function timerNotif(){if(!LN)return;try{await LN.cancel({notifications:[{id:99999}]});const T=S.timer;if(T.running&&S.notif&&(await ensurePerm()))await LN.schedule({notifications:[{id:99999,channelId:'route',title:T.mode==='focus'?'Focus session done!':'Break over',body:T.mode==='focus'?'+'+sessPts()+' points. Take a '+(S.breakMin||5)+'-minute break.':'Ready for another focus session?',schedule:{at:new Date(T.endAt),allowWhileIdle:true}}]})}catch(e){}}
+async function timerNotif(){if(!LN)return;try{await LN.cancel({notifications:[{id:99999}]});const T=S.timer;if(T.running&&S.notif&&(await ensurePerm()))await LN.schedule(arSepN({notifications:[{id:99999,channelId:'route',title:T.mode==='focus'?'Focus session done!':'Break over',body:T.mode==='focus'?'+'+sessPts()+' points. Take a '+(S.breakMin||5)+'-minute break.':'Ready for another focus session?',schedule:{at:new Date(T.endAt),allowWhileIdle:true}}]}))}catch(e){}}
 if(IS_NATIVE){
  if(S.notifNativeInit!==true){S.notif=true;S.notifNativeInit=true;store.set(S)}
  const _save=save;save=function(){_save();scheduleNative()};
@@ -3575,7 +3579,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=92;
+const APP_VERSION=93;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3735,7 +3739,7 @@ function subscribeFamily(){
 }
 function heartbeat(){if(FB.ok&&S.famId)famRef().collection('members').doc(FB.uid).set({lastSeen:SV()},{merge:true}).catch(()=>{})}
 setInterval(heartbeat,5*6e4);document.addEventListener('visibilitychange',()=>{if(!document.hidden)heartbeat()});
-function localNotify(title,body){try{if(typeof LN!=='undefined'&&LN)LN.schedule({notifications:[{id:80000+Math.floor(Math.random()*9000),channelId:'route',title,body,schedule:{at:new Date(Date.now()+800)}}]})}catch(e){}}
+function localNotify(title,body){try{if(typeof LN!=='undefined'&&LN)LN.schedule({notifications:[{id:80000+Math.floor(Math.random()*9000),channelId:'route',title:arSep(title),body:arSep(body),schedule:{at:new Date(Date.now()+800)}}]})}catch(e){}}
 async function createFamily(){
  const fam=document.getElementById('fName').value.trim()||'Our Family';if(!saveProfile())return;
  const code=famCode();try{const id=await famIdOf(code),key=await famKeyOf(code);FKEY=key;
@@ -4045,7 +4049,7 @@ let wT=null;function pushWidget(){if(!WIDGET)return;clearTimeout(wT);const run=(
  const steps=[];for(let i=0;i<2;i++){const d=new Date(now);d.setDate(d.getDate()+i);sorted(d).filter(t=>!t.prayer&&(i>0||!rec.done.includes(t.id))).forEach(t=>{const ms=atTime(d,i?t.time:effTime(t)).getTime();steps.push({id:i?'':t.id,n:T(t.name),t:ms,tt:wTT(ms)})})}
  const list=sorted(),done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
  const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:T(tName(t)),t:atTime(now,effTime(t)).getTime(),tt:wTT(atTime(now,effTime(t)).getTime()),pts:t.pts,p:t.prayer?1:0}));
- WIDGET.setData({data:JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:T(p.n),t:p.t,tt:wTT(p.t)})),L:widgetLabels(),rtl:S.lang==='ar',...widgetExtra(),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()})}).catch(()=>{})}catch(e){}};if(document.hidden)run();else wT=setTimeout(run,600)}
+ WIDGET.setData({data:arSep(JSON.stringify({day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:T(p.n),t:p.t,tt:wTT(p.t)})),L:widgetLabels(),rtl:S.lang==='ar',...widgetExtra(),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()}))}).catch(()=>{})}catch(e){}};if(document.hidden)run();else wT=setTimeout(run,600)}
 // leaving the app always hands the latest data to the widgets
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pushWidget()});
 
