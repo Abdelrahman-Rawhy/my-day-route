@@ -188,7 +188,8 @@ textarea{resize:none;font-size:14px}
 .seg{display:flex;background:rgba(0,0,0,.25);border-radius:14px;padding:4px;gap:4px;margin-bottom:6px}
 .seg button{flex:1;padding:9px 4px;border-radius:11px;font-size:13px;color:var(--mu);font-weight:600;display:flex;gap:6px;justify-content:center;align-items:center}
 .seg button.on{background:var(--s2);color:var(--tx)}
-.tring{width:200px;height:200px;margin:14px auto 6px;position:relative}
+.tring{width:200px;height:200px;margin:14px auto 6px;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}.tring:active{transform:scale(.97)}
+.trow{display:flex;gap:10px;align-items:center;margin-top:10px}.trow .btn{flex:1;min-height:56px;font-size:17px}.trow .treset{width:56px;height:56px;flex:none;border-radius:18px}.trow .treset.hide{display:none}
 .tring svg{transform:rotate(-90deg)}
 .tring .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .tring .clock{font-size:44px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
@@ -936,14 +937,13 @@ html[dir=rtl] .g-xp i,html[dir=rtl] .gq-bar i{margin-left:auto;background:linear
   <div id="gList"></div>
   <div class="card">
     <h3><span class="ico c-teal" data-i="clock"></span><span class="sp">Focus timer</span></h3>
-    <div class="sub" id="tSub">25 min focus · 5 min break · +5 points per session</div>
     <div id="tAdjust"></div>
-    <label style="margin-top:0">Focus on</label><select id="catSel" onchange="setCat(this.value)" style="margin-bottom:10px"></select>
-    <div class="tring">
+    <label style="margin-top:0">Focus on</label><select id="catSel" onchange="setCat(this.value)" style="margin-bottom:6px"></select>
+    <div class="tring" onclick="startPause()" role="button">
       <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/></svg>
       <div class="in"><div class="clock" id="tClock">25:00</div><div class="mode" id="tMode">Ready to focus</div></div>
     </div>
-    <div class="row"><button class="btn ghost" onclick="resetTimer()" id="tReset"></button><button class="btn" id="tBtn" onclick="startPause()"></button></div>
+    <div class="trow"><button class="btn" id="tBtn" onclick="startPause()"></button><button class="iconbtn treset" onclick="resetTimer()" id="tReset" aria-label="reset"></button></div>
     <div class="sub" style="margin:12px 0 0;text-align:center" id="tToday"></div>
   </div>
 </section>
@@ -1464,8 +1464,9 @@ function renderGoals(){
   :`<div class="card" style="text-align:center;padding:26px 16px"><span class="ico c-violet" style="width:56px;height:56px;border-radius:18px;display:grid;place-items:center;margin:0 auto">${ic('target',26,'draw')}</span><h3 style="justify-content:center;margin-top:12px">${gFilter==='all'?'No goals yet':'No '+F.find(f=>f[0]===gFilter)[1].toLowerCase()+' yet'}</h3><div class="sub">Tap + to add a project, habit, number target or life goal.</div><button class="btn" onclick="openNewGoal(${gFilter==='all'?'':`'${gFilter}'`})">${ic('plus',16)}New goal</button></div>`;
  // focus timer
  const sel=document.getElementById('catSel');if(sel){sel.innerHTML=focusOptions()}
- document.getElementById('tReset').innerHTML=ic('rotate',16)+'Reset';document.getElementById('tAdjust').innerHTML=timerAdjustHtml();document.getElementById('tSub').textContent=(S.focusMin||25)+' min focus · '+(S.breakMin||5)+' min break · +'+sessPts()+' points per session';
- drawTimer();const rec=dayRec();document.getElementById('tToday').textContent=`Today: ${rec.sessions||0} sessions · ${(sumF(rec.focus)/60).toFixed(1)} h focused`;
+ document.getElementById('tReset').innerHTML=ic('rotate',18);document.getElementById('tAdjust').innerHTML=timerAdjustHtml();
+ drawTimer();const rec=dayRec(),nn=v=>S.lang==='ar'?arNum(v):v,ss=rec.sessions||0,mf=Math.round(sumF(rec.focus));
+ document.getElementById('tToday').textContent=ss?L(`النهارده: ${nn(ss)} ${ss===1?'جلسة':ss===2?'جلستين':'جلسات'}، ${mf>=60?nn(Math.floor(mf/60))+' س ':''}${mf%60?nn(mf%60)+' د':''} تركيز`,`Today: ${ss} session${ss>1?'s':''} · ${mf>=60?Math.floor(mf/60)+'h ':''}${mf%60?mf%60+'m':''} focused`):L('لسه مفيش جلسات النهارده','No sessions yet today');
 }
 function habitAdd(id,d){const g=S.goals.find(x=>x.id===id);if(!g)return;g.log=g.log||{};const k=keyOf(new Date()),before=habitCount(g);g.log[k]=Math.max(0,(g.log[k]||0)+d);if(!g.log[k])delete g.log[k];const after=habitCount(g);
  if(d>0){if(before<g.target&&after>=g.target){addPts(15,g.title+': done '+(g.period==='day'?'today':'this week')+'!','check');burst(80)}else addPts(3,g.title+' +1',gIcon(g))}else{subPts(before>=g.target&&after<g.target?15:3);save();render()}
@@ -1566,16 +1567,20 @@ function adjTimer(kind,d){if(S.timer.running){toast('Pause the timer to change i
  if(kind==='f')S.focusMin=Math.min(120,Math.max(5,(S.focusMin||25)+d));else S.breakMin=Math.min(30,Math.max(1,(S.breakMin||5)+d));
  if(S.timer.mode==='focus')S.timer.left=FOCUS_S();else S.timer.left=BREAK_S();save();renderGoals()}
 function presetTimer(f,b){if(S.timer.running){toast('Pause the timer to change it','clock');return}S.focusMin=f;S.breakMin=b;S.timer.mode='focus';S.timer.left=FOCUS_S();save();renderGoals()}
-function timerAdjustHtml(){const f=S.focusMin||25,b=S.breakMin||5,st='padding:0;width:34px;height:34px;border-radius:11px';
- const step=(k,v,unit,dm,dp)=>`<div style="flex:1;background:rgba(0,0,0,.22);border-radius:16px;padding:8px 10px;display:flex;align-items:center;gap:8px"><div style="flex:1"><div style="font-size:11px;color:var(--mu);font-weight:600">${unit}</div><b style="font-size:17px;white-space:nowrap">${v}<span style="font-size:12px;color:var(--mu);font-weight:600"> min</span></b></div><button class="btn ghost" style="${st}" onclick="adjTimer('${k}',${dm})">−</button><button class="btn ghost" style="${st}" onclick="adjTimer('${k}',${dp})">+</button></div>`;
- return `<div style="display:flex;gap:8px;margin-bottom:8px">${step('f',f,'Focus',f>30?-10:-5,f>=30?10:5)}${step('b',b,'Break',b>5?-5:-1,b>=5?5:1)}</div>
- <div style="display:flex;gap:6px;margin-bottom:10px">${[[25,5],[50,10],[90,20],[120,30]].map(([x,y])=>`<button class="btn ghost" style="flex:1;padding:7px 2px;font-size:12px;${f===x&&b===y?'border-color:var(--a1);background:rgba(124,92,255,.2)':''}" onclick="presetTimer(${x},${y})">${x}/${y}</button>`).join('')}</div>`}
+function timerAdjustHtml(){const f=S.focusMin||25,b=S.breakMin||5,n=v=>S.lang==='ar'?arNum(v):v;
+ return `<button class="fsel" onclick="timerMenu()"><span class="ico c-teal">${ic('clock',20)}</span><span class="fs-t"><small>${L('المدة','Duration')}: +${n(sessPts())} ${L('نقطة للجلسة','pts per session')}</small><b>${L(`${n(f)} د تركيز، ${n(b)} د راحة`,`${f} min focus · ${b} min break`)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>`}
+function timerMenu(){if(S.timer.running){toast(L('وقّف المؤقت الأول عشان تغيّر المدة','Pause the timer to change it'),'clock');return}
+ const f=S.focusMin||25,b=S.breakMin||5,n=v=>S.lang==='ar'?arNum(v):v,P=[[25,5,L('قصيرة','Short')],[50,10,L('متوسطة','Medium')],[90,20,L('طويلة','Long')],[120,30,L('عميقة','Deep work')]];
+ const it=P.map(([x,y,nm])=>({k:x+'/'+y,label:L(`${n(x)} د تركيز، ${n(y)} د راحة`,`${x} min focus · ${y} min break`),sub:nm+(S.lang==='ar'?'، +':' · +')+n(Math.max(5,Math.round(x/25*5)))+' '+L('نقطة','pts'),icon:'clock',c:'teal',on:f===x&&b===y}));
+ const cu=!P.some(([x,y])=>x===f&&y===b);it.push({k:'c',label:L('مدة مخصّصة…','Custom…'),sub:cu?L(`${n(f)} د، ${n(b)} د`,`${f} · ${b} min`):L('اختار الدقايق بنفسك','Pick your own minutes'),icon:'pen',c:'violet',on:cu});
+ openMenu(L('مدة التركيز','Focus length'),it,k=>{if(k!=='c'){const [x,y]=k.split('/').map(Number);presetTimer(x,y);return}
+  setTimeout(()=>askNumber(L('دقايق التركيز (٥–١٢٠)','Focus minutes (5–120)'),f,v=>{setTimeout(()=>askNumber(L('دقايق الراحة (١–٣٠)','Break minutes (1–30)'),b,w=>presetTimer(Math.round(v),Math.round(w)),1,30,1),320)},5,120,5),320)})}
 function timeLeft(){const T=S.timer;return T.running?Math.max(0,Math.round((T.endAt-Date.now())/1000)):T.left}
 function drawTimer(){const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS_S():BREAK_S();
  document.getElementById('tClock').textContent=String(Math.floor(l/60)).padStart(2,'0')+':'+String(l%60).padStart(2,'0');
  document.getElementById('tArc').style.strokeDashoffset=552.9*(1-l/tot);
- const fgN=(S.goals.find(x=>x.id===T.cat)||{}).title;document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?(fgN?fgN.slice(0,22):'Focusing'):'Ready to focus'):(T.running?'Break time':'Break ready');
- document.getElementById('tBtn').innerHTML=T.running?ic('pause',16,'',2.4)+'Pause':ic('play',16,'',2.2)+'Start'}
+ const fgN=(S.goals.find(x=>x.id===T.cat)||{}).title,full=!T.running&&l===tot;document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?(fgN?fgN.slice(0,22):L('بتركّز…','Focusing')):full?L('اضغط عشان تبدأ','Tap to start'):L('متوقف مؤقتًا','Paused')):(T.running?L('وقت الراحة','Break time'):L('الراحة جاهزة','Break ready'));
+ document.getElementById('tBtn').innerHTML=T.running?ic('pause',18,'',2.4)+L('إيقاف مؤقت','Pause'):ic('play',18,'',2.2)+(full?L('ابدأ','Start'):L('كمّل','Resume'));const R=document.getElementById('tReset');if(R)R.classList.toggle('hide',full&&T.mode==='focus')}
 function setCat(c){S.timer.cat=c;save()}
 function startPause(){const T=S.timer;if(T.running){T.left=timeLeft();T.running=false}else{T.endAt=Date.now()+T.left*1000;T.running=true;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}save();drawTimer()}
 function resetTimer(){S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS_S();save();drawTimer()}
@@ -3285,7 +3290,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=70;
+const APP_VERSION=71;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
