@@ -7,7 +7,7 @@
 <title>Yawmi</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
-<style>
+<style id="appCss">
 @font-face{font-family:'Plus Jakarta Sans';font-weight:400;font-display:swap;src:url(fonts/plus-jakarta-sans-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:'Plus Jakarta Sans';font-weight:500;font-display:swap;src:url(fonts/plus-jakarta-sans-latin-500-normal.woff2) format('woff2')}
 @font-face{font-family:'Plus Jakarta Sans';font-weight:600;font-display:swap;src:url(fonts/plus-jakarta-sans-latin-600-normal.woff2) format('woff2')}
@@ -20,7 +20,7 @@
  --grad:linear-gradient(135deg,#7C5CFF,#22D3EE);--r:22px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{background:var(--bg)}
+html{background:var(--bg)!important}body{background:transparent!important}
 body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--tx);min-height:100vh;padding:calc(env(safe-area-inset-top) + 16px) 18px calc(env(safe-area-inset-bottom) + 170px);max-width:560px;margin:0 auto;position:relative;-webkit-font-smoothing:antialiased}
 .aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
 .aurora i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:float 18s ease-in-out infinite}
@@ -2772,7 +2772,7 @@ function applyLang(){const ar=S.lang==='ar';document.documentElement.lang=ar?'ar
 const CREAM_MAP=[[/#A78BFA/gi,'#B08050'],[/167,\s*139,\s*250/g,'176,128,80'],[/#7C5CFF/gi,'#8A5A2B'],[/#22D3EE/gi,'#C9A063'],[/124,\s*92,\s*255/g,'138,90,43'],[/34,\s*211,\s*238/g,'201,160,99'],[/#F472B6/gi,'#D9A86C'],[/22,\s*26,\s*60/g,'70,45,20'],[/20,\s*24,\s*40/g,'60,40,20'],[/246,\s*247,\s*255/g,'255,250,240'],[/#F4F5FA/gi,'#F6EFE2'],[/#EEF0FA/gi,'#F3EADA'],[/#f6f7fb/gi,'#FBF5EA'],[/#eef0f7/gi,'#F3EADA'],[/#F0F2F8/gi,'#F6EFE2'],[/#E9ECF6/gi,'#F1E6D3'],[/#161A2E/gi,'#3B2A1A'],[/#1b1f33/gi,'#3B2A1A'],[/#5E667C/gi,'#7A6247']];
 function creamize(t){CREAM_MAP.forEach(([a,b])=>{t=t.replace(a,b)});return t}
 let CSS0=null,CSSC=null;
-function creamCss(on){const el=document.querySelector('style');if(!el)return;if(CSS0===null)CSS0=el.textContent;if(on){if(CSSC===null)CSSC=creamize(CSS0)+'\nhtml.cream{--bg:#F6EFE2;--tx:#3B2A1A;--mu:#7A6247;--a1:#8A5A2B;--a2:#C9A063;--gold:#B7791F;--grad:linear-gradient(135deg,#8A5A2B,#C9A063)}html.glass.cream{--bg:#F3EADA}html.cream .aurora i{opacity:.22!important}html.cream .hero,html.cream .hero h1,html.cream .hero h2{color:var(--tx)}';if(el.textContent!==CSSC)el.textContent=CSSC}else if(el.textContent!==CSS0)el.textContent=CSS0;
+function creamCss(on){const el=document.getElementById('appCss')||[...document.querySelectorAll('style')].sort((a,b)=>b.textContent.length-a.textContent.length)[0];if(!el)return;if(CSS0===null)CSS0=el.textContent;if(on){if(CSSC===null)CSSC=creamize(CSS0)+'\nhtml.cream{--bg:#F6EFE2;--tx:#3B2A1A;--mu:#7A6247;--a1:#8A5A2B;--a2:#C9A063;--gold:#B7791F;--grad:linear-gradient(135deg,#8A5A2B,#C9A063)}html.glass.cream{--bg:#F3EADA}html.cream .aurora i{opacity:.22!important}html.cream .hero,html.cream .hero h1,html.cream .hero h2{color:var(--tx)}';if(el.textContent!==CSSC)el.textContent=CSSC}else if(el.textContent!==CSS0)el.textContent=CSS0;
  document.querySelectorAll('stop').forEach(st=>{const c=st.getAttribute('stop-color')||'';if(!st.dataset.c0)st.dataset.c0=c;st.setAttribute('stop-color',on?creamize(st.dataset.c0):st.dataset.c0)})}
 function applyTheme(){const t=S.theme||'dark',cream=t==='cream',light=cream||t==='light'||(t==='auto'&&matchMedia&&matchMedia('(prefers-color-scheme: light)').matches);document.documentElement.classList.toggle('light',light);document.documentElement.classList.toggle('cream',cream);creamCss(cream);document.documentElement.classList.toggle('glass',(S.style||'glass')==='glass');
  let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=cream?((S.style||'glass')==='glass'?'#F3EADA':'#F6EFE2'):light?((S.style||'glass')==='glass'?'#EEF0FA':'#F4F5FA'):((S.style||'glass')==='glass'?'#070914':'#0A0D17');
@@ -3359,7 +3359,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=86;
+const APP_VERSION=87;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
