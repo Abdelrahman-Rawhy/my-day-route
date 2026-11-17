@@ -984,6 +984,8 @@ html.light .celebrate h2,html.light .celebrate .shr{color:white!important}html.l
 .fs-c.go{transform:none}html[dir=rtl] .fs-c.go{transform:scaleX(-1)}
 .tring svg{overflow:visible}
 html.light .kh-st.late{color:#9F1239}
+.gc-t{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.6;padding-block:2px;overflow-wrap:anywhere}
+.chatrow .prev,.cd .nm,.lnk-tx b,.gl-r b,.adkr-sw b,.kh-live,.qr-t b{line-height:1.7;padding-block:1px}
 </style>
 </head>
 <body>
@@ -1472,7 +1474,7 @@ function render(){
 function renderToday2(list,rec,now){
  const ag=S.goals.filter(g=>!g.archived&&!g.done&&g.type!=='habit').sort((x,y)=>(gDays(x)??9999)-(gDays(y)??9999));const ng=ag[0];
  const hl=S.goals.filter(g=>!g.archived&&g.type==='habit'),hLeft=hl.filter(h=>habitCount(h)<h.target);
- document.getElementById('projChip').innerHTML=(ng?`<div class="chip" onclick="go('goals');setTimeout(()=>openGoal('${ng.id}'),60)"><span class="ico c-${gColor(ng)}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(gIcon(ng),18)}</span><div class="t">${esc(ng.title)} · <bdi>${S.lang==='ar'?arNum(gProg(ng))+'٪':gProg(ng)+'%'}</bdi><div class="mini-bar"><i style="width:${gProg(ng)}%"></i></div></div><b>${gDays(ng)===null?(ag.length>1?'+'+(ag.length-1)+' goals':''):gDays(ng)>0?gDays(ng)+' days left':gDays(ng)===0?'Today!':'Overdue'}</b>${ic('chevron',16)}</div>`:`<div class="chip" onclick="go('goals');setTimeout(openNewGoal,60)"><span class="ico c-violet" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('target',18)}</span><div class="t">Set your first goal</div>${ic('chevron',16)}</div>`)
+ document.getElementById('projChip').innerHTML=(ng?`<div class="chip" onclick="go('goals');setTimeout(()=>openGoal('${ng.id}'),60)"><span class="ico c-${gColor(ng)}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(gIcon(ng),18)}</span><div class="t">${esc(S.lang==='ar'?trS(ng.title):ng.title)}${S.lang==='ar'?'، ':' · '}<bdi>${S.lang==='ar'?arNum(gProg(ng))+'٪':gProg(ng)+'%'}</bdi><div class="mini-bar"><i style="width:${gProg(ng)}%"></i></div></div><b>${gDays(ng)===null?(ag.length>1?'+'+(ag.length-1)+' goals':''):gDays(ng)>0?gDays(ng)+' days left':gDays(ng)===0?'Today!':'Overdue'}</b>${ic('chevron',16)}</div>`:`<div class="chip" onclick="go('goals');setTimeout(openNewGoal,60)"><span class="ico c-violet" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('target',18)}</span><div class="t">Set your first goal</div>${ic('chevron',16)}</div>`)
   +(hl.length?`<div class="chip" onclick="go('goals')"><span class="ico c-teal" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('rotate',18)}</span><div class="t">${hLeft.length?hLeft.length+' habit'+(hLeft.length>1?'s':'')+' left today':'All habits done today 🎉'}<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${hLeft.slice(0,3).map(h=>esc(h.title)).join(' · ')}</div></div>${ic('chevron',16)}</div>`:'');
  const mine=FAM.tasks.filter(t=>FB.uid&&forMe(t)&&t.status==='open');
  document.getElementById('projChip').innerHTML+=mine.length?`<div class="chip" onclick="go('family')" style="border-color:rgba(244,114,182,.35)"><span class="ico c-pink" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic('users',18)}</span><div class="t">${mine.length} family task${mine.length>1?'s':''} for you<div style="font-size:12px;color:var(--mu);font-weight:500;margin-top:2px">${esc(mine[0].title)} · from ${esc(nameOf(mine[0].from,mine[0].fromName))}</div></div>${ic('chevron',16)}</div>`:'';
@@ -1544,7 +1546,7 @@ const projPct=()=>Math.max(0,...S.goals.filter(g=>g.type==='project'&&!g.archive
 function gIcon(g){return g.icon||GTYPES[g.type][1]}
 function gColor(g){return (AREAS[g.area]||AREAS.personal)[2]}
 function goalCard(g,small){const p=gProg(g),dl=gDays(g),a=AREAS[g.area]||AREAS.personal;
- return `<div class="gcard" onclick="openGoal('${g.id}')"${small?' style="padding:10px;border-radius:16px"':''}><span class="ico c-${gColor(g)}"${small?' style="width:36px;height:36px;border-radius:12px"':''}>${ic(gIcon(g),small?17:21)}</span><div class="info" style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center"><b style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.title)}</b>${g.done?'<span class="tag" style="background:var(--ok)">DONE</span>':dl!==null?`<span class="gtag" style="${dl<=7?'color:var(--red)':''}">${dl>0?dl+'d left':dl===0?'Today':'Overdue'}</span>`:''}</div>
+ return `<div class="gcard" onclick="openGoal('${g.id}')"${small?' style="padding:10px;border-radius:16px"':''}><span class="ico c-${gColor(g)}"${small?' style="width:36px;height:36px;border-radius:12px"':''}>${ic(gIcon(g),small?17:21)}</span><div class="info" style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center"><b class="gc-t">${esc(g.title)}</b>${g.done?'<span class="tag" style="background:var(--ok)">DONE</span>':dl!==null?`<span class="gtag" style="${dl<=7?'color:var(--red)':''}">${dl>0?dl+'d left':dl===0?'Today':'Overdue'}</span>`:''}</div>
   <div class="pbar"><i style="width:${p}%"></i></div><div class="meta">${gSub(g)} · ${p}%${small?'':' · '+a[0]}</div></div></div>`}
 function renderGoals(){
  const act=S.goals.filter(g=>!g.archived);
@@ -3597,7 +3599,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=99;
+const APP_VERSION=100;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
