@@ -34,20 +34,25 @@ public class TasksWidget extends AppWidgetProvider {
         WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
         rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "tasks", 2200));
         rv.setOnClickPendingIntent(R.id.w_t_add, WidgetKit.open(ctx, "add", 2201));
-        rv.setTextViewText(R.id.w_t_title, RouteWidgetBase.L(data, "todo", "Today's tasks"));
-        JSONArray list = data.optJSONArray("todo");
-        int n = list == null ? 0 : list.length();
-        rv.setTextViewText(R.id.w_t_count, n > 0 ? WidgetKit.num(data, data.optInt("todoN", n)) : "");
-        rv.setViewVisibility(R.id.w_t_empty, n == 0 ? View.VISIBLE : View.GONE);
+        JSONArray list = data.optJSONArray("todo"), next = data.optJSONArray("todoNext");
+        int n = list == null ? 0 : list.length(), m = next == null ? 0 : next.length();
+        rv.setTextViewText(R.id.w_t_title, RouteWidgetBase.L(data, "todo", "Today's tasks") + (n > 0 ? " · " + WidgetKit.num(data, data.optInt("todoN", n)) : ""));
+        rv.setTextViewText(R.id.w_t_count, "");
+        rv.setViewVisibility(R.id.w_t_count, View.GONE);
+        boolean empty = n == 0 && m == 0;
+        rv.setViewVisibility(R.id.w_t_empty, empty ? View.VISIBLE : View.GONE);
         rv.setTextViewText(R.id.w_t_empty, RouteWidgetBase.L(data, "noTasks", "No tasks today 🎉"));
         for (int i = 0; i < ROWS.length; i++) {
-            if (i >= slots || n == 0) { rv.setViewVisibility(ROWS[i][0], View.GONE); continue; }
-            JSONObject t = i < n ? list.optJSONObject(i) : null;
+            if (i >= slots || empty) { rv.setViewVisibility(ROWS[i][0], View.GONE); continue; }
+            // today's tasks first, then the coming ones (dimmed) so the widget is never half empty
+            boolean later = i >= n;
+            JSONObject t = !later ? list.optJSONObject(i) : (i - n < m ? next.optJSONObject(i - n) : null);
             if (t == null) { rv.setViewVisibility(ROWS[i][0], View.INVISIBLE); continue; }
             rv.setViewVisibility(ROWS[i][0], View.VISIBLE);
             rv.setTextViewText(ROWS[i][2], t.optString("n"));
+            rv.setTextColor(ROWS[i][2], later ? 0x99FFFFFF : 0xFFFFFFFF);
             rv.setTextViewText(ROWS[i][3], t.optString("d"));
-            rv.setTextColor(ROWS[i][3], t.optInt("ov") == 1 ? 0xFFF87171 : 0x99FFFFFF);
+            rv.setTextColor(ROWS[i][3], t.optInt("ov") == 1 ? 0xFFF87171 : later ? 0x80FFFFFF : 0x99FFFFFF);
             int pri = t.optInt("pri");
             rv.setInt(ROWS[i][1], "setBackgroundResource", pri >= 3 ? R.drawable.widget_cb_red : pri >= 2 ? R.drawable.widget_cb_hi : R.drawable.widget_cb);
             rv.setOnClickPendingIntent(ROWS[i][1], WidgetKit.broadcast(ctx, TasksWidget.class, ACTION_DONE, t.optString("id"), 2210 + i));
@@ -71,10 +76,14 @@ public class TasksWidget extends AppWidgetProvider {
         WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
         rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "tasks", 2200));
         rv.setOnClickPendingIntent(R.id.w_t_add, WidgetKit.open(ctx, "add", 2201));
-        rv.setTextViewText(R.id.w_t_title, RouteWidgetBase.L(data, "todo", "Today's tasks"));
-        JSONArray list = data.optJSONArray("todo");
-        int n = list == null ? 0 : list.length();
-        rv.setTextViewText(R.id.w_t_count, n > 0 ? WidgetKit.num(data, data.optInt("todoN", n)) : "");
+        JSONArray list0 = data.optJSONArray("todo"), next = data.optJSONArray("todoNext");
+        int n0 = list0 == null ? 0 : list0.length();
+        rv.setTextViewText(R.id.w_t_title, RouteWidgetBase.L(data, "todo", "Today's tasks") + (n0 > 0 ? " · " + WidgetKit.num(data, data.optInt("todoN", n0)) : ""));
+        rv.setViewVisibility(R.id.w_t_count, View.GONE);
+        JSONArray list = new JSONArray();
+        for (int i = 0; i < n0; i++) list.put(list0.optJSONObject(i));
+        if (next != null) for (int i = 0; i < next.length(); i++) { JSONObject x = next.optJSONObject(i); if (x != null) { try { x.put("later", 1); } catch (Exception ignored) { } list.put(x); } }
+        int n = list.length();
         rv.setViewVisibility(R.id.w_t_empty, n == 0 ? View.VISIBLE : View.GONE);
         rv.setViewVisibility(R.id.w_list, n == 0 ? View.GONE : View.VISIBLE);
         rv.setTextViewText(R.id.w_t_empty, RouteWidgetBase.L(data, "noTasks", "No tasks today 🎉"));
@@ -85,6 +94,7 @@ public class TasksWidget extends AppWidgetProvider {
                 if (t == null) continue;
                 RemoteViews row = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_tasks_row, R.layout.widget_tasks_row_rtl));
                 row.setTextViewText(R.id.w_r_n, t.optString("n"));
+                row.setTextColor(R.id.w_r_n, t.optInt("later") == 1 ? 0x99FFFFFF : 0xFFFFFFFF);
                 row.setTextViewText(R.id.w_r_d, t.optString("d"));
                 row.setTextColor(R.id.w_r_d, t.optInt("ov") == 1 ? 0xFFF87171 : 0x99FFFFFF);
                 int pri = t.optInt("pri");
@@ -118,7 +128,10 @@ public class TasksWidget extends AppWidgetProvider {
                 JSONObject t = list.optJSONObject(i);
                 if (t != null && !id.equals(t.optString("id"))) keep.put(t);
             }
+            JSONArray nx = data.optJSONArray("todoNext"), keep2 = new JSONArray();
+            if (nx != null) for (int i = 0; i < nx.length(); i++) { JSONObject t = nx.optJSONObject(i); if (t != null && !id.equals(t.optString("id"))) keep2.put(t); }
             try {
+                data.put("todoNext", keep2);
                 data.put("todo", keep);
                 data.put("todoN", Math.max(0, data.optInt("todoN", list.length()) - 1));
             } catch (Exception ignored) {
