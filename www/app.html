@@ -3341,7 +3341,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=80;
+const APP_VERSION=81;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3377,21 +3377,31 @@ async function apkInfo(){if(!APKU||!APKU.getInfo)return null;try{return await AP
 async function apkCheck(j,manual){if(!IS_NATIVE||!j||!j.apk)return false;const inf=await apkInfo();const have=inf?+inf.code:0;
  if(inf&&have>=j.apk)return false;if(!manual&&S.autoUpd!==false&&APKU&&APKU.checkNow){try{await APKU.checkNow()}catch(e){}return true}if(!manual&&localStorage.getItem('apkLater')===j.apk+':'+today())return true;showApk(j,inf);return true}
 function showApk(j,inf){if(document.getElementById('apkBox'))return;const ar=S.lang==='ar',note=(ar&&j.apk_note_ar)||j.apk_note||'';
- const pts=String(note).split(/(?<=[.!؟])\s+/).map(x=>x.trim()).filter(Boolean),b=document.createElement('div');b.id='apkBox';b.className='upd';
+ const pts=String(note).split(/(?<=[.!؟])\s+/).map(x=>x.trim()).filter(Boolean),b=document.createElement('div');b.id='apkBox';b.className='upd';b.dataset.apk=String(+j.apk||0);apkWant=+j.apk||0;
  b.innerHTML=`<div class="upd-h"><span class="upd-ic">${ic('rocket',22,'draw')}</span><div><b>${L('نسخة جديدة من التطبيق','New app version')}</b><small>${L('محتاجة تثبيت مرة واحدة','Needs one install')}</small></div></div>${pts.length?`<ul class="upd-l">${pts.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
  <div class="apk-p" id="apkProg" hidden><div class="apk-bar"><i id="apkBarI"></i></div><small id="apkPct"></small></div>
  <div class="upd-b"><button class="btn ghost" onclick="apkLater(${+j.apk})">${L('لاحقًا','Later')}</button><button class="btn" id="apkGo" onclick="apkGo()">${ic('rocket',16)}${L('نزّل التحديث','Download update')}</button></div>
  <p class="apk-h">${inf?L('بعد التنزيل اضغط «تحديث». بياناتك كلها هتفضل زي ما هي.','After the download tap «Update». All your data stays.'):L('هيفتح رابط التنزيل. افتح الملف واضغط «تحديث». بياناتك هتفضل زي ما هي.','This opens the download link. Open the file and tap «Update». Your data stays.')}</p>`;
  document.body.appendChild(b)}
 function apkLater(v){localStorage.setItem('apkLater',v+':'+today());const u=document.getElementById('apkBox');if(u){u.classList.add('bye');setTimeout(()=>u.remove(),220)}}
-let apkBusy=false,apkWaitPerm=false;
-async function apkGo(){if(apkBusy)return;const go=document.getElementById('apkGo'),pr=document.getElementById('apkProg');
+let apkBusy=false,apkWaitPerm=false,apkWant=0;
+// one download per version: after it finishes, the button only installs (tapping it again must not start a second download)
+async function apkGo(){if(apkBusy)return;const go=document.getElementById('apkGo'),pr=document.getElementById('apkProg');apkWant=+(document.getElementById('apkBox')||{}).dataset?.apk||apkWant;
  if(!APKU||!APKU.download){openExt(APK_URL);return}// older app: no built-in updater yet
+ if(apkWant&&localStorage.getItem('apkFile')===String(apkWant)){if(go){go.onclick=apkInstall;go.innerHTML=ic('check',16)+L('ثبّت','Install')}return apkInstall()}
  apkBusy=true;if(go){go.disabled=true;go.innerHTML=L('بننزّل…','Downloading…')}if(pr)pr.hidden=false;
  let h=null;try{h=await APKU.addListener('progress',e=>{const p=e&&e.pct>=0?e.pct:null,i=document.getElementById('apkBarI'),t=document.getElementById('apkPct');if(i&&p!=null)i.style.width=p+'%';if(t)t.textContent=p!=null?(S.lang==='ar'?arNum(p):p)+'%':((e.got/1048576).toFixed(1)+' MB')})}catch(e){}
- try{await APKU.download({url:APK_URL});if(h&&h.remove)h.remove();apkBusy=false;if(go){go.disabled=false;go.innerHTML=ic('check',16)+L('ثبّت','Install')}await apkInstall()}
- catch(e){if(h&&h.remove)h.remove();apkBusy=false;if(go){go.disabled=false;go.innerHTML=L('حاول تاني','Try again')}toast(L('التنزيل وقف. اتأكد من النت وحاول تاني.','Download stopped. Check your internet and try again.'),'alert')}}
-async function apkInstall(){try{const r=await APKU.install();if(r&&r.needPermission){apkWaitPerm=true;toast(L('فعّل «السماح من هذا المصدر» ليومي، وارجع للتطبيق','Allow «install from this source» for Yawmi, then come back'),'lock')}else{const go=document.getElementById('apkGo');if(go){go.onclick=apkInstall}}}catch(e){toast(L('مقدرناش نفتح التثبيت. نزّل من الرابط.','Could not open the installer. Use the link instead.'),'alert');openExt(APK_URL)}}
+ let ok=false;try{await APKU.download({url:APK_URL});ok=true}catch(e){}
+ try{if(h&&h.remove)h.remove()}catch(e){}apkBusy=false;
+ if(!ok){if(go){go.disabled=false;go.innerHTML=L('حاول تاني','Try again')}toast(L('التنزيل وقف. اتأكد من النت وحاول تاني.','Download stopped. Check your internet and try again.'),'alert');return}
+ if(apkWant)localStorage.setItem('apkFile',String(apkWant));
+ if(go){go.disabled=false;go.onclick=apkInstall;go.innerHTML=ic('check',16)+L('ثبّت','Install')}const t=document.getElementById('apkPct');if(t)t.textContent=L('اتنزّل ✓','Downloaded ✓');
+ await apkInstall()}
+async function apkInstall(){const go=document.getElementById('apkGo');
+ try{const r=await APKU.install();if(r&&r.needPermission){apkWaitPerm=true;toast(L('فعّل «السماح من هذا المصدر» ليومي، وارجع للتطبيق','Allow «install from this source» for Yawmi, then come back'),'lock');return}
+  if(go){go.innerHTML=ic('rotate',16)+L('بيتثبّت…','Installing…')}const t=document.getElementById('apkPct');if(t)t.textContent=L('لو ظهرت شاشة «تحديث» اضغط عليها','If an «Update» screen shows, tap it')}
+ catch(e){const m=String(e&&e.message||e);if(/no file/i.test(m)){localStorage.removeItem('apkFile');if(go){go.onclick=apkGo;go.innerHTML=L('نزّل التحديث','Download update')}return apkGo()}
+  toast(L('مقدرناش نفتح التثبيت. نزّل من الرابط.','Could not open the installer. Use the link instead.'),'alert');openExt(APK_URL)}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&apkWaitPerm){apkWaitPerm=false;setTimeout(apkInstall,600)}});
 async function apkManual(){const b=document.getElementById('apkBtn');if(b){b.disabled=true;b.innerHTML=ic('rotate',16)+L('بنفحص…','Checking…')}
  try{const j=await (await updFetch('version.json')).json();const shown=await apkCheck(j,true);if(b){b.disabled=false;b.innerHTML=shown?L('متاح تحديث','Update available'):ic('check',16)+L('محدّث','Up to date')}if(!shown)toast(L('نسخة التطبيق محدّثة','The app version is up to date'),'check')}
