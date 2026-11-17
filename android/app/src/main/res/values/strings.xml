@@ -12,4 +12,12 @@
     <string name="w_prayer_label">Next prayer</string>
     <string name="w_step_desc">Your current step with a check button</string>
     <string name="w_step_label">Current step</string>
+    <string name="w_pday_label">Prayer times</string>
+    <string name="w_pday_desc">Today\'s prayers with the date, Hijri date and next-prayer countdown</string>
+    <string name="w_tasks_label">Today\'s tasks</string>
+    <string name="w_tasks_desc">Tasks due today; tick them from the home screen</string>
+    <string name="w_habits_label">Habits</string>
+    <string name="w_habits_desc">Your habits; tap a card to add one</string>
+    <string name="w_cd_label">Countdown</string>
+    <string name="w_cd_desc">Days left to your dates, goals, Ramadan and Eid</string>
 </resources>

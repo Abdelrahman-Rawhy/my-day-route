@@ -51,6 +51,30 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_step_info" />
         </receiver>
+        <receiver android:name=".PrayerDayWidget" android:exported="false" android:label="@string/w_pday_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_pday_info" />
+        </receiver>
+        <receiver android:name=".TasksWidget" android:exported="false" android:label="@string/w_tasks_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_tasks_info" />
+        </receiver>
+        <receiver android:name=".HabitsWidget" android:exported="false" android:label="@string/w_habits_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_habits_info" />
+        </receiver>
+        <receiver android:name=".CountdownWidget" android:exported="false" android:label="@string/w_cd_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_cd_info" />
+        </receiver>
     </application>
 
     <!-- Permissions -->

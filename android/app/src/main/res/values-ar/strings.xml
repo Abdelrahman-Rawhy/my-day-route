@@ -2,4 +2,18 @@
 <resources>
     <string name="app_name">يومي</string>
     <string name="title_activity_main">يومي</string>
+    <string name="w_route_label">مسار اليوم</string>
+    <string name="w_prayer_label">الصلاة الجاية</string>
+    <string name="w_step_label">الخطوة الحالية</string>
+    <string name="w_pday_label">مواعيد الصلاة</string>
+    <string name="w_pday_desc">صلوات النهارده مع التاريخ الهجري والعد التنازلي</string>
+    <string name="w_tasks_label">مهام النهارده</string>
+    <string name="w_tasks_desc">مهام النهارده، وتقدر تعلّم عليها من الشاشة الرئيسية</string>
+    <string name="w_habits_label">العادات</string>
+    <string name="w_habits_desc">عاداتك، اضغط على الكارت عشان تزوّد واحدة</string>
+    <string name="w_cd_label">عدّاد الأيام</string>
+    <string name="w_cd_desc">الأيام الباقية لمناسباتك وأهدافك ورمضان والعيد</string>
+    <string name="w_route_desc">العد التنازلي للصلاة والخطوة الجاية مع تقدّم اليوم</string>
+    <string name="w_prayer_desc">العد التنازلي للصلاة الجاية</string>
+    <string name="w_step_desc">خطوتك الحالية مع زرار علامة صح</string>
 </resources>

@@ -53,7 +53,7 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
     protected abstract Variant[] variants();
 
     public static void refreshAll(Context ctx) {
-        Class<?>[] classes = { RouteWidget.class, PrayerWidget.class, StepWidget.class };
+        Class<?>[] classes = { RouteWidget.class, PrayerWidget.class, StepWidget.class, PrayerDayWidget.class, TasksWidget.class, HabitsWidget.class, CountdownWidget.class };
         AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
         for (Class<?> c : classes) {
             int[] ids = mgr.getAppWidgetIds(new ComponentName(ctx, c));
@@ -169,6 +169,7 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
 
         Builder b = v -> {
             RemoteViews rv = new RemoteViews(pkg, layoutFor(data, v.layout));
+            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, v.w < 100f);
             if (prayer != null) {
                 long t = prayer.optLong("t");
                 text(rv, v, R.id.w_prayer_name, prayer.optString("n"));
