@@ -188,7 +188,7 @@ textarea{resize:none;font-size:14px}
 .seg{display:flex;background:rgba(0,0,0,.25);border-radius:14px;padding:4px;gap:4px;margin-bottom:6px}
 .seg button{flex:1;padding:9px 4px;border-radius:11px;font-size:13px;color:var(--mu);font-weight:600;display:flex;gap:6px;justify-content:center;align-items:center}
 .seg button.on{background:var(--s2);color:var(--tx)}
-.tring{width:200px;height:200px;margin:14px auto 6px;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}.tring:active{transform:scale(.97)}
+.tring{width:200px;height:200px;margin:14px auto 6px;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}.tring{touch-action:none;user-select:none}.tring:active{transform:none}#tKnob{filter:drop-shadow(0 2px 6px rgba(0,0,0,.45));transition:transform .08s}.tring .clock.dialing{color:#22D3EE;transform:scale(1.03);transition:transform .1s}
 .trow{display:flex;gap:10px;align-items:center;margin-top:10px}.trow .btn{flex:1;min-height:56px;font-size:17px}.trow .treset{width:56px;height:56px;flex:none;border-radius:18px}.trow .treset.hide{display:none}
 .tring svg{transform:rotate(-90deg)}
 .tring .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -939,8 +939,8 @@ html[dir=rtl] .g-xp i,html[dir=rtl] .gq-bar i{margin-left:auto;background:linear
     <h3><span class="ico c-teal" data-i="clock"></span><span class="sp">Focus timer</span></h3>
     <div id="tAdjust"></div>
     <label style="margin-top:0">Focus on</label><select id="catSel" onchange="setCat(this.value)" style="margin-bottom:6px"></select>
-    <div class="tring" onclick="startPause()" role="button">
-      <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/></svg>
+    <div class="tring" id="tRing" role="button">
+      <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/><g id="tKnob"><circle r="15" fill="#fff"/><circle r="5" fill="#7C5CFF"/></g></svg>
       <div class="in"><div class="clock" id="tClock">25:00</div><div class="mode" id="tMode">Ready to focus</div></div>
     </div>
     <div class="trow"><button class="btn" id="tBtn" onclick="startPause()"></button><button class="iconbtn treset" onclick="resetTimer()" id="tReset" aria-label="reset"></button></div>
@@ -1578,10 +1578,20 @@ function timerMenu(){if(S.timer.running){toast(L('وقّف المؤقت الأو
 function timeLeft(){const T=S.timer;return T.running?Math.max(0,Math.round((T.endAt-Date.now())/1000)):T.left}
 function drawTimer(){const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS_S():BREAK_S();
  document.getElementById('tClock').textContent=String(Math.floor(l/60)).padStart(2,'0')+':'+String(l%60).padStart(2,'0');
- document.getElementById('tArc').style.strokeDashoffset=552.9*(1-l/tot);
- const fgN=(S.goals.find(x=>x.id===T.cat)||{}).title,full=!T.running&&l===tot;document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?(fgN?fgN.slice(0,22):L('بتركّز…','Focusing')):full?L('اضغط عشان تبدأ','Tap to start'):L('متوقف مؤقتًا','Paused')):(T.running?L('وقت الراحة','Break time'):L('الراحة جاهزة','Break ready'));
+ const dial=!T.running&&l===tot&&T.mode==='focus',fr=dial?(S.focusMin||25)/120:l/tot;document.getElementById('tArc').style.strokeDashoffset=552.9*(1-fr);const K=document.getElementById('tKnob');if(K){const a=fr*2*Math.PI;K.setAttribute('transform',`translate(${100+88*Math.cos(a)} ${100+88*Math.sin(a)})`);K.style.display=dial?'':'none'}
+ const fgN=(S.goals.find(x=>x.id===T.cat)||{}).title,full=!T.running&&l===tot;document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?(fgN?fgN.slice(0,22):L('بتركّز…','Focusing')):full?L('لفّ الدايرة أو اضغط عشان تبدأ','Turn the dial or tap to start'):L('متوقف مؤقتًا','Paused')):(T.running?L('وقت الراحة','Break time'):L('الراحة جاهزة','Break ready'));
  document.getElementById('tBtn').innerHTML=T.running?ic('pause',18,'',2.4)+L('إيقاف مؤقت','Pause'):ic('play',18,'',2.2)+(full?L('ابدأ','Start'):L('كمّل','Resume'));const R=document.getElementById('tReset');if(R)R.classList.toggle('hide',full&&T.mode==='focus')}
 function setCat(c){S.timer.cat=c;save()}
+// rotary dial: drag the ring like an old phone dial (5–120 min, 5-min steps); a tap starts/pauses
+(function(){let d=null;const z=()=>parseFloat(document.body.style.zoom)||1;
+ const ang=(e,r)=>{let a=Math.atan2(e.clientY/z()-(r.top+r.height/2),e.clientX/z()-(r.left+r.width/2))*180/Math.PI+90;return(a+360)%360};
+ document.addEventListener('pointerdown',e=>{const R=e.target.closest&&e.target.closest('#tRing');if(!R)return;d={x:e.clientX,y:e.clientY,mv:0,dial:!S.timer.running&&S.timer.mode==='focus'&&timeLeft()===FOCUS_S(),r:R.getBoundingClientRect(),m:S.focusMin||25};try{R.setPointerCapture(e.pointerId)}catch(_){}});
+ document.addEventListener('pointermove',e=>{if(!d)return;if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>8)d.mv=1;if(!d.mv||!d.dial)return;e.preventDefault();
+  let m=Math.round(ang(e,d.r)/360*120/5)*5;if(d.m>=100&&m<=20)m=120;else if(d.m<=20&&m>=100)m=5;m=Math.min(120,Math.max(5,m));
+  if(m!==d.m){d.m=m;S.focusMin=m;S.timer.left=FOCUS_S();drawTimer();SFX('click');buzz();const c=document.getElementById('tClock');if(c)c.classList.add('dialing')}},{passive:false});
+ const up=e=>{if(!d)return;const D=d;d=null;const c=document.getElementById('tClock');if(c)c.classList.remove('dialing');
+  if(!D.mv){startPause();return}if(D.dial){save();const A=document.getElementById('tAdjust');if(A)A.innerHTML=timerAdjustHtml();SFX('swipe')}else if(S.timer.running)toast(L('وقّف المؤقت الأول عشان تغيّر المدة','Pause the timer to change it'),'clock')};
+ document.addEventListener('pointerup',up);document.addEventListener('pointercancel',()=>{if(d&&d.dial)save();d=null})})();
 function startPause(){const T=S.timer;if(T.running){T.left=timeLeft();T.running=false}else{T.endAt=Date.now()+T.left*1000;T.running=true;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}save();drawTimer()}
 function resetTimer(){S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS_S();save();drawTimer()}
 function timerTick(){const T=S.timer;if(!T.running)return;if(timeLeft()>0){if(document.getElementById('v-goals').classList.contains('on'))drawTimer();return}
@@ -3290,7 +3300,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=71;
+const APP_VERSION=72;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
