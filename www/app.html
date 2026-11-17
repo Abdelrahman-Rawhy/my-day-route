@@ -140,7 +140,7 @@ html[dir=rtl] .quote .en{display:none}html[dir=rtl] .hero h2,html[dir=rtl] .hero
 .step.done .check{background:var(--ok);border-color:var(--ok)}
 .step.next .check{border-color:var(--a1)}
 /* color themes */
-.c-amber{--c:#FBBF24;--c-bg:rgba(251,191,36,.12);--c-bd:rgba(251,191,36,.3)}
+.c-amber{--c:#FBBF24;--c-bg:rgba(251,191,36,.12);--c-bd:rgba(251,191,36,.3)}.c-red{--c:#F87171;--c-bg:rgba(248,113,113,.13);--c-bd:rgba(248,113,113,.32)}
 .c-orange{--c:#FB923C;--c-bg:rgba(251,146,60,.12);--c-bd:rgba(251,146,60,.3)}
 .c-rose{--c:#FB7185;--c-bg:rgba(251,113,133,.12);--c-bd:rgba(251,113,133,.3)}
 .c-indigo{--c:#A5B4FC;--c-bg:rgba(129,140,248,.14);--c-bd:rgba(129,140,248,.32)}
@@ -749,8 +749,24 @@ html.light .upd{background:#fff;color:var(--tx);border-color:rgba(124,92,255,.35
 .upd.bye{transition:opacity .2s,transform .2s;opacity:0;transform:translateY(16px)}
 
 /* v59 Tasks (TickTick-style) */
-.td-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.td-modes button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);color:var(--mu);font-weight:700;font-size:13.5px}
+.td-modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.td-modes button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:58px;padding:6px 2px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);color:var(--mu);font-weight:700;font-size:12.5px;white-space:nowrap}
+.mx-hint{color:var(--mu);font-size:12.5px;line-height:1.6;margin:0 2px 12px}
+.mx{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mx-q{min-width:0;display:flex;flex-direction:column;gap:6px;padding:12px 10px;border-radius:20px;background:var(--s1);border:1px solid var(--bd);min-height:170px}
+.mx-q.q1{border-color:rgba(239,68,68,.45);background:linear-gradient(160deg,rgba(239,68,68,.12),var(--s1) 60%)}
+.mx-q.q2{border-color:rgba(124,92,255,.45);background:linear-gradient(160deg,rgba(124,92,255,.12),var(--s1) 60%)}
+.mx-q.q3{border-color:rgba(245,158,11,.45);background:linear-gradient(160deg,rgba(245,158,11,.12),var(--s1) 60%)}
+.mx-q.q4{border-color:rgba(20,184,166,.4);background:linear-gradient(160deg,rgba(20,184,166,.1),var(--s1) 60%)}
+.mx-h{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px}.mx-h .ico{width:28px;height:28px;flex:none;border-radius:9px;display:grid;place-items:center}
+.mx-t{flex:1;min-width:0}.mx-t b{display:block;font-size:13.5px;line-height:1.3}.mx-t small{display:block;font-size:11px;color:var(--mu);line-height:1.3;margin-top:2px}
+.mx-h i{font-style:normal;font-size:12px;font-weight:800;color:var(--mu);padding-top:4px}
+.mx-r{display:flex;align-items:flex-start;gap:8px;padding:8px 6px;border-radius:12px;background:rgba(255,255,255,.04);font-size:13px;line-height:1.4;cursor:pointer}
+.mx-r .td-cb{width:20px;height:20px;min-width:20px;margin-top:1px}
+.mx-b{flex:1;min-width:0}.mx-r span{overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mx-r em{display:block;font-style:normal;font-size:11px;color:#ef4444;font-weight:700}
+.mx-add{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:4px;min-height:38px;border-radius:12px;border:1px dashed var(--bd);color:var(--mu);font-size:12.5px;font-weight:700;background:none}
+html.light .mx-r{background:rgba(0,0,0,.035)}
 .td-modes button.on{background:linear-gradient(135deg,rgba(124,92,255,.35),rgba(34,211,238,.18));color:var(--tx,#fff);border-color:rgba(124,92,255,.6)}
 .td-add{display:flex;gap:8px;margin-bottom:16px}.td-add input{flex:1;min-width:0}.td-add .btn{flex:none;width:52px;padding:0;min-height:50px}
 .td-add.sm .btn{width:46px;min-height:46px}
@@ -2076,8 +2092,8 @@ function tdRow(x){const pc=PRI_C[x.pri||0],ov=x.due&&x.due<today()&&x.status!=='
  ${x.pri?`<span class="td-flag" style="color:${pc}">${ic('flag',15)}</span>`:''}</div>`}
 function renderTasks(){const el=document.getElementById('tdBody');if(!el)return;const V=tdViewInfo(),items=TD().items.filter(x=>tdIn(V.k,x)).sort(V.k==='done'?(a,b)=>(b.doneAt||0)-(a.doneAt||0):tdSort);
  const cnt=TD().items.filter(x=>tdIn('today',x)).length;
- let h=`<button class="fsel" onclick="tdMenu()"><span class="ico c-${V.c}">${ic(V.i,20)}</span><span class="fs-t"><small>${L('القائمة','List')} · ${items.length}</small><b>${esc(V.n)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
- <div class="td-modes">${[['list',L('قائمة','List'),'list'],['board',L('لوحة','Board'),'columns'],['cal',L('تقويم','Calendar'),'calendar']].map(([k,n,i])=>`<button class="${tdMode===k?'on':''}" onclick="tdMode='${k}';renderTasks()">${ic(i,16)}${n}</button>`).join('')}</div>
+ let h=`<button class="fsel" onclick="tdMenu()"><span class="ico c-${V.c}">${ic(V.i,20)}</span><span class="fs-t"><small>${L('القائمة','List')} · ${S.lang==='ar'?arNum(items.length):items.length}</small><b>${esc(V.n)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
+ <div class="td-modes">${[['list',L('قائمة','List'),'list'],['board',L('لوحة','Board'),'columns'],['mx',L('الأولويات','Matrix'),'target'],['cal',L('تقويم','Calendar'),'calendar']].map(([k,n,i])=>`<button class="${tdMode===k?'on':''}" onclick="tdMode='${k}';renderTasks()">${ic(i,16)}${n}</button>`).join('')}</div>
  <div class="td-add"><input id="tdIn" placeholder="${L('أضف مهمة… مثال: اتصل بعلي بكرة ٥م #شغل !٢','Add a task… e.g. Call Ali tomorrow 5pm #work !2')}" onkeydown="if(event.key==='Enter')tdQuickAdd()"><button class="btn" onclick="tdQuickAdd()" aria-label="add">${ic('plus',18)}</button></div>`;
  if(tdMode==='list'){if(!items.length)h+=`<div class="empty">${ic('check',22)}<p>${V.k==='done'?L('لسه مافيش مهام خلصت','Nothing completed yet'):L('مافيش مهام هنا. اكتب واحدة فوق.','No tasks here. Add one above.')}</p></div>`;
   else if(V.k==='week'||V.k==='all'){const g={};items.forEach(x=>{const k=x.due?(x.due<today()?'ov':x.due):'none';(g[k]=g[k]||[]).push(x)});Object.keys(g).sort((a,b)=>a==='ov'?-1:b==='ov'?1:a==='none'?1:b==='none'?-1:a<b?-1:1).forEach(k=>{h+=`<div class="td-h">${k==='ov'?L('متأخرة','Overdue'):k==='none'?L('بدون تاريخ','No date'):tdDueTxt({due:k})}<i>${g[k].length}</i></div>`+g[k].map(tdRow).join('')})}
@@ -2085,8 +2101,30 @@ function renderTasks(){const el=document.getElementById('tdBody');if(!el)return;
  else if(tdMode==='board'){const all=TD().items.filter(x=>V.k==='done'?true:tdIn(V.k,x)||(x.status==='done'&&tdIn(V.k,{...x,status:'todo'}))).sort(tdSort);
   [['todo',L('لسه','To do'),'clipboard','violet'],['doing',L('شغال فيها','Doing'),'zap','amber'],['done',L('خلصت','Done'),'check','green']].forEach(([st,n,i,c])=>{const col=all.filter(x=>(x.status||'todo')===st);
    h+=`<div class="td-col"><div class="td-ch"><span class="ico c-${c}">${ic(i,16)}</span><b>${n}</b><i>${col.length}</i></div>${col.map(x=>tdRow(x)+`<div class="td-mv">${st!=='todo'?`<button onclick="tdSet('${x.id}','${st==='done'?'doing':'todo'}')">${ic('chevron',14)}${st==='done'?L('رجّعها شغال','Back to doing'):L('رجّعها','Back')}</button>`:''}${st!=='done'?`<button class="fw" onclick="tdSet('${x.id}','${st==='todo'?'doing':'done'}')">${st==='todo'?L('ابدأ','Start'):L('خلصت','Done')}${ic('chevron',14)}</button>`:''}</div>`).join('')||`<p class="td-e">${L('فاضي','Empty')}</p>`}</div>`})}
+ else if(tdMode==='mx'){h+=tdMxHtml(V)}
  else{h+=tdCalHtml()}
  el.innerHTML=h;const b=document.getElementById('tdTodayN');if(b)b.textContent=cnt||''}
+// ---- Eisenhower matrix: important = priority 2-3 (!2/!3, مهم/عاجل); urgent = due today/tomorrow or overdue
+const MXQ=()=>[[1,L('اعملها دلوقتي','Do now'),L('مهم وعاجل','Important · urgent'),'red','zap'],[2,L('خطّط لها','Plan it'),L('مهم ومش عاجل','Important · not urgent'),'violet','calendar'],
+ [3,L('خلّصها بسرعة','Quick / delegate'),L('عاجل ومش مهم','Urgent · not important'),'amber','clock'],[4,L('أجّلها','Later / drop'),L('مش مهم ولا عاجل','Not important · not urgent'),'teal','list']];
+function tdQ(x){const imp=(x.pri||0)>=2,urg=!!(x.due&&x.due<=tdAdd(today(),1));return imp?(urg?1:2):(urg?3:4)}
+function tdMxHtml(V){const its=TD().items.filter(x=>x.status!=='done'&&(V.k.startsWith('l:')||V.k.startsWith('t:')||V.k==='inbox'?tdIn(V.k,x):true)).sort(tdSort);
+ let h=`<p class="mx-hint">${L('المهم = أولوية عالية أو متوسطة (!٢ / !٣). العاجل = النهارده أو بكرة أو متأخرة. اضغط على مهمة عشان تنقلها.','Important = medium/high priority (!2 / !3). Urgent = due today, tomorrow or overdue. Tap a task to move it.')}</p><div class="mx">`;
+ MXQ().forEach(([q,n,sub,c,i])=>{const l=its.filter(x=>tdQ(x)===q);
+  h+=`<div class="mx-q q${q}"><div class="mx-h"><span class="ico c-${c}">${ic(i,15)}</span><div class="mx-t"><b>${n}</b><small>${sub}</small></div><i>${S.lang==='ar'?arNum(l.length):l.length}</i></div>
+  ${l.map(x=>`<div class="mx-r" onclick="tdMxTap('${x.id}')"><button class="td-cb" style="--pc:${PRI_C[x.pri||0]}" onclick="event.stopPropagation();tdToggle('${x.id}')"></button><div class="mx-b"><span>${esc(x.t)}</span>${x.due&&x.due<today()?`<em>${L('متأخرة','Overdue')}</em>`:''}</div></div>`).join('')||`<p class="td-e">${L('فاضي','Empty')}</p>`}
+  <button class="mx-add" onclick="tdMxAdd(${q})">${ic('plus',14)}${L('أضف','Add')}</button></div>`});
+ return h+`</div>`}
+function tdMxMove(x,q){const imp=q<=2,urg=q===1||q===3,t=today();
+ if(imp&&(x.pri||0)<2)x.pri=2;if(!imp&&(x.pri||0)>=2)x.pri=1;
+ if(urg&&!(x.due&&x.due<=tdAdd(t,1)))x.due=t;if(!urg&&x.due&&x.due<=tdAdd(t,1))x.due=x.rep?x.due:tdAdd(t,7)}
+function tdMxTap(id){const x=TD().items.find(y=>y.id===id);if(!x)return;const cur=tdQ(x);
+ const it=MXQ().filter(a=>a[0]!==cur).map(([q,n,sub,c,i])=>({k:'q'+q,label:L('انقلها: ','Move: ')+n,sub,icon:i,c}));
+ it.unshift({k:'open',label:L('التفاصيل','Details'),icon:'pen',c:'blue'},{k:'done',label:L('خلصت ✓','Done ✓'),icon:'check',c:'green'});
+ openMenu(x.t,it,k=>{if(k==='open')tdOpen(id);else if(k==='done')tdToggle(id);else{tdMxMove(x,+k.slice(1));save();renderTasks();toast(L('اتنقلت','Moved'),'check')}})}
+function tdMxAdd(q){askText(MXQ()[q-1][1],'',v=>{v=(v||'').trim();if(!v)return;const P=tdParse(v);if(!P.t)return;
+ const x={id:uid(),t:P.t,list:P.list||(tdView.startsWith('l:')?tdView.slice(2):null),pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
+ tdMxMove(x,q);if(q===2||q===4){if(x.due&&x.due<=tdAdd(today(),1)&&!P.due)x.due=null}TD().items.push(x);save();renderTasks();SFX('pop');toast(L('اتضافت: ','Added: ')+x.t,'check')})}
 function tdSet(id,st){const x=TD().items.find(y=>y.id===id);if(!x)return;if(st==='done'&&x.status!=='done'){tdToggle(id);return}x.status=st;if(st!=='done')x.doneAt=null;save();renderTasks()}
 function tdCalHtml(){const t=today();tdCalM=tdCalM||t.slice(0,7);tdCalSel=tdCalSel||t;const [y,mo]=tdCalM.split('-').map(Number),first=new Date(y,mo-1,1),start=(first.getDay()+1)%7,n=new Date(y,mo,0).getDate(),ar=S.lang==='ar';
  const by={};TD().items.filter(x=>x.due&&x.status!=='done').forEach(x=>{(by[x.due]=by[x.due]||[]).push(x)});
@@ -3247,7 +3285,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=69;
+const APP_VERSION=70;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
