@@ -982,6 +982,8 @@ body.adkreading #pcPill,body.reading #pcPill{display:none!important}
 html.light .tring .clock.dialing{color:var(--a1)}
 html.light .celebrate h2,html.light .celebrate .shr{color:white!important}html.light .celebrate p{color:rgba(255,255,255,.82)!important}
 .fs-c.go{transform:none}html[dir=rtl] .fs-c.go{transform:scaleX(-1)}
+.tring svg{overflow:visible}
+html.light .kh-st.late{color:#9F1239}
 </style>
 </head>
 <body>
@@ -1624,7 +1626,7 @@ function drawNewGoal(){const G=gNew,b=document.getElementById('goalNewBody');
  if(G.type==='number')extra=`<div style="display:flex;gap:8px"><div style="flex:1"><label>Start</label><input id="ngStart" type="number" value="${G.start??0}"></div><div style="flex:1"><label>Target</label><input id="ngTargetN" type="number" value="${G.target??100}"></div><div style="flex:1"><label>Unit</label><input id="ngUnitN" value="${esc(G.unit||'')}" placeholder="pages, kg, EGP…"></div></div>`;
  b.innerHTML=`<h3><span class="ico c-${t[2]}" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${ic(t[1],18)}</span>${G.editing?'Edit goal':t[0]}</h3>${G.editing?'':`<div class="help">${t[3]}</div>`}
   <label>Name</label><input id="ngTitle" value="${esc(G.title)}" placeholder="${{project:'e.g. Graduation project',habit:'e.g. Read 10 pages',number:'e.g. Memorize Quran',life:'e.g. My 2027 goals'}[G.type]}">
-  <label>Area of life</label><div class="tpl">${Object.entries(AREAS).map(([k,[n,i]])=>`<button style="${G.area===k?'border-color:var(--a1);background:rgba(124,92,255,.2);color:#fff':''}" onclick="gNew.title=document.getElementById('ngTitle').value;gNew.area='${k}';if(!gNew.iconSet)gNew.icon='${i}';saveNgFields();drawNewGoal()">${n}</button>`).join('')}</div>
+  <label>Area of life</label><div class="tpl">${Object.entries(AREAS).map(([k,[n,i]])=>`<button style="${G.area===k?'border-color:var(--a1);background:rgba(124,92,255,.2);color:var(--tx)':''}" onclick="gNew.title=document.getElementById('ngTitle').value;gNew.area='${k}';if(!gNew.iconSet)gNew.icon='${i}';saveNgFields();drawNewGoal()">${n}</button>`).join('')}</div>
   ${extra}
   ${G.type!=='habit'?`<label>Deadline (optional)</label><input id="ngDeadline" type="date" value="${G.deadline||''}">`:''}
   <label>Icon</label><div class="icons" id="ngIcons"></div>
@@ -2565,7 +2567,7 @@ function renderGame(){const el=document.getElementById('gameHub');if(!el)return;
  const rows=leagueRows();
  el.innerHTML=`<div class="g-lv"><div class="g-badge">${ic('crown',26)}<b>${n(P.lv)}</b></div><div class="g-lt"><small>${GL('المستوى','Level')} ${n(P.lv)}</small><b>${T.adv} · <span>${T.faith}</span></b><div class="g-xp"><i style="width:${P.pct}%"></i></div><small>⁦${n(P.cur)}/${n(P.need)}⁩ ${GL('للمستوى الجاي','to next level')}</small></div><div class="g-sh" title="shields">🛡️<b>${n(G.shields||0)}</b></div></div>
  <div class="card g-card"><h3><span class="ico c-amber">${ic('target',18)}</span><span class="sp">${GL('مهام النهارده','Today’s quests')}</span></h3>${qs.map(q=>qRow(q,false)).join('')}
-  <div class="g-wk"><small>${GL('مهمة الأسبوع · فاضل','Weekly quest · ')}${n(Math.max(0,daysLeft))} ${GL('أيام','days left')}</small>${qRow(wq,true)}</div></div>
+  <div class="g-wk"><small>${GL('مهمة الأسبوع · فاضل ','Weekly quest · ')}${n(Math.max(0,daysLeft))} ${GL('أيام','days left')}</small>${qRow(wq,true)}</div></div>
  ${si?`<div class="card g-card g-season ${si.ram?'ram':''}"><h3><span class="ico c-violet">${ic('map',18)}</span><span class="sp">${GL('موسم ','Season · ')}${si.name}${si.ram?' ✨':''}</span><small>${n(si.xp)} ${GL('نقطة','pts')}</small></h3>
   <div class="g-stages">${Array.from({length:10},(_,i)=>{const s=i+1,on=si.stage>=s,r=STAGE_R(s);return `<div class="gs ${on?'on':''} ${si.stage+1===s?'nx':''}"><b>${n(s)}</b><span>${r==='shield'?'🛡️':r==='crown'?'👑':'+٢٥'.replace('٢٥',ar?'٢٥':'25')}</span></div>`}).join('')}</div>
   <small class="g-note">${si.stage>=10?GL('خلّصت الموسم! 👑','Season complete! 👑'):GL('المرحلة الجاية بعد ','Next stage in ')+n(150*(si.stage+1)-si.xp)+GL(' نقطة',' pts')}</small></div>`:''}
@@ -2683,7 +2685,7 @@ function openIdeas(){ideaBack=(document.querySelector('.view.on')||{}).id?.slice
 const mmss=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 function renderIdeas(){const el=document.getElementById('ideasBody');if(!el)return;const open=S.ideas.filter(i=>!i.done).sort((a,b)=>b.at-a.at),done=S.ideas.filter(i=>i.done).sort((a,b)=>b.at-a.at);
  const row=i=>`<div class="idea ${i.done?'done':''}" onclick="openIdea('${i.id}')"><span class="ico ${i.aud&&i.aud.length?'c-pink':'c-amber'}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none">${ic(i.aud&&i.aud.length?'mic':'lightbulb',17)}</span><div style="flex:1;min-width:0"><div class="t">${i.text?esc(i.text.length>140?i.text.slice(0,140)+'…':i.text):'<span style="color:var(--mu)">Voice note · tap to add text</span>'}</div><div class="m">${ago(i.at)}${i.dur?' · '+ic('mic',11)+mmss(i.dur):''}${i.to?' · → '+esc(i.to):''}</div></div>${ic('chevron',16)}</div>`;
- el.innerHTML=`<button class="btn wide" onclick="startRec()" style="margin-bottom:16px;background:linear-gradient(135deg,#FB7185,#F472B6)">${ic('mic',18)}Record an idea</button>
+ el.innerHTML=`<button class="btn wide" onclick="startRec()" style="margin-bottom:16px;background:linear-gradient(135deg,#E11D48,#DB2777)">${ic('mic',18)}Record an idea</button>
  <div class="sec"><h3>${ic('lightbulb',18)}To sort · ${open.length}</h3></div>${open.map(row).join('')||'<div class="empty">Nothing here. Tap the mic and say whatever is on your mind.</div>'}
  ${done.length?`<div class="sec" style="margin-top:16px"><h3>${ic('check',18)}Sorted · ${done.length}</h3></div>${done.slice(0,30).map(row).join('')}`:''}`}
 function addIdeaText(){const i=document.getElementById('ideaTxt'),v=i.value.trim();if(!v)return;S.ideas.push({id:uid(),at:Date.now(),text:v,aud:[]});i.value='';addPts(2,'Idea captured','lightbulb');renderIdeas()}
@@ -2953,8 +2955,8 @@ const AR_PAT=[
  [/^Tomorrow: (.+)$/,m=>'غدًا: '+trS(m[1])],
  [/^White day \((.+)\)$/,m=>'الأيام البيض ('+m[1]+')'],
  [/^To sort · (\d+)$/,m=>'للفرز · '+m[1]],[/^Sorted · (\d+)$/,m=>'تم فرزها · '+m[1]],
- [/^(\d+) of (\d+) steps · (\d+)% · (.+)$/,m=>arNum(m[1])+' من '+arNum(m[2])+' خطوات · '+arNum(m[3])+'% · '+trS(m[4])],
- [/^(.+) · (\d+)%$/,m=>trS(m[1])+' · '+arNum(m[2])+'%'],
+ [/^(\d+) of (\d+) steps · (\d+)% · (.+)$/,m=>arNum(m[1])+' من '+arNum(m[2])+' خطوات · \u2066'+m[3]+'%\u2069 · '+trS(m[4])],
+ [/^(.+) · (\d+)%$/,m=>trS(m[1])+' · \u2066'+m[2]+'%\u2069'],
  [/^(\d+) habits? left today$/,m=>'باقي '+m[1]+' عادات اليوم'],
  [/^(\d+) days left$/,m=>'باقي '+m[1]+' يوم'],
  [/^This week's challenge · (.+)$/,m=>'تحدي هذا الأسبوع · '+m[1].replace(/(\d+) days? left/,'باقي $1 يوم').replace('last day!','آخر يوم!')],
@@ -3004,9 +3006,12 @@ function creamText(t){return t.replace(/([^{}]+)\{([^{}]*)\}/g,(m,sel,body)=>{if
  const nb=body.replace(/(^|;)(\s*)color:\s*(#[0-9a-f]{3,6})\b/gi,(x,a,sp,h)=>hexLum(h)>.5?a+sp+'color:var(--tx)':x);return nb===body?m:sel+'{'+nb+'}'})}
 function creamize(t){CREAM_MAP.forEach(([a,b])=>{t=t.replace(a,b)});return creamText(t)}
 let CSS0=null,CSSC=null;
-function creamCss(on){const el=document.getElementById('appCss')||[...document.querySelectorAll('style')].sort((a,b)=>b.textContent.length-a.textContent.length)[0];if(!el)return;if(CSS0===null)CSS0=el.textContent;if(on){if(CSSC===null)CSSC=creamize(CSS0)+'\nhtml.cream{--bg:#F6EFE2;--tx:#3B2A1A;--mu:#5E4A33;--a1:#7A4E24;--a2:#8A6030;--gold:#8B5E0A;--red:#B4232F;--ok:#13795B;--pink:#A8326A;--grad:linear-gradient(135deg,#7A4E24,#8F6430)}html.glass.cream{--bg:#F3EADA}html.cream .aurora i{opacity:.22!important}html.cream .gs{opacity:1}html.cream .g-lt b span{color:var(--gold)}html.cream .kh-st.late{color:#8E1B26}html.cream .g-badge b{text-shadow:0 1px 2px rgba(120,60,0,.6)}html.cream .gs:not(.on) b,html.cream .gs:not(.on) span{color:var(--mu)}html.cream .gs:not(.on) span{filter:grayscale(.6)}html.cream .hero,html.cream .hero h1,html.cream .hero h2{color:var(--tx)}';if(el.textContent!==CSSC)el.textContent=CSSC}else if(el.textContent!==CSS0)el.textContent=CSS0;
- document.querySelectorAll('stop').forEach(st=>{const c=st.getAttribute('stop-color')||'';if(!st.dataset.c0)st.dataset.c0=c;st.setAttribute('stop-color',on?creamize(st.dataset.c0):st.dataset.c0)})}
-function applyTheme(){const t=S.theme||'dark',cream=t==='cream',light=cream||t==='light'||(t==='auto'&&matchMedia&&matchMedia('(prefers-color-scheme: light)').matches);document.documentElement.classList.toggle('light',light);document.documentElement.classList.toggle('cream',cream);creamCss(cream);document.documentElement.classList.toggle('glass',(S.style||'glass')==='glass');
+const LIGHT_MAP=[[/#22D3EE/gi,'#0E7490'],[/%2322D3EE/gi,'%230E7490'],[/#FBBF24/gi,'#B45309'],[/34,\s*211,\s*238/g,'14,116,144'],[/#C9D0E2/gi,'#4B5368'],[/#C9D7F0/gi,'#33415C']];
+function lightize(t){LIGHT_MAP.forEach(([a,b])=>{t=t.replace(a,b)});return creamText(t)}
+let CSSL=null;
+function creamCss(on,lt){const el=document.getElementById('appCss')||[...document.querySelectorAll('style')].sort((a,b)=>b.textContent.length-a.textContent.length)[0];if(!el)return;if(CSS0===null)CSS0=el.textContent;if(on){if(CSSC===null)CSSC=creamize(CSS0)+'\nhtml.cream{--bg:#F6EFE2;--tx:#3B2A1A;--mu:#5E4A33;--a1:#7A4E24;--a2:#8A6030;--gold:#8B5E0A;--red:#B4232F;--ok:#13795B;--pink:#A8326A;--grad:linear-gradient(135deg,#7A4E24,#8F6430)}html.glass.cream{--bg:#F3EADA}html.cream .aurora i{opacity:.22!important}html.cream .gs{opacity:1}html.cream .g-lt b span{color:var(--gold)}html.cream .kh-st.late{color:#8E1B26}html.cream .g-badge b{text-shadow:0 1px 2px rgba(120,60,0,.6)}html.cream .gs:not(.on) b,html.cream .gs:not(.on) span{color:var(--mu)}html.cream .gs:not(.on) span{filter:grayscale(.6)}html.cream .hero,html.cream .hero h1,html.cream .hero h2{color:var(--tx)}';if(el.textContent!==CSSC)el.textContent=CSSC}else if(lt){if(CSSL===null)CSSL=lightize(CSS0)+'\nhtml.light:not(.cream){--mu:#4B5368;--a2:#0E7490;--gold:#B45309;--ok:#047857;--red:#BE123C;--grad:linear-gradient(135deg,#6D4AE8,#0E7490)}html.light .g-lt b span{color:var(--gold)}html.light .gs{opacity:1}html.light .gs:not(.on) b,html.light .gs:not(.on) span{color:var(--mu)}';if(el.textContent!==CSSL)el.textContent=CSSL}else if(el.textContent!==CSS0)el.textContent=CSS0;
+ document.querySelectorAll('stop').forEach(st=>{const c=st.getAttribute('stop-color')||'';if(!st.dataset.c0)st.dataset.c0=c;st.setAttribute('stop-color',on?creamize(st.dataset.c0):lt?lightize(st.dataset.c0):st.dataset.c0)})}
+function applyTheme(){const t=S.theme||'dark',cream=t==='cream',light=cream||t==='light'||(t==='auto'&&matchMedia&&matchMedia('(prefers-color-scheme: light)').matches);document.documentElement.classList.toggle('light',light);document.documentElement.classList.toggle('cream',cream);creamCss(cream,light&&!cream);document.documentElement.classList.toggle('glass',(S.style||'glass')==='glass');
  let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=cream?((S.style||'glass')==='glass'?'#F3EADA':'#F6EFE2'):light?((S.style||'glass')==='glass'?'#EEF0FA':'#F4F5FA'):((S.style||'glass')==='glass'?'#070914':'#0A0D17');
  document.body.style.zoom=S.fs||1}
 function drawAppearance(){const mk=(id,opts,cur,fn)=>{const c=document.getElementById(id);if(!c)return;c.innerHTML=opts.map(([v,n])=>`<button class="${cur===v?'on':''}" data-v="${v}">${T(n)}</button>`).join('');c.querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v))};
@@ -3592,7 +3597,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=98;
+const APP_VERSION=99;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
