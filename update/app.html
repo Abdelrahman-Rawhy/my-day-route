@@ -979,6 +979,9 @@ html.light .cmsgs{background:transparent}
 input.need{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(225,29,72,.18)}.nm-hint{margin:6px 2px 4px;font-size:12px}.nm-ask{margin-top:4px;font-size:14px}
 .adkr-sw{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--tx)}.adkr-sw b{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.adkr-sw svg{transform:rotate(90deg)!important;color:var(--mu);flex:none}
 body.adkreading #pcPill,body.reading #pcPill{display:none!important}
+html.light .tring .clock.dialing{color:var(--a1)}
+html.light .celebrate h2,html.light .celebrate .shr{color:white!important}html.light .celebrate p{color:rgba(255,255,255,.82)!important}
+.fs-c.go{transform:none}html[dir=rtl] .fs-c.go{transform:scaleX(-1)}
 </style>
 </head>
 <body>
@@ -1028,7 +1031,7 @@ body.adkreading #pcPill,body.reading #pcPill{display:none!important}
     <div id="tAdjust"></div>
     <label style="margin-top:0">Focus on</label><select id="catSel" onchange="setCat(this.value)" style="margin-bottom:6px"></select>
     <div class="tring" id="tRing" role="button">
-      <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" stroke="rgba(255,255,255,.07)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/><g id="tKnob"><circle r="15" fill="#fff"/><circle r="5" fill="#7C5CFF"/></g></svg>
+      <svg width="200" height="200"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle cx="100" cy="100" r="88" style="stroke:var(--bd2)" stroke-width="10" fill="none"/><circle id="tArc" cx="100" cy="100" r="88" stroke="url(#tg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="552.9" stroke-dashoffset="0"/><g id="tKnob"><circle r="15" fill="#fff"/><circle r="5" style="fill:var(--a1)"/></g></svg>
       <div class="in"><div class="clock" id="tClock">25:00</div><div class="mode" id="tMode">Ready to focus</div></div>
     </div>
     <div class="trow"><button class="btn" id="tBtn" onclick="startPause()"></button><button class="iconbtn treset" onclick="resetTimer()" id="tReset" aria-label="reset"></button></div>
@@ -2178,8 +2181,8 @@ function adkHomeHtml(){const ar=S.lang==='ar',cur=adkDefault(),[cd,ct]=adkProg(c
 function adkResHtml(){const ar=S.lang==='ar';if(adkQ.trim()){const R=adkSearchRefs(adkQ);if(!R.length)return `<div class="empty">${ar?'مفيش نتايج. جرّب كلمة تانية.':'No results. Try another word.'}</div>`;
   window._adkSR=R;return `<div class="sub" style="margin:0 2px 8px">${ar?arNum(R.length)+' نتيجة':R.length+' results'}</div><div class="adk-list">${R.slice(0,80).map((r,k)=>adkRowHtml(r,`adkOpenRefs(window._adkSR,${k},'${ar?'نتائج البحث':'Search results'}')`)).join('')}</div>`}
  const cur=adkDefault(),[cd,ct]=adkProg(cur),fv=adkFavRefs().length;
- return `<button class="fsel" onclick="adkOpen('${cur}')"><span class="ico c-${ADK_TILE_C[cur]||'violet'}">${ic((ADK_CATS.find(z=>z[0]===cur)||[])[2]||'sun',20)}</span><span class="fs-t"><small>${ar?'وقتها دلوقتي':'Right now'} · ${ar?arNum(cd)+' من '+arNum(ct):cd+'/'+ct}</small><b>${adkCatName(cur)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
- <button class="fsel" onclick="adkOpenFav()"><span class="ico c-red">${ic('heart',20)}</span><span class="fs-t"><small>${ar?arNum(fv)+' ذكر':fv+' saved'}</small><b>${ar?'المفضلة':'Favorites'}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
+ return `<button class="fsel" onclick="adkOpen('${cur}')"><span class="ico c-${ADK_TILE_C[cur]||'violet'}">${ic((ADK_CATS.find(z=>z[0]===cur)||[])[2]||'sun',20)}</span><span class="fs-t"><small>${ar?'وقتها دلوقتي':'Right now'} · ${ar?arNum(cd)+' من '+arNum(ct):cd+'/'+ct}</small><b>${adkCatName(cur)}</b></span><span class="fs-c go">${ic('chevron',18)}</span></button>
+ <button class="fsel" onclick="adkOpenFav()"><span class="ico c-red">${ic('heart',20)}</span><span class="fs-t"><small>${ar?arNum(fv)+' ذكر':fv+' saved'}</small><b>${ar?'المفضلة':'Favorites'}</b></span><span class="fs-c go">${ic('chevron',18)}</span></button>
  <div class="adk-cats adk-grid">${ADK_CATS.map(([k,n,i])=>{const [d,t]=adkProg(k),rem=(S.adkRem||{})[k];return `<button onclick="adkOpen('${k}')" class="${d===t&&t?'done':''}"><span class="ico c-${ADK_TILE_C[k]||'violet'}">${ic(i,20)}</span><b>${n}</b><i>${d===t&&t?'✓ ':''}${d&&d<t?(ar?arNum(d)+' من '+arNum(t):d+'/'+t):(ar?arNum(t)+' ذكر':t+' items')}${rem?' · '+ic('bell',10):''}</i></button>`}).join('')}</div>
  ${adkGuide()}${adkStatsHtml(cur)}`}
 function adkResPaint(){const el=document.getElementById('adkRes');if(el)el.innerHTML=adkResHtml()}
@@ -2245,7 +2248,8 @@ async function quranData(){if(QD)return QD;if(qLoading)return qLoading;qLoading=
  let j=null;for(const u of ['quran.json','https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/quran.json']){try{const r=await fetch(u);if(r.ok){j=await r.json();if(j&&j.c&&j.c.length===114)break;j=null}}catch(e){}}
  if(!j)throw new Error('offline');try{const d=await miscDB();d.transaction('kv','readwrite').objectStore('kv').put(j,'quran13b')}catch(e){}return QD=j})();
  try{return await qLoading}finally{qLoading=null}}
-const arNum=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+const arNum=n=>String(n);// Ahmed (Nov 17): Western digits 123 everywhere, not ١٢٣
+const latD=x=>String(x).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٪/g,'%');
 function qPos(){S.qr=S.qr||{s:1,a:1,fs:26};return S.qr}
 function mushafHtml(){if(!QD){quranData().then(()=>{if(fTab==='mushaf')renderFaith()}).catch(()=>{const el=document.getElementById('faithBody');if(el&&fTab==='mushaf')el.innerHTML=`<div class="card"><b>${T('Could not load the Quran. Connect to the internet once, then it works offline.')}</b></div>`});return `<div class="card" style="text-align:center"><div class="sub">${T('Loading the Mushaf…')}</div></div>`}
  return qView.s?surahHtml(qView.s):quranIndexHtml()}
@@ -2949,13 +2953,13 @@ const AR_PAT=[
  [/^Tomorrow: (.+)$/,m=>'غدًا: '+trS(m[1])],
  [/^White day \((.+)\)$/,m=>'الأيام البيض ('+m[1]+')'],
  [/^To sort · (\d+)$/,m=>'للفرز · '+m[1]],[/^Sorted · (\d+)$/,m=>'تم فرزها · '+m[1]],
- [/^(\d+) of (\d+) steps · (\d+)% · (.+)$/,m=>m[1]+' من '+m[2]+' خطوات · '+m[3]+'% · '+trS(m[4])],
- [/^(.+) · (\d+)%$/,m=>trS(m[1])+' · '+m[2]+'%'],
+ [/^(\d+) of (\d+) steps · (\d+)% · (.+)$/,m=>arNum(m[1])+' من '+arNum(m[2])+' خطوات · '+arNum(m[3])+'% · '+trS(m[4])],
+ [/^(.+) · (\d+)%$/,m=>trS(m[1])+' · '+arNum(m[2])+'%'],
  [/^(\d+) habits? left today$/,m=>'باقي '+m[1]+' عادات اليوم'],
  [/^(\d+) days left$/,m=>'باقي '+m[1]+' يوم'],
  [/^This week's challenge · (.+)$/,m=>'تحدي هذا الأسبوع · '+m[1].replace(/(\d+) days? left/,'باقي $1 يوم').replace('last day!','آخر يوم!')],
  [/^Today: (\d+) sessions? · (.+) h focused$/,m=>'اليوم: '+m[1]+' جلسة · '+m[2]+' ساعة تركيز'],
- [/^(\d+) active days? · (\d+) perfect · best streak (\d+)$/,m=>m[1]+' يوم نشط · '+m[2]+' مثالي · أفضل سلسلة '+m[3]],
+ [/^(\d+) active days? · (\d+) perfect · best streak (\d+)$/,m=>arNum(m[1])+' يوم نشط · '+arNum(m[2])+' مثالي · أفضل سلسلة '+arNum(m[3])],
  [/^Sub-steps · (\d+)\/(\d+) today$/,m=>'خطوات فرعية · '+m[1]+'/'+m[2]+' اليوم'],
  [/^(\d+) days$/,m=>m[1]+' يوم'],[/^(.+) h$/,m=>m[1]+' ساعة'],
  [/^(.+) · Not marked yet$/,m=>m[1]+' · لم تُسجَّل بعد'],
@@ -2985,9 +2989,9 @@ const DAYS_AR={Sun:'أحد',Mon:'إثنين',Tue:'ثلاثاء',Wed:'أربعا�
 function trDays(x){return AR[x]||x.split(' ').map(w=>DAYS_AR[w]||w).join(' ')}
 function trS(x){if(AR[x])return AR[x];{const y=x.replace(/←/g,'→');if(y!==x&&AR[y])return AR[y].replace(/→/g,'←')}for(const [re,f] of AR_PAT){const m=x.match(re);if(m){const r=f(m);if(r!=null)return r}}return x.replace(/\b(\d{1,2}:\d\d) (AM|PM)\b/g,(a,t,ap)=>t+' '+(ap==='AM'?'ص':'م'))}
 const AR_SKIP='.bub,.idea .t,textarea,#recTxt,.code,.ar,.ar2,#jBody .jtext,script,style';
-function arSep(x){return S.lang==='ar'&&typeof x==='string'?x.replace(/ ?· ?/g,'، ').replace(/، $/,''):x}
+function arSep(x){return typeof x==='string'?latD(S.lang==='ar'?x.replace(/ ?· ?/g,'، ').replace(/، $/,''):x):x}
 function arSepN(o){if(S.lang==='ar'&&o&&o.notifications)o.notifications.forEach(n=>{n.title=arSep(n.title);n.body=arSep(n.body)});return o}
-function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue,o=raw;if(raw.includes('→'))raw=raw.replace(/→/g,'←');const t=raw.trim();if(t&&/[A-Za-z]/.test(t)){const r=trS(t);if(r!==t)raw=raw.replace(t,r)}if(raw.includes('·')&&!/[A-Za-z]{3}/.test(raw.replace(/pts|AM|PM/g,''))&&!p.closest('.mushaf,.qreader,.qr-inner'))raw=raw.trim()==='·'?raw.replace('·','،'):raw.replace(/ ?· ?/g,'، ');if(raw!==o)root.nodeValue=raw;return}
+function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(p&&/[٠-٩۰-۹٪]/.test(root.nodeValue)&&!p.closest('.mushaf,.qreader,.qr-inner,.qtext,.adk-t,.adkr-t,.bub,textarea,script,style'))root.nodeValue=latD(root.nodeValue);if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue,o=raw;if(raw.includes('→'))raw=raw.replace(/→/g,'←');const t=raw.trim();if(t&&/[A-Za-z]/.test(t)){const r=trS(t);if(r!==t)raw=raw.replace(t,r)}if(/[٠-٩۰-۹٪]/.test(raw)&&!p.closest('.mushaf,.qreader,.qr-inner,.ayah,.q-text,.qtext'))raw=latD(raw);if(raw.includes('·')&&!/[A-Za-z]{3}/.test(raw.replace(/pts|AM|PM/g,''))&&!p.closest('.mushaf,.qreader,.qr-inner'))raw=raw.trim()==='·'?raw.replace('·','،'):raw.replace(/ ?· ?/g,'، ');if(raw!==o)root.nodeValue=raw;return}
  if(root.nodeType===1&&root.querySelectorAll){const ph=[...(root.matches&&root.matches('[placeholder]')?[root]:[]),...root.querySelectorAll('[placeholder]')];ph.forEach(e=>{const v=e.getAttribute('placeholder');if(v&&/[A-Za-z]/.test(v)&&!e.dataset.phAr){const r=trS(v);if(r!==v){e.setAttribute('placeholder',r);e.dataset.phAr=1}}})}if(root.nodeType!==1||root.closest&&root.closest(AR_SKIP))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const L=[];let n;while(n=w.nextNode())L.push(n);L.forEach(trNode);
  (root.querySelectorAll?[root,...root.querySelectorAll('[placeholder],[title]')]:[]).forEach(e=>{if(e.placeholder&&/[A-Za-z]/.test(e.placeholder)){const r=trS(e.placeholder);if(r!==e.placeholder)e.placeholder=r}})}
 let arObs=null;
@@ -3588,7 +3592,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=96;
+const APP_VERSION=98;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
