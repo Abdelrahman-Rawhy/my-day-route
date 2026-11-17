@@ -774,6 +774,11 @@ html.light .upd{background:#fff;color:var(--tx);border-color:rgba(124,92,255,.35
 .mx-r em{display:block;font-style:normal;font-size:11px;color:#ef4444;font-weight:700}
 .mx-add{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:4px;min-height:38px;border-radius:12px;border:1px dashed var(--bd);color:var(--mu);font-size:12.5px;font-weight:700;background:none}
 html.light .mx-r{background:rgba(0,0,0,.035)}
+/* smooth bars everywhere (CSS for in-place changes; JS tween below for re-rendered ones) */
+.adk-pb>i,.bar>i,.g-xp>i,.gq-bar>i,.pbar>i,.mini-bar>i,.kh-today>i,.kh-fill,.apk-bar>i,i.bar{transition:width .55s cubic-bezier(.22,.8,.24,1)}
+svg circle[stroke-dasharray]{transition:stroke-dashoffset .6s cubic-bezier(.22,.8,.24,1)}
+#tArc{transition:stroke-dashoffset 1s linear}.tring.dragging #tArc,.tring.dragging #tKnob{transition:none}
+
 .wg-prev{display:grid;place-items:center;padding:22px 10px;margin:4px 0 14px;border-radius:20px;background:linear-gradient(160deg,#1d3a6e,#0b1530 55%,#3b2a5c)}
 .wg-box{width:180px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;transition:all .2s}.wg-box small{font-size:10px;font-weight:800;color:#FBBF24}.wg-box b{font-size:16px}.wg-box span{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
 .wg-st{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.wg-st button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:16px;background:var(--s1);border:1px solid var(--bd);color:var(--tx,#fff);font-weight:700}
@@ -1608,8 +1613,8 @@ function setCat(c){S.timer.cat=c;save()}
  document.addEventListener('pointerdown',e=>{const R=e.target.closest&&e.target.closest('#tRing');if(!R)return;d={x:e.clientX,y:e.clientY,mv:0,dial:!S.timer.running&&S.timer.mode==='focus'&&timeLeft()===FOCUS_S(),r:R.getBoundingClientRect(),m:S.focusMin||25};try{R.setPointerCapture(e.pointerId)}catch(_){}});
  document.addEventListener('pointermove',e=>{if(!d)return;if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>8)d.mv=1;if(!d.mv||!d.dial)return;e.preventDefault();
   let m=Math.round(ang(e,d.r)/360*120/5)*5;if(d.m>=100&&m<=20)m=120;else if(d.m<=20&&m>=100)m=5;m=Math.min(120,Math.max(5,m));
-  if(m!==d.m){d.m=m;S.focusMin=m;S.timer.left=FOCUS_S();drawTimer();SFX('click');buzz();const c=document.getElementById('tClock');if(c)c.classList.add('dialing')}},{passive:false});
- const up=e=>{if(!d)return;const D=d;d=null;const c=document.getElementById('tClock');if(c)c.classList.remove('dialing');
+  if(m!==d.m){d.m=m;S.focusMin=m;S.timer.left=FOCUS_S();drawTimer();SFX('click');buzz();const c=document.getElementById('tClock');if(c)c.classList.add('dialing');const R2=document.getElementById('tRing');if(R2)R2.classList.add('dragging')}},{passive:false});
+ const up=e=>{if(!d)return;const D=d;d=null;const c=document.getElementById('tClock');if(c)c.classList.remove('dialing');{const R2=document.getElementById('tRing');if(R2)R2.classList.remove('dragging')}
   if(!D.mv){startPause();return}if(D.dial){save();const A=document.getElementById('tAdjust');if(A)A.innerHTML=timerAdjustHtml();SFX('swipe')}else if(S.timer.running)toast(L('وقّف المؤقت الأول عشان تغيّر المدة','Pause the timer to change it'),'clock')};
  document.addEventListener('pointerup',up);document.addEventListener('pointercancel',()=>{if(d&&d.dial)save();d=null})})();
 function startPause(){const T=S.timer;if(T.running){T.left=timeLeft();T.running=false}else{T.endAt=Date.now()+T.left*1000;T.running=true;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}save();drawTimer()}
@@ -3336,7 +3341,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=79;
+const APP_VERSION=80;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -3824,6 +3829,19 @@ document.querySelectorAll('.view:not(#v-settings) .top').forEach(top=>{if(top.qu
 (()=>{let last=0;document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('button,.btn,.chip,.gcard,.jcard,.chatrow,.lnk-o,.cd,[onclick]');if(!el)return;const n=Date.now();if(n-last<70)return;last=n;if(!el.closest('#qrStage'))SFX('click');if(S.vib===false)return;
  try{const H=HAP();if(H)H.impact({style:'LIGHT'}).catch(()=>{});else if(navigator.vibrate)navigator.vibrate(8)}catch(_){}},true)})();
 
+
+// ===== Bars move smoothly even when a screen is redrawn: each bar remembers its last value and animates from it =====
+(function(){const SEL='.adk-pb>i,.bar>i,.g-xp>i,.gq-bar>i,.pbar>i,.mini-bar>i,.kh-today>i,.kh-fill,.apk-bar>i,i.bar,.hring circle[stroke-dasharray],.ring circle[stroke-dasharray],#tzArc';
+ const MEM=new Map(),clampW=v=>{const n=parseFloat(v);return isNaN(n)?null:Math.max(0,Math.min(100,n))};
+ const keyOf=e=>{let a=e,path='';for(let d=0;a&&d<6;d++,a=a.parentElement){if(a.id){path='#'+a.id+path;break}const p=a.parentElement;if(!p)break;path='>'+[...p.children].indexOf(a)+path}return path+'|'+(e.className&&e.className.baseVal!=null?e.className.baseVal:e.className)};
+ function tween(e){if(e._tw)return;e._tw=1;const k=keyOf(e);
+  if(e.tagName.toLowerCase()==='circle'){const tgt=parseFloat(e.getAttribute('stroke-dashoffset')),full=parseFloat(e.getAttribute('stroke-dasharray'));if(isNaN(tgt))return;
+   const prev=MEM.has(k)?MEM.get(k):full;MEM.set(k,tgt);if(Math.abs(prev-tgt)<.5)return;e.style.transition='none';e.style.strokeDashoffset=prev;e.getBoundingClientRect();requestAnimationFrame(()=>{e.style.transition='';e.style.strokeDashoffset=tgt});return}
+  const raw=e.style.width;if(!raw||!/%$/.test(raw))return;const tgt=clampW(raw);if(tgt==null)return;if(String(tgt)+'%'!==raw)e.style.width=tgt+'%';
+  const prev=MEM.has(k)?MEM.get(k):0;MEM.set(k,tgt);if(Math.abs(prev-tgt)<.3)return;e.style.transition='none';e.style.width=prev+'%';e.getBoundingClientRect();requestAnimationFrame(()=>{e.style.transition='';e.style.width=tgt+'%'})}
+ const scan=n=>{if(n.nodeType!==1)return;if(n.matches&&n.matches(SEL))tween(n);n.querySelectorAll&&n.querySelectorAll(SEL).forEach(tween)};
+ new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(scan)}).observe(document.body,{childList:true,subtree:true});
+ setTimeout(()=>document.querySelectorAll(SEL).forEach(e=>{e._tw=1;const k=keyOf(e);if(e.tagName.toLowerCase()==='circle'){const v=parseFloat(e.getAttribute('stroke-dashoffset'));if(!isNaN(v))MEM.set(k,v)}else{const v=clampW(e.style.width);if(v!=null)MEM.set(k,v)}}),0)})();
 // ---- show time/date boxes as 12-hour / Arabic text instead of Android's own format ----
 function dtLabel(inp){const v=inp.value;if(!v)return `<span class="ph">${T(inp.type==='time'?'Pick a time':'Pick a date')}</span>`;if(inp.type==='time')return esc(trS(fmt(v)));
  const d=new Date(v+'T12:00');return esc(d.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'long',year:'numeric'}))}
