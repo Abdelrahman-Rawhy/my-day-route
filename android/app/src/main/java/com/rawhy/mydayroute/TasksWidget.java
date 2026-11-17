@@ -28,10 +28,10 @@ public class TasksWidget extends AppWidgetProvider {
         new RouteWidgetBase.Variant(R.layout.widget_tasks, 180f, 360f, 6),
     };
 
-    private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data) {
+    private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data, int wid) {
         int slots = v.ids.iterator().next();
         RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_tasks, R.layout.widget_tasks_rtl));
-        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false);
+        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
         rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "tasks", 2200));
         rv.setOnClickPendingIntent(R.id.w_t_add, WidgetKit.open(ctx, "add", 2201));
         rv.setTextViewText(R.id.w_t_title, RouteWidgetBase.L(data, "todo", "Today's tasks"));
@@ -58,7 +58,46 @@ public class TasksWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         JSONObject data = WidgetKit.data(ctx);
-        for (int id : ids) mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> build(ctx, v, data), mgr, id));
+        for (int id : ids) {
+            final int wid = id;
+            if (WidgetKit.scrollable(ctx, id)) mgr.updateAppWidget(id, buildList(ctx, data, id));
+            else mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> build(ctx, v, data, wid), mgr, id));
+        }
+    }
+
+    /** Scrollable mode (Android 12+): every task in a list you can swipe through. */
+    private RemoteViews buildList(Context ctx, JSONObject data, int wid) {
+        RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_tasks_list, R.layout.widget_tasks_list_rtl));
+        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
+        rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "tasks", 2200));
+        rv.setOnClickPendingIntent(R.id.w_t_add, WidgetKit.open(ctx, "add", 2201));
+        rv.setTextViewText(R.id.w_t_title, RouteWidgetBase.L(data, "todo", "Today's tasks"));
+        JSONArray list = data.optJSONArray("todo");
+        int n = list == null ? 0 : list.length();
+        rv.setTextViewText(R.id.w_t_count, n > 0 ? WidgetKit.num(data, data.optInt("todoN", n)) : "");
+        rv.setViewVisibility(R.id.w_t_empty, n == 0 ? View.VISIBLE : View.GONE);
+        rv.setViewVisibility(R.id.w_list, n == 0 ? View.GONE : View.VISIBLE);
+        rv.setTextViewText(R.id.w_t_empty, RouteWidgetBase.L(data, "noTasks", "No tasks today 🎉"));
+        if (android.os.Build.VERSION.SDK_INT >= 31 && n > 0) {
+            RemoteViews.RemoteCollectionItems.Builder b = new RemoteViews.RemoteCollectionItems.Builder().setHasStableIds(true).setViewTypeCount(1);
+            for (int i = 0; i < n; i++) {
+                JSONObject t = list.optJSONObject(i);
+                if (t == null) continue;
+                RemoteViews row = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_tasks_row, R.layout.widget_tasks_row_rtl));
+                row.setTextViewText(R.id.w_r_n, t.optString("n"));
+                row.setTextViewText(R.id.w_r_d, t.optString("d"));
+                row.setTextColor(R.id.w_r_d, t.optInt("ov") == 1 ? 0xFFF87171 : 0x99FFFFFF);
+                int pri = t.optInt("pri");
+                row.setInt(R.id.w_r_cb, "setBackgroundResource", pri >= 3 ? R.drawable.widget_cb_red : pri >= 2 ? R.drawable.widget_cb_hi : R.drawable.widget_cb);
+                row.setOnClickFillInIntent(R.id.w_r_cb, new Intent().putExtra("id", t.optString("id")));
+                b.addItem(t.optString("id").hashCode(), row);
+            }
+            rv.setRemoteAdapter(R.id.w_list, b.build());
+            Intent tpl = new Intent(ctx, TasksWidget.class).setAction(ACTION_DONE);
+            rv.setPendingIntentTemplate(R.id.w_list, android.app.PendingIntent.getBroadcast(ctx, 2290, tpl,
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_MUTABLE));
+        }
+        return rv;
     }
 
     @Override

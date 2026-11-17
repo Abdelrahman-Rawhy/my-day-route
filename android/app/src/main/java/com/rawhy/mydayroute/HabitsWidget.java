@@ -25,10 +25,10 @@ public class HabitsWidget extends AppWidgetProvider {
         new RouteWidgetBase.Variant(R.layout.widget_habits, 250f, 260f, 3),
     };
 
-    private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data) {
+    private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data, int wid) {
         int rows = v.ids.iterator().next();
         RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_habits, R.layout.widget_habits_rtl));
-        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false);
+        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
         rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "habits", 2300));
         JSONArray list = data.optJSONArray("habits");
         int n = list == null ? 0 : list.length();
@@ -52,7 +52,7 @@ public class HabitsWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         JSONObject data = WidgetKit.data(ctx);
-        for (int id : ids) mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> build(ctx, v, data), mgr, id));
+        for (int id : ids) { final int wid = id; mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> build(ctx, v, data, wid), mgr, id)); }
     }
 
     @Override

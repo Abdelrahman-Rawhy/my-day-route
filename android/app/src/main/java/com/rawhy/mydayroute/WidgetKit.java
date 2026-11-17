@@ -34,16 +34,51 @@ public final class WidgetKit {
         return Math.round(v * ctx.getResources().getDisplayMetrics().density);
     }
 
-    /** Background (glass or black, corner and opacity levels) and inner margins chosen in the app's settings. */
-    static void applyStyle(Context ctx, RemoteViews rv, int rootId, JSONObject data, boolean small) {
-        JSONObject w = data.optJSONObject("wg");
-        String s = w == null ? "glass" : w.optString("s", "glass");
+    /** Settings saved for one widget from its long-press «Settings» screen, or null. */
+    static JSONObject cfg(Context ctx, int widgetId) {
+        if (widgetId < 0) return null;
+        try {
+            String s = ctx.getSharedPreferences(RouteWidgetBase.PREFS, Context.MODE_PRIVATE).getString("wcfg_" + widgetId, null);
+            return s == null ? null : new JSONObject(s);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** The look for one widget: its own settings if saved, else the app-wide look from Settings → Appearance. */
+    static JSONObject look(Context ctx, JSONObject data, int widgetId) {
+        JSONObject w = data.optJSONObject("wg"), c = cfg(ctx, widgetId), out = new JSONObject();
+        try {
+            out.put("s", c != null && c.has("s") ? c.optString("s") : w == null ? "glass" : w.optString("s", "glass"));
+            out.put("o", c != null && c.has("o") ? c.optInt("o") : w == null ? 2 : w.optInt("o", 2));
+            out.put("r", c != null && c.has("r") ? c.optInt("r") : w == null ? 3 : w.optInt("r", 3));
+            out.put("p", c != null && c.has("p") ? c.optInt("p") : w == null ? 2 : w.optInt("p", 2));
+            out.put("scroll", c != null && c.optBoolean("scroll", false));
+        } catch (Exception ignored) {
+        }
+        return out;
+    }
+
+    static boolean scrollable(Context ctx, int widgetId) {
+        JSONObject c = cfg(ctx, widgetId);
+        return c != null && c.optBoolean("scroll", false) && android.os.Build.VERSION.SDK_INT >= 31;
+    }
+
+    static int bgRes(Context ctx, String s, int r, int o) {
         if (!"black".equals(s)) s = "glass";
-        int r = clamp(w == null ? 3 : w.optInt("r", 3), 0, 4);
-        int o = clamp(w == null ? 2 : w.optInt("o", 2), 0, 5);
-        int p = clamp(w == null ? 2 : w.optInt("p", 2), 0, 3);
-        int res = ctx.getResources().getIdentifier("wbg_" + s + "_" + r + "_" + o, "drawable", ctx.getPackageName());
+        return ctx.getResources().getIdentifier("wbg_" + s + "_" + clamp(r, 0, 4) + "_" + clamp(o, 0, 5), "drawable", ctx.getPackageName());
+    }
+
+    static void applyStyle(Context ctx, RemoteViews rv, int rootId, JSONObject data, boolean small) {
+        applyStyle(ctx, rv, rootId, data, small, -1);
+    }
+
+    /** Background (glass or black, corner and opacity levels) and inner margins. */
+    static void applyStyle(Context ctx, RemoteViews rv, int rootId, JSONObject data, boolean small, int widgetId) {
+        JSONObject w = look(ctx, data, widgetId);
+        int res = bgRes(ctx, w.optString("s"), w.optInt("r"), w.optInt("o"));
         if (res != 0) rv.setInt(rootId, "setBackgroundResource", res);
+        int p = clamp(w.optInt("p", 2), 0, 3);
         int px = dp(ctx, small ? Math.max(5, PAD_DP[p] / 2) : PAD_DP[p]);
         rv.setViewPadding(rootId, px, px, px, px);
     }

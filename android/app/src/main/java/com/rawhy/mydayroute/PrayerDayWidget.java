@@ -30,7 +30,7 @@ public class PrayerDayWidget extends AppWidgetProvider {
         long nextAt = Long.MAX_VALUE;
         for (int id : ids) {
             RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_pday, R.layout.widget_pday_rtl));
-            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false);
+            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, id);
             rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "prayers", 2100));
             rv.setTextViewText(R.id.w_pd_date, fresh ? data.optString("dateG") : RouteWidgetBase.L(data, "openApp", "Open the app"));
             rv.setTextViewText(R.id.w_pd_hijri, fresh ? data.optString("dateH") : RouteWidgetBase.L(data, "loadPrayers", "to load prayer times"));

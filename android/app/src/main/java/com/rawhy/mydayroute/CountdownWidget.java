@@ -51,13 +51,13 @@ public class CountdownWidget extends AppWidgetProvider {
         return d == 0 ? RouteWidgetBase.L(data, "today", "Today") : WidgetKit.num(data, d);
     }
 
-    private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data) {
+    private RemoteViews build(Context ctx, RouteWidgetBase.Variant v, JSONObject data, int wid) {
         int rows = v.ids.iterator().next();
         JSONArray list = upcoming(data);
         int n = list.length();
         if (rows == 0) {
             RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_cd_s, R.layout.widget_cd_s_rtl));
-            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, true);
+            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, true, wid);
             rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "cds", 2400));
             if (n == 0) {
                 rv.setTextViewText(R.id.w_cs_e, "📅");
@@ -75,7 +75,7 @@ public class CountdownWidget extends AppWidgetProvider {
             return rv;
         }
         RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_cd, R.layout.widget_cd_rtl));
-        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false);
+        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
         rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "cds", 2401));
         rv.setViewVisibility(R.id.w_c_empty, n == 0 ? View.VISIBLE : View.GONE);
         rv.setTextViewText(R.id.w_c_empty, RouteWidgetBase.L(data, "noCds", "Add a countdown in Settings"));
@@ -96,7 +96,44 @@ public class CountdownWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         JSONObject data = WidgetKit.data(ctx);
-        for (int id : ids) mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> build(ctx, v, data), mgr, id));
+        for (int id : ids) {
+            final int wid = id;
+            if (WidgetKit.scrollable(ctx, id)) mgr.updateAppWidget(id, buildList(ctx, data, id));
+            else mgr.updateAppWidget(id, RouteWidgetBase.responsive(VARIANTS, v -> build(ctx, v, data, wid), mgr, id));
+        }
+    }
+
+    /** Scrollable mode (Android 12+): all countdowns in a list. */
+    private RemoteViews buildList(Context ctx, JSONObject data, int wid) {
+        JSONArray list = upcoming(data);
+        int n = list.length();
+        RemoteViews rv = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_cd_list, R.layout.widget_cd_list_rtl));
+        WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, false, wid);
+        rv.setOnClickPendingIntent(R.id.w_root, WidgetKit.open(ctx, "cds", 2401));
+        rv.setViewVisibility(R.id.w_c_empty, n == 0 ? View.VISIBLE : View.GONE);
+        rv.setViewVisibility(R.id.w_list, n == 0 ? View.GONE : View.VISIBLE);
+        rv.setTextViewText(R.id.w_c_empty, RouteWidgetBase.L(data, "noCds", "Add a countdown in Settings"));
+        if (android.os.Build.VERSION.SDK_INT >= 31 && n > 0) {
+            RemoteViews.RemoteCollectionItems.Builder b = new RemoteViews.RemoteCollectionItems.Builder().setHasStableIds(true).setViewTypeCount(1);
+            for (int i = 0; i < n; i++) {
+                JSONObject c = list.optJSONObject(i);
+                long d = days(c);
+                RemoteViews row = new RemoteViews(ctx.getPackageName(), WidgetKit.layout(data, R.layout.widget_cd_row, R.layout.widget_cd_row_rtl));
+                row.setTextViewText(R.id.w_r_e, c.optString("e"));
+                row.setTextViewText(R.id.w_r_n, c.optString("n"));
+                row.setTextViewText(R.id.w_r_d, dayText(data, d));
+                row.setTextColor(R.id.w_r_d, d == 0 ? 0xFFFBBF24 : i == 0 ? 0xFFFF7A3D : 0xFF6B8CFF);
+                row.setOnClickFillInIntent(R.id.w_row, new android.content.Intent());
+                b.addItem((c.optString("n") + i).hashCode(), row);
+            }
+            rv.setRemoteAdapter(R.id.w_list, b.build());
+            android.content.Intent tpl = new android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("com.rawhy.mydayroute://open/cds"));
+            tpl.setClass(ctx, MainActivity.class);
+            tpl.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            rv.setPendingIntentTemplate(R.id.w_list, android.app.PendingIntent.getActivity(ctx, 2490, tpl,
+                android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_MUTABLE));
+        }
+        return rv;
     }
 
     @Override

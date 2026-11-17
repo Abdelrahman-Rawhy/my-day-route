@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layoutDirection="rtl" android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="18dp" android:background="@drawable/wbg_glass_3_2">
+    <TextView android:id="@+id/w_c_empty" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="" android:textColor="#B3FFFFFF" android:textSize="15sp" android:visibility="gone"/>
+    <ListView android:id="@+id/w_list" android:layout_width="match_parent" android:layout_height="match_parent" android:divider="@null" android:dividerHeight="0dp" android:scrollbars="none"/>
+</LinearLayout>

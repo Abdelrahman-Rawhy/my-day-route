@@ -95,7 +95,7 @@ public class StepWidget extends AppWidgetProvider {
         int done = Math.max(0, total - left.length);
         DateFormat tf = android.text.format.DateFormat.getTimeFormat(ctx);
         RemoteViews v = new RemoteViews(ctx.getPackageName(), RouteWidgetBase.layoutFor(data, var.layout));
-        WidgetKit.applyStyle(ctx, v, R.id.w_step_body, data, var.w < 100f);
+        WidgetKit.applyStyle(ctx, v, R.id.w_step_body, data, var.w < 100f, widgetId);
 
         Intent open = new Intent(ctx, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

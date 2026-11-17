@@ -167,9 +167,10 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
         final PendingIntent openPi = PendingIntent.getActivity(ctx, 0, open,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
+        final int[] cur = { -1 };
         Builder b = v -> {
             RemoteViews rv = new RemoteViews(pkg, layoutFor(data, v.layout));
-            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, v.w < 100f);
+            WidgetKit.applyStyle(ctx, rv, R.id.w_root, data, v.w < 100f, cur[0]);
             if (prayer != null) {
                 long t = prayer.optLong("t");
                 text(rv, v, R.id.w_prayer_name, prayer.optString("n"));
@@ -199,7 +200,7 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
             rv.setOnClickPendingIntent(R.id.w_root, openPi);
             return rv;
         };
-        for (int id : ids) mgr.updateAppWidget(id, responsive(variants(), b, mgr, id));
+        for (int id : ids) { cur[0] = id; mgr.updateAppWidget(id, responsive(variants(), b, mgr, id)); }
 
         long nextEvent = Long.MAX_VALUE;
         if (prayer != null) nextEvent = Math.min(nextEvent, prayer.optLong("t"));
