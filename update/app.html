@@ -977,6 +977,8 @@ html.light .chead b{color:var(--tx)}html.light .ccomp textarea{background:var(--
 .mrow.me .bub{background:var(--grad)}html.light .mrow.them .bub{color:var(--tx);border:1px solid var(--bd)}
 html.light .cmsgs{background:transparent}
 input.need{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(225,29,72,.18)}.nm-hint{margin:6px 2px 4px;font-size:12px}.nm-ask{margin-top:4px;font-size:14px}
+.adkr-sw{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--tx)}.adkr-sw b{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.adkr-sw svg{transform:rotate(90deg)!important;color:var(--mu);flex:none}
+body.adkreading #pcPill,body.reading #pcPill{display:none!important}
 </style>
 </head>
 <body>
@@ -2176,9 +2178,9 @@ function adkHomeHtml(){const ar=S.lang==='ar',cur=adkDefault(),[cd,ct]=adkProg(c
 function adkResHtml(){const ar=S.lang==='ar';if(adkQ.trim()){const R=adkSearchRefs(adkQ);if(!R.length)return `<div class="empty">${ar?'مفيش نتايج. جرّب كلمة تانية.':'No results. Try another word.'}</div>`;
   window._adkSR=R;return `<div class="sub" style="margin:0 2px 8px">${ar?arNum(R.length)+' نتيجة':R.length+' results'}</div><div class="adk-list">${R.slice(0,80).map((r,k)=>adkRowHtml(r,`adkOpenRefs(window._adkSR,${k},'${ar?'نتائج البحث':'Search results'}')`)).join('')}</div>`}
  const cur=adkDefault(),[cd,ct]=adkProg(cur),fv=adkFavRefs().length;
- return `<button class="fsel" onclick="adkOpen('${cur}')"><span class="ico c-${ADK_TILE_C[cur]||'violet'}">${ic((ADK_CATS.find(z=>z[0]===cur)||[])[2]||'sun',20)}</span><span class="fs-t"><small>${ar?'وقتها دلوقتي':'Right now'} · ${ar?arNum(cd)+'/'+arNum(ct):cd+'/'+ct}</small><b>${adkCatName(cur)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
+ return `<button class="fsel" onclick="adkOpen('${cur}')"><span class="ico c-${ADK_TILE_C[cur]||'violet'}">${ic((ADK_CATS.find(z=>z[0]===cur)||[])[2]||'sun',20)}</span><span class="fs-t"><small>${ar?'وقتها دلوقتي':'Right now'} · ${ar?arNum(cd)+' من '+arNum(ct):cd+'/'+ct}</small><b>${adkCatName(cur)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
  <button class="fsel" onclick="adkOpenFav()"><span class="ico c-red">${ic('heart',20)}</span><span class="fs-t"><small>${ar?arNum(fv)+' ذكر':fv+' saved'}</small><b>${ar?'المفضلة':'Favorites'}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
- <div class="adk-cats adk-grid">${ADK_CATS.map(([k,n,i])=>{const [d,t]=adkProg(k),rem=(S.adkRem||{})[k];return `<button onclick="adkOpen('${k}')" class="${d===t&&t?'done':''}"><span class="ico c-${ADK_TILE_C[k]||'violet'}">${ic(i,20)}</span><b>${n}</b><i>${d===t&&t?'✓ ':''}${d&&d<t?(ar?arNum(d)+'/'+arNum(t):d+'/'+t):(ar?arNum(t)+' ذكر':t+' items')}${rem?' · '+ic('bell',10):''}</i></button>`}).join('')}</div>
+ <div class="adk-cats adk-grid">${ADK_CATS.map(([k,n,i])=>{const [d,t]=adkProg(k),rem=(S.adkRem||{})[k];return `<button onclick="adkOpen('${k}')" class="${d===t&&t?'done':''}"><span class="ico c-${ADK_TILE_C[k]||'violet'}">${ic(i,20)}</span><b>${n}</b><i>${d===t&&t?'✓ ':''}${d&&d<t?(ar?arNum(d)+' من '+arNum(t):d+'/'+t):(ar?arNum(t)+' ذكر':t+' items')}${rem?' · '+ic('bell',10):''}</i></button>`}).join('')}</div>
  ${adkGuide()}${adkStatsHtml(cur)}`}
 function adkResPaint(){const el=document.getElementById('adkRes');if(el)el.innerHTML=adkResHtml()}
 function adkRowHtml(r,on){const x=adhkarList(r.c)[r.i],fav=adkIsFav(r.c,r.i),cc=(adkState()[r.c]||{})[r.i]||0,ok=cc>=x.n;
@@ -2190,12 +2192,13 @@ function adkOpen(cat){const L=adhkarList(cat),cc=adkState()[cat]||{};let k=L.fin
 function adkOpenFav(){const R=adkFavRefs();if(!R.length){toast(S.lang==='ar'?'اضغط ♡ على أي ذكر عشان يتضاف هنا':'Tap ♡ on any dhikr to save it here','heart');return}adkOpenRefs(R,0,S.lang==='ar'?'المفضلة':'Favorites')}
 function adkOpenRefs(refs,k,title,cat){if(!refs||!refs.length)return;ADKR={refs:refs.slice(),k:Math.max(0,Math.min(refs.length-1,k||0)),title,cat:cat||null,started:false};adkCat=ADKR.refs[ADKR.k].c;
  let R=document.getElementById('adkR');
- if(!R){R=document.createElement('div');R.id='adkR';R.className='adkr';R.innerHTML=`<div class="adkr-top"><button class="iconbtn adkr-back" onclick="adkRExit()" aria-label="back">${ic('chevron',18)}</button><b id="adkRTitle"></b><button class="adk-tm" id="adkTm" dir="ltr" onclick="adkToggleTimer()">${ic('clock',13)}<b></b><i class="adk-pz">❚❚</i></button></div>
+ if(!R){R=document.createElement('div');R.id='adkR';R.className='adkr';R.innerHTML=`<div class="adkr-top"><button class="iconbtn adkr-back" onclick="adkRExit()" aria-label="back">${ic('chevron',18)}</button><button class="adkr-sw" onclick="adkRSwitch()"><b id="adkRTitle"></b>${ic('chevron',14)}</button><button class="adk-tm" id="adkTm" dir="ltr" onclick="adkToggleTimer()">${ic('clock',13)}<b></b><i class="adk-pz">❚❚</i></button></div>
   <div class="adkr-tools"><button class="iconbtn" onclick="adkRShare()" aria-label="share">${ic('share',18)}</button><button class="iconbtn" id="adkRBell" onclick="adkRBell()" aria-label="reminder">${ic('bell',18)}</button><button class="iconbtn adk-hrt" id="adkRFav" onclick="adkRFav()" aria-label="favorite">${ic('heart',18)}</button><span class="sp"></span><button class="link" id="adkRUndo" onclick="adkRUndo()">${ic('rotate',14)}<span></span></button></div>
   <div class="adkr-stage" id="adkRStage"><div class="adkr-card" id="adkRCard"></div></div>
   <div class="adkr-bot"><button class="iconbtn adkr-nav" onclick="adkRGo(-1)" aria-label="previous">${ic('chevron',18)}</button><span class="adkr-rep" id="adkRRep"></span><button class="adkr-btn" id="adkRBtn" onclick="adkRCount()" aria-label="count"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="adkr-tr"/><circle cx="50" cy="50" r="44" class="adkr-fl" id="adkRRing" stroke-dasharray="276.5" stroke-dashoffset="276.5" transform="rotate(-90 50 50)"/></svg><span id="adkRNum"></span></button><span class="adkr-pos" id="adkRPos"></span><button class="iconbtn adkr-nav nx" onclick="adkRGo(1)" aria-label="next">${ic('chevron',18)}</button></div>`;
   document.body.appendChild(R);adkRSwipe(document.getElementById('adkRStage'));window._smoothReg&&window._smoothReg(R)}
  if(!R.classList.contains('on'))SFX('up');R.classList.add('on');document.body.classList.add('adkreading');adkRDraw()}
+function adkRSwitch(){const st=adkState(),cur=ADKR&&ADKR.cat;openMenu(S.lang==='ar'?'اختر قسم الأذكار':'Choose a section',ADK_CATS.map(([k,n,i])=>{const [d,t]=adkProg(k);return{k,label:n,sub:(S.lang==='ar'?arNum(d)+' من '+arNum(t):'\u2066'+d+' / '+t+'\u2069')+(d===t&&t?' ✓':''),icon:i,c:ADK_TILE_C[k]||'violet',on:k===cur}}).concat([{k:'__fav',label:S.lang==='ar'?'المفضلة':'Favorites',icon:'heart',c:'red',on:!cur&&ADKR&&ADKR.title===(S.lang==='ar'?'المفضلة':'Favorites')}]),k=>{if(k==='__fav')adkOpenFav();else adkOpen(k)})}
 function adkRRef(){return ADKR&&ADKR.refs[ADKR.k]}
 function adkRDraw(){const R=document.getElementById('adkR');if(!R||!ADKR)return;const ar=S.lang==='ar',r=adkRRef(),L=adhkarList(r.c),x=L[r.i],cc=(adkState()[r.c]||{})[r.i]||0,ok=cc>=x.n;adkCat=r.c;
  document.getElementById('adkRTitle').textContent=ADKR.title;
@@ -2203,7 +2206,7 @@ function adkRDraw(){const R=document.getElementById('adkR');if(!R||!ADKR)return;
  document.getElementById('adkRCard').innerHTML=`${!ADKR.cat?`<div class="adkr-cat">${adkCatName(r.c)}</div>`:''}${x.h?`<div class="adk-h">${x.h}</div>`:''}<div class="ar2 adkr-t selok">${x.t}</div>${x.s?`<div class="adk-src ar2">${x.s}</div>`:''}${x.f||x.d?`<details class="adk-x" ${op?'open':''} ontoggle="ADK_OPEN['${r.c}:${r.i}']=this.open"><summary>${x.f?'الفضل':''}${x.f&&x.d?' · ':''}${x.d?'تدبّر':''}</summary>${x.f?`<div class="ar2 adk-box fadl"><span class="adk-lbl">${ic('star',13)} الفضل</span><p>${x.f}</p></div>`:''}${x.d?`<div class="ar2 adk-box tdb"><span class="adk-lbl">${ic('lightbulb',13)} تدبّر</span><p>${x.d}</p></div>`:''}</details>`:''}`;
  document.getElementById('adkRStage').scrollTop=0;
  document.getElementById('adkRRep').textContent=adkRep(x.n);
- document.getElementById('adkRPos').textContent=ar?arNum(ADKR.k+1)+' / '+arNum(ADKR.refs.length):(ADKR.k+1)+' / '+ADKR.refs.length;
+ document.getElementById('adkRPos').textContent=ar?arNum(ADKR.k+1)+' من '+arNum(ADKR.refs.length):(ADKR.k+1)+' / '+ADKR.refs.length;
  const B=document.getElementById('adkRBtn');B.classList.toggle('ok',ok);document.getElementById('adkRNum').innerHTML=ok?ic('check',30,'',3):cc?(ar?arNum(cc):String(cc)):`<small class="adkr-tap">${ar?'اضغط':'Tap'}</small>`;
  document.getElementById('adkRRing').setAttribute('stroke-dashoffset',String(276.5*(1-Math.min(1,cc/x.n))));
  document.getElementById('adkRFav').classList.toggle('on',adkIsFav(r.c,r.i));
@@ -3585,7 +3588,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=95;
+const APP_VERSION=96;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
