@@ -44,7 +44,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.${{ github.run_number }}
-          name: My Day Route 1.${{ github.run_number }}
+          name: Yawmi 1.${{ github.run_number }}
           make_latest: true
           files: MyDayRoute.apk
           body: |

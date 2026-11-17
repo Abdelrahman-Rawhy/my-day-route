@@ -1,4 +1,4 @@
-# My Day Route
+# Yawmi (يومي) — formerly My Day Route
 
 A daily route app: prayers (auto times), Quran, work, graduation project, family, points, badges and prizes, with phone notifications for every step.
 

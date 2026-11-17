@@ -194,7 +194,7 @@ public abstract class RouteWidgetBase extends AppWidgetProvider {
                 data.optInt("done") + "/" + data.optInt("total") + " " + L(data, "steps", "steps") + " · " + data.optInt("pct") + "%");
             text(rv, v, R.id.w_lbl_prayer, L(data, "nextPrayer", "NEXT PRAYER"));
             text(rv, v, R.id.w_lbl_step, L(data, "nextStep", "NEXT STEP"));
-            text(rv, v, R.id.w_lbl_app, L(data, "app", "My Day Route"));
+            text(rv, v, R.id.w_lbl_app, L(data, "app", "Yawmi"));
             rv.setOnClickPendingIntent(R.id.w_root, openPi);
             return rv;
         };
