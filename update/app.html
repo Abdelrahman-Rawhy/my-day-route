@@ -1984,7 +1984,7 @@ function adkHtml(){const cat=adkCat||(adkCat=adkDefault()),L=adhkarList(cat),st=
  ${L.map((x,i)=>{const k=c[i]||0,ok=k>=x.n;return `<div class="adk ${ok?'ok':''}" onclick="adkTap(${i})">${x.h?`<div class="adk-h">${x.h}</div>`:''}<div class="ar2 adk-t">${x.t}</div>${(x.f||x.d)&&!ok?`<details class="adk-x" ${ADK_OPEN[cat+':'+i]?'open':''} onclick="event.stopPropagation()" ontoggle="ADK_OPEN['${cat}:${i}']=this.open"><summary>${x.f?'الفضل':''}${x.f&&x.d?' · ':''}${x.d?'تدبّر':''}</summary>${x.f?`<div class="ar2 adk-box fadl"><span class="adk-lbl">${ic('star',13)} الفضل</span><p>${x.f}</p>${x.s?`<small>${x.s}</small>`:''}</div>`:''}${x.d?`<div class="ar2 adk-box tdb"><span class="adk-lbl">${ic('lightbulb',13)} تدبّر</span><p>${x.d}</p>${!x.f&&x.s?`<small>${x.s}</small>`:''}</div>`:''}</details>`:x.s&&!ok?`<div class="adk-src ar2">${x.s}</div>`:''}<div class="adk-f">${k>0?`<button class="adk-un" onclick="event.stopPropagation();adkUndo(${i})" aria-label="undo">${ic('rotate',14)}<span>${S.lang==='ar'?'تراجع':'Undo'}</span></button>`:''}<span class="adk-n" dir="ltr">${ok?ic('check',14,'',3):k+' / '+x.n}</span>${x.n>1&&!ok?`<span class="adk-pb"><i style="width:${k/x.n*100}%"></i></span>`:''}<span class="adk-c">${x.n>1?(S.lang==='ar'?'التكرار: ':'Repeat: ')+x.n:''}</span></div></div>`}).join('')}
  ${done===L.length?`<div class="card" style="text-align:center"><b>${T('Done. May Allah accept it')} 🤍</b></div>`:''}`}
 function adkTap(i){const cat=adkCat,L=adhkarList(cat),st=adkState();st[cat]=st[cat]||{};const c=st[cat],x=L[i];if(!x)return;if((c[i]||0)>=x.n){return}
- st._t=st._t||{};if(!st._t[cat])st._t[cat]={s:Date.now(),acc:0,run:Date.now(),last:Date.now()};else if(!st._t[cat].e)adkTap(st._t[cat]);c[i]=(c[i]||0)+1;ADK_HIST.push({cat,i});if(ADK_HIST.length>200)ADK_HIST.shift();const fin=c[i]>=x.n;try{const H=HAP();if(H)fin?H.notification({type:'SUCCESS'}):H.impact({style:'LIGHT'})}catch(e){}
+ st._t=st._t||{};if(!st._t[cat])st._t[cat]={s:Date.now(),acc:0,run:Date.now(),last:Date.now()};else if(!st._t[cat].e)adkTmTap(st._t[cat]);c[i]=(c[i]||0)+1;ADK_HIST.push({cat,i});if(ADK_HIST.length>200)ADK_HIST.shift();const fin=c[i]>=x.n;try{const H=HAP();if(H)fin?H.notification({type:'SUCCESS'}):H.impact({style:'LIGHT'})}catch(e){}
  save();const all=L.every((y,j)=>(c[j]||0)>=y.n);
  if(all&&!(st._done||{})[cat]){st._done=st._done||{};st._done[cat]=1;if(st._t[cat]&&!st._t[cat].e){const t=st._t[cat];adkClose(t);t.e=Date.now()}save();
   const re=cat==='morning'?/morning adhkar|أذكار الصباح/i:cat==='evening'?/evening adhkar|أذكار المساء/i:null;const t=re&&sorted().find(z=>re.test(z.name)),rec=dayRec();
@@ -2003,7 +2003,7 @@ const ADK_IDLE=120000;
 function adkRunMs(t,now){if(!t||!t.run)return 0;const n=now||Date.now(),l=t.last||t.run,end=n-l>ADK_IDLE?l+10000:n;return Math.max(0,end-t.run)}
 function adkClose(t){if(!t)return;if(t.acc==null&&!t.e){t.acc=0;t.run=null;return}if(t.run){t.acc+=adkRunMs(t);t.run=null}}
 function adkIdle(t){return !!(t&&t.run&&!t.e&&Date.now()-(t.last||t.run)>ADK_IDLE)}
-function adkTap(t){const now=Date.now();if(t.acc==null){t.acc=0;t.run=null}if(t.run&&now-(t.last||t.run)>ADK_IDLE)adkClose(t);if(!t.run)t.run=now;t.last=now}
+function adkTmTap(t){const now=Date.now();if(t.acc==null){t.acc=0;t.run=null}if(t.run&&now-(t.last||t.run)>ADK_IDLE)adkClose(t);if(!t.run)t.run=now;t.last=now}
 function adkDur(t){if(!t)return 0;if(t.acc==null)return t.e?t.e-t.s:0;return t.acc+(t.e?0:adkRunMs(t))}
 function adkPauseAll(){const st=adkState(),T2=st._t||{};let ch=0;for(const k in T2){const t=T2[k];if(t&&!t.e&&(t.run||t.acc==null)){adkClose(t);ch=1}}if(ch)save();return ch}
 function adkToggleTimer(){const t=(adkState()._t||{})[adkCat];if(!t||t.e)return;if(t.run&&!adkIdle(t))adkClose(t);else{adkClose(t);t.run=Date.now();t.last=Date.now()}save();adkTmPaint()}
@@ -3368,7 +3368,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=90;
+const APP_VERSION=91;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
