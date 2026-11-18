@@ -1154,11 +1154,12 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .dz-mic{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;font-size:16px}
 .cd .tm.tm-s{font-size:26px}
 .kh-now{display:flex;align-items:center;gap:10px;margin:2px 0 12px;padding:10px 12px;border-radius:16px;background:var(--s1);border:1px solid var(--bd)}
-.kh-nowt{flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;line-height:1.6}
+.kh-pm{display:flex;gap:8px;flex:none}.kh-nowt{flex:1;min-width:0;text-align:start;display:flex;flex-direction:column;line-height:1.6}
 .kh-nowt small{font-size:12.5px;color:var(--mu);font-weight:600}.kh-nowt b{font-size:16.5px;font-weight:800;color:var(--a2)}
 .kh-now .iconbtn{font-size:22px;font-weight:800}
 .kh-hint{margin:10px 2px 4px;font-size:13px;line-height:1.7}
 .gl-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.gl-t b{flex:none!important}.gl-t small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qbtns.kh-q{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10px}.qbtns.kh-q button{width:auto!important;margin:0!important}
 </style>
 </head>
 <body>
@@ -3280,7 +3281,7 @@ function khatmaHtml(){const K=kh(),r=dayRec(),qp=r.qp||0,tg=khTarget(),pc=K.page
  return `<div class="hero"><div class="ring"><svg width="92" height="92"><circle cx="46" cy="46" r="38" stroke="rgba(255,255,255,.1)" stroke-width="9" fill="none"/><circle cx="46" cy="46" r="38" stroke="url(#rg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="${238.8*(1-pc)}" transform="rotate(-90 46 46)"/></svg><div class="pct" style="font-size:${String(pTxt).length>3?18:22}px">${pTxt}%</div></div>
  <div style="min-width:0"><h2>Page ${K.page} of 604</h2><p>${T('Juz')} ${jz}${sur?' · '+T('Surah')+' '+sur:''} · ${T('Khatma')} #${(K.done||0)+1}</p><div class="kh-st ${diff>=0?'ok':'late'}">${diff>=0?(diff>0?T('Ahead of plan by')+' '+khPg(diff):T('Right on plan')):T('Behind plan by')+' '+khPg(-diff)}</div></div></div>
  <div class="card"><h3><span class="ico c-amber">${ic('target',18)}</span><span class="sp">${dzL('مكانك في الختمة','Your place in the khatma')}</span></h3>
-  <div class="kh-now"><button class="iconbtn sm" onclick="khSlideSet(${K.page}-1)" aria-label="-1">−</button><div class="kh-nowt"><small>${dzL('إنت دلوقتي','You are now at')}</small><b id="khLive" dir="auto">${khWhere(K.page)}</b></div><button class="iconbtn sm" onclick="khSlideSet(${K.page}+1)" aria-label="+1">+</button></div>
+  <div class="kh-now"><div class="kh-nowt"><small>${dzL('إنت دلوقتي','You are now at')}</small><b id="khLive" dir="auto">${khWhere(K.page)}</b></div><span class="kh-pm"><button class="iconbtn sm" onclick="khSlideSet(${K.page}-1)" aria-label="-1">−</button><button class="iconbtn sm" onclick="khSlideSet(${K.page}+1)" aria-label="+1">+</button></span></div>
   <div class="kh-track"><div class="kh-fill" style="width:${pc*100}%"></div><div class="kh-exp" style="right:${expected/604*100}%" title="plan"></div>${juzStart.map(p=>`<i style="right:${(p-1)/604*100}%"></i>`).join('')}</div>
   <input type="range" class="kh-range" min="0" max="604" step="1" value="${K.page}" oninput="khSlide(this.value)" onchange="khSlideSet(this.value)">
   <div class="kh-scale" dir="rtl"><span>1</span><span>${T('Juz')} 10</span><span>${T('Juz')} 20</span><span>604</span></div>
@@ -3288,7 +3289,7 @@ function khatmaHtml(){const K=kh(),r=dayRec(),qp=r.qp||0,tg=khTarget(),pc=K.page
   <button class="btn wide" style="margin-top:12px" onclick="openPage(Math.min(604,${K.page}+1))">${ic('book',16)}${T('Continue in the Mushaf')} · ${T('Page')} ${Math.min(604,K.page+1)}</button></div>
  <div class="card"><h3><span class="ico c-green">${ic('book',18)}</span><span class="sp">Today: ${qp} / ${tg} pages</span>${qp>=tg?'<span style="color:var(--ok)">✓</span>':''}</h3>
   <div class="kh-today"><i style="width:${Math.min(100,qp/tg*100)}%"></i></div>
-  <div class="qbtns">${[1,2,5,10,20].map(n=>`<button onclick="khAdd(${n})">+${n===20?'Juz':n}</button>`).join('')}<button onclick="khAdd(-1)">−1</button></div></div>
+  <div class="qbtns kh-q">${[1,2,5,10,20].map(n=>`<button onclick="khAdd(${n})">+${n===20?'Juz':n}</button>`).join('')}<button onclick="khAdd(-1)">−1</button></div></div>
  <div class="card"><h3><span class="ico c-violet">${ic('clock',18)}</span><span class="sp">${T('Your plan')}</span><b style="font-size:13px">${K.days} ${T('days')}</b></h3>
   <div class="kh-plans">${[7,15,30,60,90,180].map(d=>`<button class="${K.days===d?'on':''}" onclick="khSetPlan(${d})"><b>${d}</b><i>${T('days')}</i><small>${Math.ceil(604/d)} ${T('pages/day')}</small></button>`).join('')}<button onclick="khPlan()"><b>…</b><i>${T('Custom')}</i></button></div>
   <div class="sub" style="margin-top:10px">${T('Finish by')} ${end.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'long'})} · ${leftDays} ${T('days left')} · ${T('about')} ${tg} ${T('pages/day')}</div></div>
@@ -4265,7 +4266,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=116;
+const APP_VERSION=117;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
