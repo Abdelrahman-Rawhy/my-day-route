@@ -1903,6 +1903,8 @@ function lifeTilesHtml(){LF();const L=S.life,k=today(),sn=Object.values(lSunOf(k
 
 function wipeFix(){if(!window._wipeDid)return;window._wipeDid=0;try{const r=S.history[today()];if(r){r.done=(r.done||[]).filter(id=>S.tasks.some(t=>t.id===id));r.total=dayTasks().length}if(S.timer&&S.timer.cat&&!AREAS[S.timer.cat])S.timer.cat='study';save();scheduleNative();setTimeout(()=>toast(dzL('بدأنا من جديد: الصلوات بس. ضيف خطواتك وأهدافك بنفسك','Fresh start: prayers only. Add your own steps and goals'),'sparkles'),1500)}catch(e){}}
 function wipeRestore(b){const B=S._wipeBak;if(!B)return;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=dzL('اضغط تاني للتأكيد','Tap again to confirm');return}const ids=new Set(S.tasks.map(t=>t.id));B.tasks.forEach(t=>{if(!ids.has(t.id))S.tasks.push(t)});const gids=new Set(S.goals.map(g=>g.id));B.goals.forEach(g=>{if(!gids.has(g.id))S.goals.push(g)});S.wkPlan=Object.assign({},B.wk||{},S.wkPlan);delete S._wipeBak;save();closeSheets();render();scheduleNative();toast(dzL('رجعت الخطوات والأهداف القديمة','Old steps and goals restored'),'check')}
+// v110: tapping anywhere on a settings row with ONE control triggers that control (people tap the text, not the small button)
+document.addEventListener('click',e=>{const row=e.target.closest&&e.target.closest('.setting');if(!row||row.hasAttribute('onclick')||e.target.closest('button,input,select,textarea,a,label,[onclick],.chips'))return;const c=[...row.querySelectorAll('button,input.sw,.swb,select')].filter(x=>x.offsetParent);if(c.length===1)c[0].click()});
 // ===== v109 ONBOARDING: wizard · checklist · coach marks · empty states · help · first 7 days =====
 function OB(){S.ob=S.ob||{};const o=S.ob;o.ck=o.ck||{};o.m=o.m||{};if(!o.start)o.start=today();if(!o.day)o.day=1;S.tips=S.tips||{};return o}
 function obDays(a,b){return Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5)}
@@ -1985,14 +1987,15 @@ function tip(key,el,text,scroll){OB();if(S.tips[key]||window._tipShown||!el||doc
  const B=document.createElement('div');B.id='coach';B.className='coach';B.innerHTML=`<span>${text}</span>`;document.body.appendChild(B);
  const top=R.top/z,bot=R.bottom/z,W=innerWidth/z,bh=B.offsetHeight,below=bot+bh+16<vh/z;B.style.top=(below?bot+10:Math.max(8,top-bh-10))+'px';B.classList.add(below?'dn':'up');
  const cx=Math.min(Math.max((R.left+R.width/2)/z,30),W-30);B.style.setProperty('--ax',cx+'px');
- requestAnimationFrame(()=>B.classList.add('on'));setTimeout(()=>{const f=()=>{document.removeEventListener('pointerdown',f,true);tipClose()};document.addEventListener('pointerdown',f,true)},300);clearTimeout(window._tipT);window._tipT=setTimeout(tipClose,9000);return true}
+ window._tipAt=Date.now();requestAnimationFrame(()=>B.classList.add('on'));setTimeout(()=>{const f=()=>{document.removeEventListener('pointerdown',f,true);tipClose()};document.addEventListener('pointerdown',f,true)},300);clearTimeout(window._tipT);window._tipT=setTimeout(tipClose,9000);return true}
+addEventListener('scroll',()=>{if(document.getElementById('coach')&&Date.now()-(window._tipAt||0)>700)tipClose()},{passive:true});
 function tipClose(){const B=document.getElementById('coach');if(B){B.classList.remove('on');setTimeout(()=>B.remove(),200)}}
 function obTipToday(){if(!S.ob1||document.body.classList.contains('guiding'))return;const v=document.querySelector('.view.on');if(!v||v.id!=='v-today')return;const o=OB(),days=obDays(o.start,today());
  tip('path',document.querySelector('#route .dp-n.cur')||document.querySelector('#route .step.next')||document.querySelector('#route .pnode'),dzL('ده مسارك اليوم. دوس على الصلاة لما تصليها.','This is your route today. Tap a prayer when you pray it.'),1)
  ||(IS_NATIVE&&days>=3&&tip('wdg',document.querySelector('.hero'),dzL('حط يومي على الشاشة: ضغطة طويلة على الشاشة الرئيسية ثم Widgets.','Put Yawmi on your home screen: long-press it, then Widgets.')))
  ||(new Date().getHours()>=15&&!((S.plan||{})[today()]||{}).top&&tip('top3',document.getElementById('dzPlan'),dzL('اختار 3 حاجات بس. القليل بيخلص.','Pick just 3 things. Less gets done.')))
  ||(Object.keys(S.history||{}).length>=2&&tip('disc',document.querySelector('.dz-pill'),dzL('مش لازم 100. المهم متسيبش يومين ورا بعض.','No need for 100. Just never miss twice.')))}
-function obOnGo(v){if(!S.ob1)return;setTimeout(()=>{const cur=document.querySelector('.view.on');if(!cur||cur.id!=='v-'+v)return;
+function obOnGo(v){tipClose();if(!S.ob1)return;setTimeout(()=>{const cur=document.querySelector('.view.on');if(!cur||cur.id!=='v-'+v)return;
  if(v==='goals')tip('focus',document.getElementById('tRing'),dzL('لِف الدايرة للمدة، ولو اتشتّت دوس «اتشتّت؟».','Turn the dial for the length; distracted? Tap «Distracted?».'),1);
  else if(v==='family')tip('fam',document.querySelector('#v-family .card'),dzL('ابعت الكود لأهلك، وكل واحد يشوف تقدّم التاني.','Send the code to your family; everyone sees each other’s progress.'));
  else if(v==='settings')tip('thm',document.getElementById('thChips'),dzL('الشكل من هنا: كريمي، فاتح، غامق.','Change the look here: Cream, Light, Dark.'),1);
@@ -2073,7 +2076,7 @@ function render(){
    <div class="meta">${ic('clock',12)}${moved?`<s style="opacity:.6">${fmt(t.time)}</s> → `:''}${fmt(effTime(t))} · +${t.pts} pts ${t.prayer?'<span class="tag auto">AUTO</span>':''}${t.date?'<span class="tag sub">ONCE</span>':''}${t.days&&t.days.length===1&&t.days[0]===5?'<span class="tag fri">FRIDAY</span>':''}${t.subs&&t.subs.length?`<span class="tag sub">☑ ${subDone(t,rec)}/${t.subs.length}</span>`:''}${t.note?'<span class="tag sub">📝</span>':''}${t.links&&t.links.length?'<span class="tag sub">🔗 '+t.links.length+'</span>':''}${moved?'<span class="tag auto">MOVED TODAY</span>':''}${nx?(effTime(t)<=now?'<span class="tag">NOW</span>':'<span class="tag">NEXT</span>'):''}${late?'<span class="tag late">MISSED</span>':''}</div>${t.prayer&&d?pqRow(t,rec):''}</div>
    <span class="check">${d?ic('check',18,t.id===justDone?'draw':'',3):''}</span></div></div>`}).join('')||'<div class="empty">No steps yet. Tap Edit to add your route.</div>');if(S.routeView!=='list')requestAnimationFrame(drawPathLine);{const rv=document.getElementById('rvLink');if(rv)rv.innerHTML=S.routeView==='list'?ic('map',15)+(S.lang==='ar'?'مسار':'Path'):ic('list',15)+(S.lang==='ar'?'قائمة':'List')}
  const q=QUOTES[(new Date().getDate()+new Date().getMonth()*31)%QUOTES.length];
- document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
+ document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">${S.lang==='ar'&&!q.ar?'«'+T(q.en)+'»':'“'+q.en+'”'}</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
  renderGuide();{const sk=(rec.skip||[]).filter(id=>S.tasks.some(t=>t.id===id));document.getElementById('skipped').innerHTML=sk.length?`<button class="link" style="margin:6px auto 0;display:flex" onclick="unskip()">${ic('rotate',14)}${sk.length} skipped today · restore</button>`:''}
  renderToday2(list,rec,now);renderFaithBar();renderCal();schedScore();renderCountdowns();pushWidget();const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();if(vis('faith'))renderFaith();
  firstPaint=false;justDone=null;clearTimeout(window._gdT);window._gdT=setTimeout(()=>{try{gameDaily();publishLeague()}catch(e){}},1200);if(window._wipeDid)setTimeout(()=>{wipeFix();render()},300);try{const b0=JSON.stringify(S.ob||0);obSync();obPaint();if(JSON.stringify(S.ob)!==b0)save()}catch(e){}if(!window._gdAuto){window._gdAuto=1;if(!S.ob1)setTimeout(()=>{if(!S.ob1&&!document.querySelector('.sheet.on'))obOpen()},700);else setTimeout(obTipToday,2500)}
@@ -2997,7 +3000,7 @@ function tdParse(raw){let s=' '+raw.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'
  if(m=s.match(/(?:\bat\s*|@\s*|الساعة\s*|الساعه\s*)?\b(\d{1,2})(?:[:.](\d{2}))?\s*(a\.?m\.?|p\.?m\.?|ص|م|صباحا|مساء|مساءً|الصبح|بالليل)(?=\s|$)/i)||(m=s.match(/(?:\bat\s+|@\s*|الساعة\s*|الساعه\s*)(\d{1,2})(?:[:.](\d{2}))?()(?=\s|$)/i))){let h=+m[1],mi=+(m[2]||0);const ap=(m[3]||'').toLowerCase();if(h<=23&&mi<60){if(/^p|^م|مساء|بالليل/.test(ap)&&h<12)h+=12;else if(/^a|^ص|صباح|الصبح/.test(ap)&&h===12)h=0;else if(!ap&&h>=1&&h<=7)h+=12;time=String(h).padStart(2,'0')+':'+String(mi).padStart(2,'0');s=s.replace(m[0],' ');if(!due)due=today()}}
  if(rep&&!due)due=today();
  const t=s.replace(/\s{2,}/g,' ').trim();return{t,tags,pri,list,due,time,rep}}
-function tdQuickAdd(){const i=document.getElementById('tdIn');const v=(i.value||'').trim();if(!v)return;const P=tdParse(v);if(!P.t){toast(L('اكتب اسم المهمة','Type a task name'),'pen');return}
+function tdQuickAdd(){const i=document.getElementById('tdIn');const v=(i.value||'').trim();if(!v){i.focus();toast(L('اكتب المهمة الأول','Type the task first'),'pen');return}const P=tdParse(v);if(!P.t){toast(L('اكتب اسم المهمة','Type a task name'),'pen');return}
  const V=tdView;if(!P.list&&V.startsWith('l:'))P.list=V.slice(2);if(!P.due&&(V==='today'||V==='week'))P.due=today();if(!P.due&&V==='tomorrow')P.due=tdAdd(today(),1);if(V.startsWith('t:')&&!P.tags.includes(V.slice(2)))P.tags.push(V.slice(2));
  const x={id:uid(),t:P.t,list:P.list,pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
  TD().items.push(x);i.value='';save();renderTasks();SFX('pop');toast(L('اتضافت: ','Added: ')+x.t+(x.due?' · '+tdDueTxt(x):''),'check')}
@@ -4224,7 +4227,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=109;
+const APP_VERSION=110;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4402,7 +4405,7 @@ async function joinFamily(code){
  }catch(e){toast('Could not join: '+e.message,'alert')}
 }
 function saveProfile(){const el=document.getElementById('pfName');if(el){if(!el.value.trim()){if(S.name){el.value=S.name}else{toast('Write your name first','user');el.classList.add('need');el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});return false}}S.name=el.value.trim()}S.color=pickColor||S.color||AVCOLORS[0];save();return true}
-async function updateProfile(){if(!saveProfile())return;if(S.famId)await publishMe();toast('Profile saved','user');render()}
+async function updateProfile(){if(!saveProfile())return;try{if(S.famId)await publishMe();toast('Profile saved','user')}catch(e){toast(dzL('اتحفظ على الموبايل، وهيتبعت للعيلة لما الاتصال يرجع','Saved on the phone; it will reach the family when you are back online'),'user')}render()}
 async function leaveFamily(){if(!S.famId)return;FB.unsubs.forEach(u=>u());FB.unsubs=[];Object.keys(CHATS).forEach(c=>{CHATS[c].unsub.forEach(u=>u());delete CHATS[c]});dmKeys.clear();try{await famRef().collection('members').doc(FB.uid).delete()}catch(e){}S.fams=(S.fams||[]).filter(f=>f.id!==S.famId);S.famCode=null;S.famId=null;FKEY=null;FAM.family=null;FAM.members=[];FAM.tasks=[];save();toast('You left the family','users');if(S.fams.length){famSwitch(S.fams[0].id)}else{renderFamily();render()}}
 function setSendType(k){sendType=k;document.querySelectorAll('#sType button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const sh=k==='shopping';
  document.getElementById('sItemsBox').style.display=sh?'block':'none';document.getElementById('sTitleL').textContent=sh?'List name':'Task';
@@ -4436,7 +4439,7 @@ function openMember(id){const m=FAM.members.find(x=>x.id===id);if(!m)return;
  document.getElementById('memberSheet').classList.add('on')}
 function saveAlias(id){S.aliases=S.aliases||{};const v=document.getElementById('aliasIn').value.trim();if(v)S.aliases[id]=v;else delete S.aliases[id];save();closeSheets();renderFamily();render();toast(v?'Nickname saved':'Nickname removed','user')}
 function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
-function shareInvite(){openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on Yawmi 🤍\n\nFamily code: ${S.famCode}\n(Keep it private: it is the key that unlocks our family's tasks.)\n\nDownload the app: https://github.com/Abdelrahman-Rawhy/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
+function shareInvite(){if(S.lang==='ar'){openExt('https://wa.me/?text='+encodeURIComponent(`انضم لعيلتنا على تطبيق يومي 🤍\n\nكود العيلة: ${S.famCode}\n(خليه سر: هو المفتاح اللي بيفتح مهام عيلتنا.)\n\nنزّل التطبيق: https://github.com/Abdelrahman-Rawhy/my-day-route/releases/latest/download/MyDayRoute.apk\nافتحه ← العيلة ← الانضمام بكود.`));return}openExt('https://wa.me/?text='+encodeURIComponent(`Join our family on Yawmi 🤍\n\nFamily code: ${S.famCode}\n(Keep it private: it is the key that unlocks our family's tasks.)\n\nDownload the app: https://github.com/Abdelrahman-Rawhy/my-day-route/releases/latest/download/MyDayRoute.apk\nOpen it → Family → Join with code.`))}
 function copyCode(){try{navigator.clipboard.writeText(S.famCode).then(()=>toast('Code copied','check'),()=>toast(S.famCode,'users'))}catch(e){toast(S.famCode,'users')}}
 // ---- family QR: show code as QR, scan with camera or from a photo ----
 const QR_PREFIX='MYDAYROUTE:JOIN:';
@@ -4601,7 +4604,7 @@ function renderFamily(){
   <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${isSent?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button></div>
   ${list.length?list.map(row).join(''):(isSent?`<div class="empty">${T('Tasks you send will show here with their status.')}</div>`:emptyHtml('family',dzL('لسه مفيش مهام','No tasks yet'),dzL('لما عيلتك تبعتلك حاجة، هتظهر هنا على طول.','When your family sends you something, it appears here instantly.')))}`}
   <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}" placeholder="${S.lang==='ar'?'مثال: أحمد':'e.g. Ahmed'}" oninput="this.classList.remove('need')"><div class="sub nm-hint">${S.lang==='ar'?'ده نفس اسمك في الإعدادات والتحية، لو غيّرته هنا هيتغيّر هناك':'Same name as in Settings and the greeting; change it here and it changes there'}</div><label>Color</label>${colorPicker()}
-   <div class="row"><button class="btn red" onclick="leaveFamily()">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;
+   <div class="row"><button class="btn red" onclick="askConfirm(dzL('تخرج من العيلة؟ هتقدر ترجع بالكود تاني.','Leave the family? You can rejoin with the code.'),dzL('اخرج','Leave'),leaveFamily,1)">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;
 }
 
 function stepTransition(id){requestAnimationFrame(()=>{const a=document.querySelector(`.step[data-id="${id}"]`);if(a)a.classList.add('jd');const n=document.querySelector('.step.next');
@@ -4620,7 +4623,7 @@ function renderCountdowns(){const el=document.getElementById('cds');if(!el)retur
  const {fut,cur}=nextStep();
  const tk=fut?{lb:'NEXT STEP',nm:tName(fut.t),tm:hms(fut.at-now),at:'at '+clock12(fut.at),bar:0}:cur?{lb:'NOW',nm:tName(cur.t),tm:'Now',at:'started '+clock12(cur.at),bar:100}:{lb:'NEXT STEP',nm:'All steps done',tm:'🎉',at:'for today',bar:100};
  el.innerHTML=`<div class="cd pr" onclick="go('settings')"><div class="lb">${ic(PRAYER_ICON[next.k],12)}NEXT PRAYER</div><div class="nm">${next.n}</div><div class="tm" id="cdP">${hms(next.t-now)}</div><div class="at">at ${clock12(next.t)}${new Date(next.t).getDate()!==new Date().getDate()?' tomorrow':''}</div><i class="bar" id="cdPb" style="width:${pc}%"></i></div>
-  <div class="cd tk" onclick="document.querySelector('.step.next')&&document.querySelector('.step.next').scrollIntoView({behavior:'smooth',block:'center'})"><div class="lb">${ic(fut?'clock':cur?'zap':'check',12)}${tk.lb}</div><div class="nm">${esc(tk.nm)}</div><div class="tm" id="cdT">${tk.tm}</div><div class="at">${tk.at}</div><i class="bar" style="width:${tk.bar}%"></i></div>`;
+  <div class="cd tk" onclick="(document.querySelector('.step.next')||document.querySelector('#route .dp-n.cur'))&&(document.querySelector('.step.next')||document.querySelector('#route .dp-n.cur')).scrollIntoView({behavior:'smooth',block:'center'})"><div class="lb">${ic(fut?'clock':cur?'zap':'check',12)}${tk.lb}</div><div class="nm">${esc(tk.nm)}</div><div class="tm" id="cdT">${tk.tm}</div><div class="at">${tk.at}</div><i class="bar" style="width:${tk.bar}%"></i></div>`;
  el._p=next;el._f=fut}
 setInterval(()=>{const el=document.getElementById('cds');if(!el||!el._p||document.hidden)return;const now=Date.now();
  if(el._p.t<=now||(el._f&&el._f.at<=now)){renderCountdowns();pushWidget();return}
@@ -4706,8 +4709,8 @@ document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="$
 // ---- phone back button: close what is open, then go to Today, then press twice to leave ----
 const APPP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.App)||null):null;let backAt=0;
 function handleBack(){if(document.getElementById('coach')){tipClose();return}if(document.body.classList.contains('obon')){if(obI>0)obGo(-1);return}if(document.body.classList.contains('lifeon')&&!document.querySelector('.sheet.on:not(.closing)')){lifeClose();return}if(document.body.classList.contains('guiding')){guideClose();return}if(document.body.classList.contains('adkreading')&&!document.querySelector('.sheet.on:not(.closing)')&&!(document.getElementById('celebrate')||{classList:{contains:()=>0}}).classList.contains('on')){adkRExit();return}if(document.body.classList.contains('reading')&&!document.querySelector('.sheet.on:not(.closing)')){closeReader();return}document.querySelectorAll('.sheet.closing').forEach(x=>x.classList.remove('closing','on'));const cel=document.getElementById('celebrate');if(cel&&cel.classList.contains('on')){cel.classList.remove('on');return}const vw=document.getElementById('viewer');if(vw&&vw.classList.contains('on')&&typeof closeViewer==='function'){closeViewer();return}const open=[...document.querySelectorAll('.sheet.on:not(.closing)')];
- if(document.getElementById('pickSheet').classList.contains('on')){closePick();return}
- if(document.getElementById('dtSheet').classList.contains('on')){closeDT();return}if(document.getElementById('askSheet').classList.contains('on')){closeAsk();return}
+ if(document.getElementById('pickSheet').matches('.on:not(.closing)')){closePick();return}
+ if(document.getElementById('dtSheet').matches('.on:not(.closing)')){closeDT();return}if(document.getElementById('askSheet').matches('.on:not(.closing)')){closeAsk();return}
  if(open.length){const top=open[open.length-1];if(top.id==='recSheet'&&typeof stopRec==='function')stopRec();else if(top.id==='scanSheet')stopScan();else closeSheets();return}
  const v=document.querySelector('.view.on');if(v&&v.id==='v-settings'){go(setFrom||'today');return}{const SUB={'v-prizes':'awards','v-review':'awards','v-ideas':(typeof ideaBack!=='undefined'&&ideaBack)||'journal'};if(v&&SUB[v.id]){go(String(SUB[v.id]).replace(/^v-/,''));return}}
  if(Date.now()-backAt<2000){if(APPP)try{APPP.minimizeApp?APPP.minimizeApp():APPP.exitApp()}catch(e){try{APPP.exitApp()}catch(e2){}}return}
