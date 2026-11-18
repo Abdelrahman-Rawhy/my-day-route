@@ -1153,6 +1153,11 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .pcin .pcb i{font-size:13px}
 .dz-mic{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;font-size:16px}
 .cd .tm.tm-s{font-size:26px}
+.kh-now{display:flex;align-items:center;gap:10px;margin:2px 0 12px;padding:10px 12px;border-radius:16px;background:var(--s1);border:1px solid var(--bd)}
+.kh-nowt{flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;line-height:1.6}
+.kh-nowt small{font-size:12.5px;color:var(--mu);font-weight:600}.kh-nowt b{font-size:16.5px;font-weight:800;color:var(--a2)}
+.kh-now .iconbtn{font-size:22px;font-weight:800}
+.kh-hint{margin:10px 2px 4px;font-size:13px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -3272,12 +3277,13 @@ function khatmaHtml(){const K=kh(),r=dayRec(),qp=r.qp||0,tg=khTarget(),pc=K.page
  const pTxt=pc>0&&pc<.1?(pc*100).toFixed(1):Math.round(pc*100),jz=juzOf(Math.max(1,K.page)),sur=QD&&K.page>0?SURAH_AR[qPages()[Math.min(604,Math.max(1,K.page))][0][0]-1]:'';if(!QD)quranData().then(()=>{if(fTab==='quran')renderFaith()}).catch(()=>{});
  const juzStart=[1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582];
  return `<div class="hero"><div class="ring"><svg width="92" height="92"><circle cx="46" cy="46" r="38" stroke="rgba(255,255,255,.1)" stroke-width="9" fill="none"/><circle cx="46" cy="46" r="38" stroke="url(#rg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="${238.8*(1-pc)}" transform="rotate(-90 46 46)"/></svg><div class="pct" style="font-size:${String(pTxt).length>3?18:22}px">${pTxt}%</div></div>
- <div style="min-width:0"><h2>Page ${K.page} of 604</h2><p>${T('Juz')} ${jz}${sur?' · '+T('Surah')+' '+sur:''} · ${T('Khatma')} #${(K.done||0)+1}</p><div class="kh-st ${diff>=0?'ok':'late'}">${diff>=0?(diff>0?T('Ahead of plan by')+' '+diff+' '+T('pages'):T('Right on plan')):T('Behind plan by')+' '+(-diff)+' '+T('pages')}</div></div></div>
- <div class="card"><h3><span class="ico c-amber">${ic('target',18)}</span><span class="sp">${T('Where are you now?')}</span><b class="kh-live" id="khLive" dir="auto">${T('Page')} ${K.page}</b></h3>
+ <div style="min-width:0"><h2>Page ${K.page} of 604</h2><p>${T('Juz')} ${jz}${sur?' · '+T('Surah')+' '+sur:''} · ${T('Khatma')} #${(K.done||0)+1}</p><div class="kh-st ${diff>=0?'ok':'late'}">${diff>=0?(diff>0?T('Ahead of plan by')+' '+khPg(diff):T('Right on plan')):T('Behind plan by')+' '+khPg(-diff)}</div></div></div>
+ <div class="card"><h3><span class="ico c-amber">${ic('target',18)}</span><span class="sp">${dzL('مكانك في الختمة','Your place in the khatma')}</span></h3>
+  <div class="kh-now"><button class="iconbtn sm" onclick="khSlideSet(${K.page}-1)" aria-label="-1">−</button><div class="kh-nowt"><small>${dzL('إنت دلوقتي','You are now at')}</small><b id="khLive" dir="auto">${khWhere(K.page)}</b></div><button class="iconbtn sm" onclick="khSlideSet(${K.page}+1)" aria-label="+1">+</button></div>
   <div class="kh-track"><div class="kh-fill" style="width:${pc*100}%"></div><div class="kh-exp" style="right:${expected/604*100}%" title="plan"></div>${juzStart.map(p=>`<i style="right:${(p-1)/604*100}%"></i>`).join('')}</div>
   <input type="range" class="kh-range" min="0" max="604" step="1" value="${K.page}" oninput="khSlide(this.value)" onchange="khSlideSet(this.value)">
   <div class="kh-scale" dir="rtl"><span>1</span><span>${T('Juz')} 10</span><span>${T('Juz')} 20</span><span>604</span></div>
-  <div class="kh-juz">${Array.from({length:30},(_,k)=>{const a=juzStart[k],b=(juzStart[k+1]||605)-1,st=K.page>=b?'d':K.page>=a?'c':'';return `<button class="${st}" onclick="khSlideSet(${b})" title="${k+1}">${k+1}</button>`}).join('')}</div>
+  <div class="sub kh-hint">${dzL('اسحب الدايرة لحد صفحتك، أو استخدم − و+ لصفحة واحدة، أو اضغط رقم آخر جزء خلّصته.','Drag the circle to your page, use − / + for one page, or tap the last juz you finished.')}</div><div class="kh-juz">${Array.from({length:30},(_,k)=>{const a=juzStart[k],b=(juzStart[k+1]||605)-1,st=K.page>=b?'d':K.page>=a?'c':'';return `<button class="${st}" onclick="khSlideSet(${b})" title="${k+1}">${k+1}</button>`}).join('')}</div>
   <button class="btn wide" style="margin-top:12px" onclick="openPage(Math.min(604,${K.page}+1))">${ic('book',16)}${T('Continue in the Mushaf')} · ${T('Page')} ${Math.min(604,K.page+1)}</button></div>
  <div class="card"><h3><span class="ico c-green">${ic('book',18)}</span><span class="sp">Today: ${qp} / ${tg} pages</span>${qp>=tg?'<span style="color:var(--ok)">✓</span>':''}</h3>
   <div class="kh-today"><i style="width:${Math.min(100,qp/tg*100)}%"></i></div>
@@ -3286,7 +3292,9 @@ function khatmaHtml(){const K=kh(),r=dayRec(),qp=r.qp||0,tg=khTarget(),pc=K.page
   <div class="kh-plans">${[7,15,30,60,90,180].map(d=>`<button class="${K.days===d?'on':''}" onclick="khSetPlan(${d})"><b>${d}</b><i>${T('days')}</i><small>${Math.ceil(604/d)} ${T('pages/day')}</small></button>`).join('')}<button onclick="khPlan()"><b>…</b><i>${T('Custom')}</i></button></div>
   <div class="sub" style="margin-top:10px">${T('Finish by')} ${end.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'long'})} · ${leftDays} ${T('days left')} · ${T('about')} ${tg} ${T('pages/day')}</div></div>
  ${K.done?`<div class="sub" style="text-align:center">${K.done} khatma${K.done>1?'s':''} completed, MashaAllah 🌟</div>`:''}`}
-function khSlide(v){v=+v;const e=document.getElementById('khLive');let sur='';try{if(QD&&v>0)sur=' · '+SURAH_AR[qPages()[v][0][0]-1]}catch(x){}if(e)e.textContent=T('Page')+' '+v+' · '+T('Juz')+' '+juzOf(Math.max(1,v))+sur;const f=document.querySelector('.kh-fill');if(f)f.style.width=(v/604*100)+'%';try{const H=HAP();if(H&&v%20===0)H.impact({style:'LIGHT'})}catch(x){}}
+function khPg(n){return S.lang==='ar'?(n===1?'صفحة':n===2?'صفحتين':n+' '+(n>=3&&n<=10?'صفحات':'صفحة')):n+' page'+(n===1?'':'s')}
+function khWhere(v){let sur='';try{if(QD&&v>0)sur=(S.lang==='ar'?'، ':' · ')+(S.lang==='ar'?'سورة ':'Surah ')+SURAH_AR[qPages()[v][0][0]-1]}catch(x){}return v<1?dzL('لسه مابدأتش','Not started yet'):(S.lang==='ar'?'صفحة '+v+'، جزء '+juzOf(v):'Page '+v+' · Juz '+juzOf(v))+sur}
+function khSlide(v){v=+v;const e=document.getElementById('khLive');if(e)e.textContent=khWhere(v);const f=document.querySelector('.kh-fill');if(f)f.style.width=(v/604*100)+'%';try{const H=HAP();if(H&&v%20===0)H.impact({style:'LIGHT'})}catch(x){}}
 function khSlideSet(v){v=Math.max(0,Math.min(604,+v));const K=kh();if(v===K.page){renderFaith();return}K.page=v;save();renderFaith();renderFaithBar();toast(T('Page')+' '+v,'book')}
 function khSetPlan(d){const K=kh();K.days=d;K.start=today();save();renderFaith();toast(T('Plan')+': '+d+' '+T('days'),'clock')}
 function khAdd(n){const K=kh(),r=dayRec();const before=K.page;K.page=Math.max(0,Math.min(604,K.page+n));const d=K.page-before;r.qp=Math.max(0,(r.qp||0)+d);
@@ -4256,7 +4264,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=114;
+const APP_VERSION=115;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
