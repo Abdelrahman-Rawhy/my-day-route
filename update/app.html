@@ -1028,6 +1028,8 @@ html.light .kh-st.late{color:#9F1239}
 .dz-set{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dz-set .fsel{margin:0}
 .dz-sw{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
 html.light .dz-gb{background:#fff}
+#stepList .li{transition:transform .18s ease;position:relative}#stepList .li.dragging{transition:none;z-index:5;background:var(--s2);border-radius:14px;box-shadow:0 10px 24px -10px rgba(0,0,0,.45)}.st-grip{width:28px;height:40px;display:grid;place-items:center;color:var(--mu);touch-action:none;cursor:grab;flex:none;opacity:.7}#stepList .li .t{-webkit-touch-callout:none}
+.st-hint{font-size:12px;margin:6px 2px 0}
 </style>
 </head>
 <body>
@@ -1727,6 +1729,18 @@ function stepToggle(gid,sid){const g=S.goals.find(x=>x.id===gid),st=g.steps.find
 function goalDoneCheck(g){if(!g.done&&gProg(g)>=100&&g.type!=='habit'){g.done=true;g.doneAt=Date.now();save();setTimeout(()=>{celebrate(gIcon(g),'Goal achieved!',g.title+'. MashaAllah! +100 points');burst(160)},400);addPts(100,null)}
  if(g.parent){const p=S.goals.find(x=>x.id===g.parent);if(p)goalDoneCheck(p)}}
 function stepAdd(gid){const i=document.getElementById('stepIn'),v=i.value.trim();if(!v)return;const g=S.goals.find(x=>x.id===gid);g.steps.push({id:uid(),name:v,done:false});g.done=false;save();openGoal(gid);setTimeout(()=>document.getElementById('stepIn').focus(),50)}
+function stepEdit(gid,sid){const g=S.goals.find(x=>x.id===gid),st=g&&(g.steps||[]).find(x=>x.id===sid);if(!st)return;HAP();askText(S.lang==='ar'?'تعديل الخطوة':'Edit step',st.name,v=>{v=(v||'').trim();if(v){st.name=v;save()}setTimeout(()=>openGoal(gid),280)})}
+(function(){let drag=null,lp=null,lx=0,ly=0;
+ document.addEventListener('pointerdown',e=>{const L=e.target.closest&&e.target.closest('#stepList');if(!L)return;const row=e.target.closest('.li');if(!row)return;const z=parseFloat(document.body.style.zoom)||1;
+  if(e.target.closest('.st-grip')){e.preventDefault();const rows=[...L.querySelectorAll('.li')];drag={L,row,rows,y0:e.clientY/z,idx:rows.indexOf(row),to:rows.indexOf(row),h:row.getBoundingClientRect().height/z,pid:e.pointerId};row.classList.add('dragging');try{e.target.closest('.st-grip').setPointerCapture(e.pointerId)}catch(_){}HAP();return}
+  if(e.target.closest('.t')){lx=e.clientX;ly=e.clientY;clearTimeout(lp);lp=setTimeout(()=>{lp=null;stepEdit(L.dataset.g,row.dataset.sid)},500)}},{passive:false});
+ document.addEventListener('pointermove',e=>{if(lp&&(Math.abs(e.clientX-lx)>8||Math.abs(e.clientY-ly)>8)){clearTimeout(lp);lp=null}
+  if(!drag||e.pointerId!==drag.pid)return;e.preventDefault();const z=parseFloat(document.body.style.zoom)||1,dy=e.clientY/z-drag.y0;drag.row.style.transform=`translateY(${dy}px)`;
+  let to=Math.max(0,Math.min(drag.rows.length-1,drag.idx+Math.round(dy/drag.h)));if(to!==drag.to){drag.to=to;HAP()}
+  drag.rows.forEach((r,i)=>{if(r===drag.row)return;let sh=0;if(drag.idx<to&&i>drag.idx&&i<=to)sh=-drag.h;else if(drag.idx>to&&i<drag.idx&&i>=to)sh=drag.h;r.style.transform=sh?`translateY(${sh}px)`:''})},{passive:false});
+ const end=e=>{clearTimeout(lp);lp=null;if(!drag||e.pointerId!==drag.pid)return;const d=drag;drag=null;d.rows.forEach(r=>{r.style.transform='';r.classList.remove('dragging')});
+  if(d.to!==d.idx){const g=S.goals.find(x=>x.id===d.L.dataset.g);if(g){const [m]=g.steps.splice(d.idx,1);g.steps.splice(d.to,0,m);save();SFX('click');openGoal(g.id)}}};
+ document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end)})();
 function stepDel(gid,sid){const g=S.goals.find(x=>x.id===gid);g.steps=g.steps.filter(x=>x.id!==sid);save();openGoal(gid)}
 function numSet(gid,v){const g=S.goals.find(x=>x.id===gid);v=+v;if(isNaN(v))return;const better=g.target>=g.start?v>g.current:v<g.current;g.history=g.history||[];g.history.push({d:Date.now(),v});g.current=v;
  if(better)addPts(5,g.title+': '+fmtNum(v)+' '+g.unit,gIcon(g));else save();goalDoneCheck(g);openGoal(gid)}
@@ -1746,8 +1760,8 @@ function addLink(kind,id){const o=linksOf(kind,id);if(!o)return;const u=normUrl(
 function delLink(kind,id,lid){const o=linksOf(kind,id);if(!o)return;o.links=(o.links||[]).filter(l=>l.id!==lid);save();relinks(kind,id)}
 function relinks(kind,id){if(kind==='g')openGoal(id);else{drawStep();render()}}
 function openGoal(id){const g=S.goals.find(x=>x.id===id);if(!g)return;const p=gProg(g),dl=gDays(g),a=AREAS[g.area]||AREAS.personal,t=GTYPES[g.type];let body='';
- if(g.type==='project'){body=`<div style="margin-top:6px">${(g.steps||[]).map(st=>`<div class="li ${st.done?'done':''}"><button class="cb" onclick="stepToggle('${g.id}','${st.id}')">${st.done?ic('check',14,'',3):''}</button><span class="t">${esc(st.name)}</span><button class="x" onclick="stepDel('${g.id}','${st.id}')">${ic('x',15)}</button></div>`).join('')||'<div class="sub">No steps yet. Add the first one below.</div>'}</div>
-  <div class="addrow"><input id="stepIn" placeholder="Add a step…" onkeydown="if(event.key==='Enter')stepAdd('${g.id}')"><button class="btn" onclick="stepAdd('${g.id}')">${ic('plus',18)}</button></div>`}
+ if(g.type==='project'){body=`<div style="margin-top:6px" id="stepList" data-g="${g.id}">${(g.steps||[]).map(st=>`<div class="li ${st.done?'done':''}" data-sid="${st.id}"><span class="st-grip" aria-label="drag"><svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor"><circle cx="4" cy="3" r="1.6"/><circle cx="10" cy="3" r="1.6"/><circle cx="4" cy="9" r="1.6"/><circle cx="10" cy="9" r="1.6"/><circle cx="4" cy="15" r="1.6"/><circle cx="10" cy="15" r="1.6"/></svg></span><button class="cb" onclick="stepToggle('${g.id}','${st.id}')">${st.done?ic('check',14,'',3):''}</button><span class="t">${esc(st.name)}</span><button class="x" onclick="stepDel('${g.id}','${st.id}')">${ic('x',15)}</button></div>`).join('')||'<div class="sub">No steps yet. Add the first one below.</div>'}</div>
+  ${(g.steps||[]).length>1?`<div class="sub st-hint">${S.lang==='ar'?'اسحب النقط عشان ترتّب الخطوات، واضغط مطوّل على أي خطوة عشان تعدّلها':'Drag the dots to reorder. Long-press a step to edit it.'}</div>`:''}<div class="addrow"><input id="stepIn" placeholder="Add a step…" onkeydown="if(event.key==='Enter')stepAdd('${g.id}')"><button class="btn" onclick="stepAdd('${g.id}')">${ic('plus',18)}</button></div>`}
  else if(g.type==='habit'){const st=new Date();st.setDate(st.getDate()-((st.getDay()+1)%7));let wk='';for(let i=0;i<7;i++){const x=new Date(st);x.setDate(st.getDate()+i);const c=(g.log||{})[keyOf(x)]||0;wk+=`<div class="${(g.period==='day'?c>=g.target:c>0)?'ok':''} ${keyOf(x)===today()?'td':''}">${x.toLocaleDateString(LOC(),{weekday:'narrow'})}<b>${c||'·'}</b></div>`}
   body=`<div class="help">${g.period==='day'?`Goal: ${g.target} ${g.unit} every day.`:`Goal: ${g.target} ${g.unit} every week (Sat–Fri).`} Tap +1 each time you do it.</div><div class="wkgrid">${wk}</div>
   <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin:6px 0"><button class="btn ghost" style="width:52px;height:52px;padding:0;font-size:22px" onclick="habitAdd('${g.id}',-1)">−</button><div style="text-align:center;min-width:110px"><b style="font-size:30px">${habitCount(g)}</b><span style="color:var(--mu)"> / ${g.target}</span><div class="meta" style="justify-content:center">${g.period==='day'?'today':'this week'}</div></div><button class="btn" style="width:52px;height:52px;padding:0;font-size:22px" onclick="habitAdd('${g.id}',1)">+</button></div>
@@ -3753,7 +3767,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=101;
+const APP_VERSION=102;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4250,7 +4264,7 @@ document.addEventListener('animationend',e=>{if(e.animationName==='sheetUp'&&e.t
 // ---- swipe a sheet down from its top to close it ----
 (()=>{let P=null,y0=0,dy=0,t0=0,ok=false;
  document.addEventListener('touchstart',e=>{const p=e.target.closest&&e.target.closest('.sheet.on .panel');if(!p||e.touches.length>1){P=null;return}
-  if(e.target.closest('input,textarea,select,.tp-g,.cal-g'))  {P=null;return}
+  if(e.target.closest('input,textarea,select,.tp-g,.cal-g,.st-grip,#stepList .t'))  {P=null;return}
   P=p;y0=e.touches[0].clientY;dy=0;t0=Date.now();ok=p.scrollTop<=0},{passive:true});
  document.addEventListener('touchmove',e=>{if(!P)return;const y=e.touches[0].clientY;dy=y-y0;
   if(!ok){if(P.scrollTop<=0&&dy>0){ok=true;y0=y;dy=0}else return}
