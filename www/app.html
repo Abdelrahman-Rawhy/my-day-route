@@ -1429,6 +1429,7 @@ const DEFAULT_REWARDS=[{id:uid(),icon:'coffee',name:'Special coffee',cost:80},{i
 let S=store.get()||{fri1:1,lang:'ar',goals:[],name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:false,sound:true,notified:{}};
 if(!S.thMig){S.thMig=1;if(!S.theme||S.theme==='dark')S.theme='cream'}
 // v104 (Ahmed, Nov 18): one-time reset for everyone — keep only the prayers, remove all goals. Backup kept in S._wipeBak (restore button in Edit route).
+if(!S.ps2){S.ps2=1;if(!S.psound||S.psound==='bell'||S.psound==='off')S.psound='phone'}
 if(!S.wipe1){S.wipe1=1;const rmT=(S.tasks||[]).filter(t=>!t.prayer),G0=S.goals||[];if(rmT.length||G0.length){S._wipeBak={at:Date.now(),tasks:rmT,goals:G0,wk:S.wkPlan||{}};S.tasks=(S.tasks||[]).filter(t=>t.prayer);S.goals=[];S.wkPlan={};window._wipeDid=1}}
 if(!S.colMig){S.colMig=1;if(!S.color||S.color==='#7C5CFF'){S.color='#8A5A2B';if(S.famId)setTimeout(()=>{try{publishMe().catch(()=>{})}catch(e){}},5000)}}
 let save=()=>{store.set(S);if(typeof scheduleSync==='function')scheduleSync()};
@@ -1773,7 +1774,7 @@ function renderSettings(){setTimeout(nameRow,0);
  document.getElementById('ptGrid').innerHTML=[['fajr','Fajr','sunrise'],['sunrise','Sunrise','sun'],['dhuhr','Dhuhr','sun'],['asr','Asr','cloudsun'],['maghrib','Maghrib','sunset'],['isha','Isha','moon']].map(([k,n,i])=>`<div>${ic(i,18)}<span>${n}</span><b>${fmt(PT[k])}</b></div>`).join('');
  document.getElementById('notifBtn').textContent=S.notif?'On':'Turn on';const ac=document.getElementById('acctCard');if(ac)ac.innerHTML=acctCardHtml();const br=document.getElementById('bioRow');if(br){br.style.display=bioOK?'flex':'none';document.getElementById('appLockRow').style.display=bioOK?'flex':'none';document.getElementById('bioBtn').textContent=S.bio?'On':'Turn on';document.getElementById('appLockBtn').textContent=S.appLock?'On':'Turn on'}const jl=document.getElementById('jLockSet');if(jl){jl.textContent=jLocked()?'Remove':'Set PIN';document.getElementById('jLockTxt').textContent=jLocked()?'On: journal is encrypted with your PIN':'Protect your journal with a PIN'}
  document.getElementById('sndBtn').textContent=S.sound?'On':'Off';{const vt=document.getElementById('verTxt');if(vt&&typeof verLabel==='function')vt.textContent=verLabel()}{const pb=document.getElementById('pcBtn');if(pb&&typeof pcLabel==='function')pb.textContent=pcLabel()}{const tb=document.getElementById('tapBtn');if(tb)tb.textContent=S.tapSnd===false?'Off':'On'}{const ac=document.getElementById('autoUpdChk');if(ac)ac.checked=S.autoUpd!==false;setTimeout(updAllLabel,0)}setTimeout(swSync,0);{const vb=document.getElementById('vibBtn');if(vb)vb.textContent=S.vib===false?'Off':'On'}drawAppearance();
- const ps=S.psound||'bell';document.getElementById('psBtn').textContent={off:'Off',bell:'Bell',file:'My adhan'}[ps];document.getElementById('psTxt').textContent=ps==='off'?'Silent prayer reminders':ps==='bell'?'A soft bell with each prayer notification':'Plays your adhan in the app · bell in notifications';document.getElementById('psFileRow').style.display=ps==='file'?'flex':'none';document.getElementById('psFileTxt').textContent=S.adhanName?'Using: '+S.adhanName:'Pick an audio file from your phone';
+ const ps=(S.psound==='off'?'phone':S.psound)||'phone';document.getElementById('psBtn').textContent={phone:S.lang==='ar'?'الموبايل':'Phone',bell:'Bell',file:'My adhan'}[ps];document.getElementById('psTxt').textContent=ps==='phone'?(S.lang==='ar'?'صوت الإشعار العادي بتاع موبايلك':'Your phone’s normal notification sound'):ps==='bell'?'A soft bell with each prayer notification':'Plays your adhan in the app · bell in notifications';document.getElementById('psFileRow').style.display=ps==='file'?'flex':'none';document.getElementById('psFileTxt').textContent=S.adhanName?'Using: '+S.adhanName:'Pick an audio file from your phone';
  document.getElementById('calTxt').textContent=S.cal&&S.cal.url?(S.cal.err?'⚠ '+S.cal.err:(S.cal.ev||[]).length+' upcoming events · synced '+ago(S.cal.fetched)):'Show your calendar events in today\'s route';document.getElementById('calBtn').textContent=S.cal&&S.cal.url?'Manage':'Connect';
  document.getElementById('hjTxt').textContent=(hijriTxt()||'—')+(S.hijriAdj?' (adjusted '+(S.hijriAdj>0?'+':'')+S.hijriAdj+')':'');document.getElementById('ramBtn').textContent={auto:'Auto',on:'On',off:'Off'}[S.ramadan||'auto'];
 }
@@ -2945,14 +2946,14 @@ function prayerStatsHtml(){const ks=Object.keys(PNAMES),rows=[];let jm=0,ot=0,lt
  <div class="sec"><h3>Last 30 days</h3></div>
  <div class="rep" style="margin-top:0"><div><b>${jm}</b><span>🕌 In jama'ah</span></div><div><b>${tot?Math.round((jm+ot)/tot*100):0}%</b><span>⏰ On time</span></div><div><b>${ms}</b><span>Missed</span></div><div><b>${sn}</b><span>Sunnah prayers</span></div><div><b>${wt}</b><span>Witr nights</span></div><div><b>${fs}</b><span>Fasting days</span></div><div><b>${tzs}</b><span>Dhikr counted</span></div><div><b>${qp}</b><span>Quran pages</span></div></div>`}
 // ---- adhan / prayer sound in the app ----
-function cyclePS(){S.psound={bell:'file',file:'off',off:'bell'}[S.psound||'bell'];save();renderSettings();if(S.psound!=='off')playPrayerSound(true)}
+function cyclePS(){S.psound={phone:'bell',bell:'file',file:'phone',off:'bell'}[S.psound||'phone'];save();renderSettings();scheduleNative();if(['bell','file'].includes(S.psound))playPrayerSound(true)}
 function miscDB(){return new Promise((res,rej)=>{const r=indexedDB.open('mdr-misc',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function kvSet(k,v){const d=await miscDB();return new Promise(r=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=r})}
 async function kvGet(k){const d=await miscDB();return new Promise(r=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}
 async function setAdhan(f){if(!f)return;if(f.size>15e6){toast('File too large (max 15 MB)','alert');return}await kvSet('adhan',f);S.adhanName=f.name;save();renderSettings();toast('Adhan saved','mosque');playPrayerSound(true)}
 let adhanAudio=null;
 function bellSynth(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t0=actx.currentTime;[[659.25,0],[783.99,.55],[987.77,1.1],[1318.5,1.9]].forEach(([f,d])=>{[1,2.01,3.02].forEach((m,j)=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f*m;const t=t0+d,a=[.25,.09,.04][j];g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(a,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+2.6);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+2.7)})})}catch(e){}}
-async function playPrayerSound(preview){const m=S.psound||'bell';if(m==='off')return;if(adhanAudio){adhanAudio.pause();adhanAudio=null;if(preview)return}
+async function playPrayerSound(preview){const m=S.psound||'phone';if(m==='off'||m==='phone')return;if(adhanAudio){adhanAudio.pause();adhanAudio=null;if(preview)return}
  if(m==='file'){try{const b=await kvGet('adhan');if(b){adhanAudio=new Audio(URL.createObjectURL(b));adhanAudio.play().catch(()=>{});if(preview)setTimeout(()=>{if(adhanAudio){adhanAudio.pause();adhanAudio=null}},8000);return}}catch(e){}}
  bellSynth()}
 setInterval(()=>{if(document.hidden)return;const now=Date.now();for(const p of prayerSchedule(1)){if(p.t<=now&&now-p.t<90000){const key=today()+p.k;if(S._lastAdhan!==key){S._lastAdhan=key;store.set(S);playPrayerSound();toast('Time for '+p.n+' prayer · Hayya ala salah','mosque')}}}},20000);
@@ -3435,7 +3436,7 @@ async function doSchedule(){
     if(d===0){if(rec.done.includes(t.id)||(rec.skip||[]).includes(t.id))return;tm=t.prayer?tm:effTime(t)}
     const [h,m]=tm.split(':').map(Number),at=new Date(day);at.setHours(h,m,0,0);if(at.getTime()<=now+20000)return;
     const pr=t.prayer?tName(t,day).replace(/^pray\s*/i,''):'';
-    out.push({id:(d+1)*1000+i,channelId:t.prayer&&(S.psound||'bell')!=='off'?'prayer':'route',title:S.lang==='ar'?(t.prayer?'حان وقت '+trS(tName(t,day)):'حان وقت: '+trS(t.name)):(t.prayer?'Time for '+pr+' prayer':'Time for: '+t.name+(t.subs&&t.subs.length?' ('+t.subs.length+' parts)':'')),body:S.lang==='ar'?(t.prayer?'حي على الصلاة · +'+t.pts+' نقطة':'+'+t.pts+' نقطة في انتظارك'):(t.prayer?'Hayya ala salah · +'+t.pts+' points on your route':'Step '+(i+1)+' of your day · +'+t.pts+' points waiting'),schedule:{at,allowWhileIdle:true}})})}
+    out.push({id:(d+1)*1000+i,channelId:t.prayer&&['bell','file'].includes(S.psound)?'prayer':'route',title:S.lang==='ar'?(t.prayer?trS(tName(t,day)):trS(t.name)):(t.prayer?pr+' prayer':t.name),body:S.lang==='ar'?(t.prayer?'حان وقت الصلاة':'حان وقتها'):(t.prayer?'It’s time to pray':'It’s time'),schedule:{at,allowWhileIdle:true}})})}
   if(S.pcheck!==false){try{await pcRegister()}catch(e){}const mins=S.pcheckMin||60;
    for(let d=0;d<14;d++){const day=new Date();day.setHours(0,0,0,0);day.setDate(day.getDate()+d);const pt=prayerTimes(day,c[1],c[2]);
     S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]).forEach((t,j)=>{if(!onDay(t,day))return;if(d===0&&rec.done.includes(t.id))return;const [h,m]=pt[t.prayer].split(':').map(Number),at=new Date(day);at.setHours(h,m+mins,0,0);if(at.getTime()<=now+20000)return;
@@ -3876,7 +3877,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=106;
+const APP_VERSION=107;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
