@@ -2335,14 +2335,16 @@ function setCat(c){S.timer.cat=c;save()}
  document.addEventListener('pointerdown',e=>{const R=e.target.closest&&e.target.closest('#tRing');if(!R)return;d={x:e.clientX,y:e.clientY,mv:0,dial:!S.timer.running&&S.timer.mode==='focus'&&timeLeft()===FOCUS_S(),r:R.getBoundingClientRect(),m:S.focusMin||25};try{R.setPointerCapture(e.pointerId)}catch(_){}});
  document.addEventListener('pointermove',e=>{if(!d)return;if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>8)d.mv=1;if(!d.mv||!d.dial)return;e.preventDefault();
   let m=Math.round(ang(e,d.r)/360*120/5)*5;if(d.m>=100&&m<=20)m=120;else if(d.m<=20&&m>=100)m=5;m=Math.min(120,Math.max(5,m));
-  if(m!==d.m){d.m=m;S.focusMin=m;S.timer.left=FOCUS_S();drawTimer();SFX('click');buzz();const c=document.getElementById('tClock');if(c)c.classList.add('dialing');const R2=document.getElementById('tRing');if(R2)R2.classList.add('dragging')}},{passive:false});
+  if(m!==d.m){d.m=m;S.focusMin=m;S.breakMin=Math.min(30,Math.max(2,Math.round(m/5)));S.timer.left=FOCUS_S();drawTimer();SFX('click');buzz();const c=document.getElementById('tClock');if(c)c.classList.add('dialing');const R2=document.getElementById('tRing');if(R2)R2.classList.add('dragging')}},{passive:false});
  const up=e=>{if(!d)return;const D=d;d=null;const c=document.getElementById('tClock');if(c)c.classList.remove('dialing');{const R2=document.getElementById('tRing');if(R2)R2.classList.remove('dragging')}
   if(!D.mv){startPause();return}if(D.dial){save();const A=document.getElementById('tAdjust');if(A)A.innerHTML=timerAdjustHtml();SFX('swipe')}else if(S.timer.running)toast(L('وقّف المؤقت الأول عشان تغيّر المدة','Pause the timer to change it'),'clock')};
  document.addEventListener('pointerup',up);document.addEventListener('pointercancel',()=>{if(d&&d.dial)save();d=null})})();
+// v114: a focus session stopped early still counts the minutes actually focused (≥1), so the daily goal isn't lost
+function focusPartial(){const T=S.timer;if(!T||T.mode!=='focus')return;const left=T.running?Math.max(0,Math.round((T.endAt-Date.now())/1000)):T.left,done=Math.floor((FOCUS_S()-left)/60);if(done<1||left<=0)return;const r=dayRec();r.focus=r.focus||{};const fg=S.goals.find(x=>x.id===T.cat),ar=fg?fg.area:String(T.cat).startsWith('area:')?T.cat.slice(5):AREAS[T.cat]?T.cat:'personal';r.focus[ar]=(r.focus[ar]||0)+done;if(fg){r.gfocus=r.gfocus||{};r.gfocus[fg.id]=(r.gfocus[fg.id]||0)+done}toast(dzL('اتحسب '+done+' دقيقة تركيز','Counted '+done+' focus minutes'),'clock')}
 function startPause(){const T=S.timer;if(T.running){T.left=timeLeft();T.running=false}else{T.endAt=Date.now()+T.left*1000;T.running=true;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}save();drawTimer()}
-function resetTimer(){S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS_S();save();drawTimer()}
+function resetTimer(){focusPartial();S.timer.running=false;S.timer.mode='focus';S.timer.left=FOCUS_S();save();drawTimer()}
 function timerTick(){const T=S.timer;if(!T.running)return;if(timeLeft()>0){if(document.getElementById('v-goals').classList.contains('on'))drawTimer();return}
- if(T.mode==='focus'){const r=dayRec();r.focus=r.focus||{};const fg=S.goals.find(x=>x.id===T.cat),ft=String(T.cat).startsWith('task:')&&S.tasks.find(x=>'task:'+x.id===T.cat),ar=fg?fg.area:String(T.cat).startsWith('area:')?T.cat.slice(5):ft?taskArea(ft):'personal';if(ft){r.tfocus=r.tfocus||{};r.tfocus[ft.id]=(r.tfocus[ft.id]||0)+(S.focusMin||25)}r.focus[ar]=(r.focus[ar]||0)+(S.focusMin||25);if(fg){r.gfocus=r.gfocus||{};r.gfocus[fg.id]=(r.gfocus[fg.id]||0)+(S.focusMin||25)}r.sessions=(r.sessions||0)+1;S.totalSessions++;
+ if(T.mode==='focus'){const r=dayRec();r.focus=r.focus||{};const fg=S.goals.find(x=>x.id===T.cat),ft=String(T.cat).startsWith('task:')&&S.tasks.find(x=>'task:'+x.id===T.cat),ar=fg?fg.area:String(T.cat).startsWith('area:')?T.cat.slice(5):ft?taskArea(ft):AREAS[T.cat]?T.cat:'personal';if(ft){r.tfocus=r.tfocus||{};r.tfocus[ft.id]=(r.tfocus[ft.id]||0)+(S.focusMin||25)}r.focus[ar]=(r.focus[ar]||0)+(S.focusMin||25);if(fg){r.gfocus=r.gfocus||{};r.gfocus[fg.id]=(r.gfocus[fg.id]||0)+(S.focusMin||25)}r.sessions=(r.sessions||0)+1;S.totalSessions++;
   T.mode='break';T.left=BREAK_S();T.endAt=Date.now()+BREAK_S()*1000;bell();notify('Focus session done','Take a '+(S.breakMin||5)+'-minute break.');addPts(sessPts(),'Focus session complete! Break time','lightbulb')}
  else{T.mode='focus';T.running=false;T.left=FOCUS_S();bell();notify('Break over','Ready for another focus session?');toast('Break over. Ready for the next session?','clock');save();render()}}
 setInterval(()=>timerTick(),1000);
@@ -4254,7 +4256,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=113;
+const APP_VERSION=114;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
