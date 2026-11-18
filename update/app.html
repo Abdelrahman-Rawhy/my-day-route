@@ -1151,6 +1151,7 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .pcin .pc-x{background:var(--bd)!important;color:var(--tx)}
 .pcin .pcb span{width:48px;height:48px;box-shadow:none}
 .pcin .pcb i{font-size:13px}
+.dz-mic{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;font-size:16px}
 </style>
 </head>
 <body>
@@ -1703,7 +1704,15 @@ function dzFocusHtml(){const ar=S.lang==='ar',fg=dzCfg().fg,m=dzFocusMin(),st=dz
   ${tops?`<div class="dz-wk"><small>${dzL('ساعات التركيز للأهداف (آخر 7 أيام)','Focus per goal (last 7 days)')}</small>${tops}</div>`:''}</div>`}
 function hm(min){min=Math.round(min||0);const h=Math.floor(min/60),m=min%60;return S.lang==='ar'?(h?h+' س'+(m?' '+m+' د':''):m+' د'):(h?h+'h'+(m?' '+m+'m':''):m+'m')}
 function focusGoalMenu(){const c=dzCfg();openMenu(dzL('هدف التركيز في اليوم','Daily focus goal'),[30,60,90,120,180,240].map(v=>({k:String(v),label:hm(v),sub:v>=120?dzL('تركيز عميق','Deep work'):'',icon:'clock',on:c.fg===v})),k=>{c.fg=+k;save();render();toast(dzL('هدفك: ','Goal: ')+hm(+k)+dzL(' تركيز كل يوم',' of focus a day'),'clock')})}
-function dzDistract(){const r=dayRec();r.dist=(r.dist||0)+1;save();SFX('click');const tips=[dzL('رجّع عينك للمهمة. نفَس عميق، وكمّل.','Eyes back on the task. Deep breath, continue.'),dzL('اقلب الموبايل على وشه لحد ما الجلسة تخلص.','Flip the phone face down until the session ends.'),dzL('اكتب الفكرة اللي شتّتتك في «تفريغ الأفكار» وارجع.','Jot the distracting thought in Brain dump and return.')];toast(tips[r.dist%tips.length],'zap');if(typeof drawTimer==='function')drawTimer()}
+function dzDistract(){const r=dayRec();r.dist=(r.dist||0)+1;save();SFX('click');if(typeof drawTimer==='function')drawTimer();
+ // v112 (Ahmed: «there is no mic when you asked about distracting»): park the distracting thought by voice or text, then back to focus
+ const tips=[dzL('رجّع عينك للمهمة. نفَس عميق، وكمّل.','Eyes back on the task. Deep breath, continue.'),dzL('اقلب الموبايل على وشه لحد ما الجلسة تخلص.','Flip the phone face down until the session ends.'),dzL('الفكرة مش هتضيع. سجّلها هنا وارجع.','The thought won’t get lost. Park it here and return.')];
+ const P=document.getElementById('askPanel');P.innerHTML=`<h3>${dzL('اتشتّت؟ عادي، ارجع بهدوء','Distracted? It’s okay, come back calmly')}</h3><div class="sub" style="margin:0 0 12px">${tips[r.dist%tips.length]} ${dzL('المؤقت لسه شغال.','The timer is still running.')}</div>
+ <button class="btn wide dz-mic" onclick="closeAsk();dzDistRec()">${ic('mic',20)}${dzL('قول الفكرة اللي شاغلاك','Say the thought on your mind')}</button>
+ <textarea id="dzDistT" rows="2" style="margin-top:12px" placeholder="${dzL('أو اكتبها هنا…','Or write it here…')}"></textarea>
+ <div class="row" style="margin-top:12px"><button class="btn ghost" onclick="dzDistSave()">${dzL('ارجع ركّز','Back to focus')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+function dzDistRec(){window._recFocus=1;startRec()}
+function dzDistSave(){const e=document.getElementById('dzDistT'),v=e?e.value.trim():'';closeAsk();if(v){S.ideas=S.ideas||[];S.ideas.push({id:uid(),at:Date.now(),text:v,aud:[]});save();toast(dzL('اتحفظت في تفريغ الأفكار. ارجع ركّز','Saved to Brain dump. Back to focus'),'lightbulb')}}
 // ---------- hub
 function dzOpen(){const ar=S.lang==='ar',c=dzCfg(),sc=dzScore(),cons=dzConsist(30);
  let sh=document.getElementById('dzSheet');if(!sh){sh=document.createElement('div');sh.className='sheet';sh.id='dzSheet';sh.onclick=e=>{if(e.target===sh)closeSheets()};sh.innerHTML='<div class="panel" id="dzBody"></div>';document.body.appendChild(sh)}
@@ -3365,12 +3374,12 @@ async function startRec(){if(rec_||window._recTextOnly)return;closeSheets();recT
 function stopRec(){if(window._recTextOnly){window._recTextOnly=false;finishRec();return}if(!rec_)return;try{rec_.stop()}catch(e){finishRec()}}
 function cancelRec(){if(window._recTextOnly){window._recTextOnly=false;window._recCancel=true;finishRec();return}if(!rec_)return;rec_._cancel=true;stopRec()}
 async function finishRec(){const r=rec_,dur=Math.round((Date.now()-recT0)/1000);const cancel=(r&&r._cancel)||window._recCancel;window._recCancel=false;rec_=null;clearInterval(recTimer);
- await stopSTT();const txt=recText;try{recStream.getTracks().forEach(t=>t.stop())}catch(e){}closeSheets();if(cancel){toast('Discarded','trash');return}
+ await stopSTT();const txt=recText;try{recStream.getTracks().forEach(t=>t.stop())}catch(e){}closeSheets();if(cancel){window._recFocus=0;toast('Discarded','trash');return}
  const blob=new Blob(recChunks||[],{type:(r&&r.mimeType)||'audio/webm'});const id=uid(),aid=uid();recChunks=[];
  if(blob.size){try{await kvSet('aud:'+aid,blob)}catch(e){}}
- if(!blob.size&&!txt.trim()){toast('Nothing was captured','mic');return}
+ if(!blob.size&&!txt.trim()){window._recFocus=0;toast('Nothing was captured','mic');return}
  const it={id,at:Date.now(),text:txt.trim(),aud:blob.size?[aid]:[],dur};S.ideas.push(it);buzz(true);addPts(2,'Idea captured','mic');
- if(document.getElementById('v-ideas').classList.contains('on'))renderIdeas();openIdea(id)}
+ if(document.getElementById('v-ideas').classList.contains('on'))renderIdeas();if(window._recFocus){window._recFocus=0;toast(dzL('اتحفظت في تفريغ الأفكار. ارجع ركّز','Saved to Brain dump. Back to focus'),'mic');return}openIdea(id)}
 let ideaId=null,ideaMode=null;
 async function openIdea(id,mode){ideaId=id;ideaMode=mode||null;const it=S.ideas.find(x=>x.id===id);if(!it)return;closeSheets();
  const auds=[];for(const a of it.aud||[]){try{const b=await kvGet('aud:'+a);if(b)auds.push(URL.createObjectURL(b))}catch(e){}}
@@ -4243,7 +4252,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=111;
+const APP_VERSION=112;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}

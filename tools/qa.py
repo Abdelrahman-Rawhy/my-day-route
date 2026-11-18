@@ -20,7 +20,7 @@ STEPS=[
  ("goals","go('goals')"),("new project","openNewGoal('project')"),("new habit","closeSheets();openNewGoal('habit')"),("new number","closeSheets();openNewGoal('number')"),("new life","closeSheets();openNewGoal('life')"),
  ("make goals","closeSheets();S.goals.push({id:'g1',type:'project',title:'مشروع',area:'study',icon:'graduation',created:Date.now(),steps:[{id:'s1',name:'خطوة',done:false}]},{id:'g2',type:'habit',title:'قراءة',area:'faith',icon:'book',created:Date.now(),target:1,unit:'صفحات',period:'day',log:{}},{id:'g3',type:'number',title:'حفظ',area:'faith',icon:'book',created:Date.now(),start:0,target:30,unit:'جزء',current:2,history:[]});save();renderGoals()"),
  ("open goal proj","openGoal('g1')"),("open goal habit","closeSheets();openGoal('g2')"),("habit add","closeSheets();habitAdd('g2')"),("open goal num","openGoal('g3')"),
- ("timer start","closeSheets();go('goals');startPause()"),("timer reset","startPause();resetTimer()"),
+ ("timer start","closeSheets();go('goals');startPause()"),("timer reset","startPause();resetTimer()"),("distracted","startPause();dzDistract()"),("distract save","document.getElementById('dzDistT').value='رسالة الشغل';dzDistSave();resetTimer()"),
  ("tasks matrix","go('tasks');tdMode='mx';renderTasks()"),("mx menu","TD().items.push({id:'mq',t:'مهمة',pri:2,due:today(),tags:[],subs:[],status:'todo',created:1});renderTasks();tdMxTap('mq')"),("mx add","closeSheets();tdMxAdd(2)"),
  ("journal","closeSheets();go('journal')"),("j editor","openJEditor()"),("ideas","closeSheets();go('ideas')"),
  ("awards","go('awards')"),("prizes","go('prizes')"),("reward sheet","openReward()"),("review","closeSheets();go('review')"),
