@@ -9,6 +9,7 @@ STEPS=[
  ("opts step","closeSheets();openOpts(S.tasks.find(x=>!x.prayer).id)"),("opts prayer","closeSheets();openOpts(S.tasks.find(x=>x.prayer).id)"),
  ("setPQ","closeSheets();setPQ('fajr','jamaah')"),("quick add","openQuick();document.getElementById('qaIn').value='الجيم الساعة 7 مساء';qaPreview()"),("save quick","saveQuick()"),
  ("task sheet","closeSheets();openTask()"),("edit","closeSheets();openEdit()"),("rescue","closeSheets();typeof rescue==='function'&&rescue()"),
+ ("plan open","go('today');planOpen()"),("plan saved","dzPick(0);planSave()"),("discipline hub","closeSheets();dzOpen()"),("hub close","closeSheets()"),
  ("adhkar home","go('faith');fTab='adhkar';renderFaith()"),("adhkar reader","adkOpen('travel')"),("adhkar count","adkRCount()"),("adhkar search","adkRClose();adkQ='سفر';renderFaith()"),("adhkar fav","adkQ='';renderFaith();adkFavToggle('food',0);adkOpenFav()"),("adhkar close","adkRClose()"),
  ("faith tasbih","go('faith');fTab='tasbih';renderFaith()"),("faith quran","fTab='quran';renderFaith()"),("faith qibla","fTab='qibla';renderFaith()"),("faith prayers","fTab='prayers';renderFaith()"),
  ("goals","go('goals')"),("new project","openNewGoal('project')"),("new habit","closeSheets();openNewGoal('habit')"),("new number","closeSheets();openNewGoal('number')"),("new life","closeSheets();openNewGoal('life')"),
