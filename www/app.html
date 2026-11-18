@@ -1160,6 +1160,8 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .kh-hint{margin:10px 2px 4px;font-size:13px;line-height:1.7}
 .gl-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.gl-t b{flex:none!important}.gl-t small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qbtns.kh-q{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10px}.qbtns.kh-q button{width:auto!important;margin:0!important}
+#sbScrim{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--bg);z-index:46;pointer-events:none;box-shadow:0 6px 14px 4px var(--bg)}
+body.reading #sbScrim,body.adkreading #sbScrim{display:none}
 </style>
 </head>
 <body>
@@ -1933,6 +1935,7 @@ function lifeTilesHtml(){LF();const L=S.life,k=today(),sn=Object.values(lSunOf(k
 
 function wipeFix(){if(!window._wipeDid)return;window._wipeDid=0;try{const r=S.history[today()];if(r){r.done=(r.done||[]).filter(id=>S.tasks.some(t=>t.id===id));r.total=dayTasks().length}if(S.timer&&S.timer.cat&&!AREAS[S.timer.cat])S.timer.cat='study';save();scheduleNative();setTimeout(()=>toast(dzL('بدأنا من جديد: الصلوات بس. ضيف خطواتك وأهدافك بنفسك','Fresh start: prayers only. Add your own steps and goals'),'sparkles'),1500)}catch(e){}}
 function wipeRestore(b){const B=S._wipeBak;if(!B)return;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=dzL('اضغط تاني للتأكيد','Tap again to confirm');return}const ids=new Set(S.tasks.map(t=>t.id));B.tasks.forEach(t=>{if(!ids.has(t.id))S.tasks.push(t)});const gids=new Set(S.goals.map(g=>g.id));B.goals.forEach(g=>{if(!gids.has(g.id))S.goals.push(g)});S.wkPlan=Object.assign({},B.wk||{},S.wkPlan);delete S._wipeBak;save();closeSheets();render();scheduleNative();toast(dzL('رجعت الخطوات والأهداف القديمة','Old steps and goals restored'),'check')}
+(()=>{const d=document.createElement('div');d.id='sbScrim';document.body.appendChild(d)})();
 // v110: tapping anywhere on a settings row with ONE control triggers that control (people tap the text, not the small button)
 document.addEventListener('click',e=>{const row=e.target.closest&&e.target.closest('.setting');if(!row||row.hasAttribute('onclick')||e.target.closest('button,input,select,textarea,a,label,[onclick],.chips'))return;const c=[...row.querySelectorAll('button,input.sw,.swb,select')].filter(x=>x.offsetParent);if(c.length===1)c[0].click()});
 // ===== v109 ONBOARDING: wizard · checklist · coach marks · empty states · help · first 7 days =====
@@ -2896,7 +2899,7 @@ function adkRBell(){const r=adkRRef();if(!r)return;const ar=S.lang==='ar',c=r.c,
 function adkRDoneAll(){if(!ADKR)return true;return ADKR.refs.every(r=>((adkState()[r.c]||{})[r.i]||0)>=adhkarList(r.c)[r.i].n)}
 function adkRExit(force){if(!ADKR){adkRClose();return}if(!force&&ADKR.started&&!adkRDoneAll()){askConfirm(S.lang==='ar'?'لسه ماكمّلتش الأذكار. تخرج؟':'You haven’t finished these adhkar yet. Leave?',S.lang==='ar'?'اخرج':'Leave',()=>adkRClose());return}adkRClose()}
 function adkRClose(){const R=document.getElementById('adkR');if(R&&R.classList.contains('on'))SFX('down');if(R)R.classList.remove('on');document.body.classList.remove('adkreading');ADKR=null;adkPauseAll();if(fTab==='adhkar')renderFaith()}
-function adkRSwipe(el){let x0=0,y0=0,t0=0,on=false;el.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();on=!e.target.closest('summary,details[open] .adk-box')},{passive:true});
+function adkRSwipe(el){let x0=0,y0=0,t0=0,on=false;let mx=null;el.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;mx={x:e.clientX,y:e.clientY,t:Date.now(),ok:!e.target.closest('summary,details[open] .adk-box,button')}});el.addEventListener('pointerup',e=>{if(!mx||e.pointerType!=='mouse')return;const dx=e.clientX-mx.x,dy=e.clientY-mx.y,ok=mx.ok&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4&&Date.now()-mx.t<1500;mx=null;if(ok)adkRGo((dx>0)===(S.lang==='ar')?1:-1)});el.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();on=!e.target.closest('summary,details[open] .adk-box')},{passive:true});
  el.addEventListener('touchend',e=>{if(!on)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4&&Date.now()-t0<800){adkRGo((dx>0)===(S.lang==='ar')?1:-1)}},{passive:true})}
 
 // ================= MUSHAF READER (King Fahd Complex Hafs v13 text) =================
@@ -4266,7 +4269,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=118;
+const APP_VERSION=119;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
