@@ -4,7 +4,10 @@ COLLECT=open('/tmp/qrtest/collect.py').read().split('COLLECT="""')[1].split('"""
 LAYOUT="""()=>{const W=innerWidth,out=[];document.querySelectorAll('.view.on *, .sheet.on *').forEach(e=>{const r=e.getBoundingClientRect();if(!r.width||!r.height)return;const cs=getComputedStyle(e);if(cs.position==='fixed')return;if(r.right>W+2||r.left<-2){if(!e.closest('.tpl,.exch,.tabs2,.daychips,.fbar,.chips,.hscroll,[style*=overflow]')&&!(e.parentElement&&getComputedStyle(e.parentElement).overflowX!=='visible'))out.push((e.id||e.className||e.tagName).toString().slice(0,40)+' '+Math.round(r.left)+'..'+Math.round(r.right))}
  if(e.children.length===0&&e.scrollWidth>e.clientWidth+3&&cs.overflow!=='visible'&&cs.textOverflow!=='ellipsis'&&!['INPUT','TEXTAREA','SELECT'].includes(e.tagName)&&e.textContent.trim())out.push('clip:'+e.textContent.trim().slice(0,30))});return [...new Set(out)].slice(0,15)}"""
 STEPS=[
- ("today","go('today')"),("add example","addExample(1);addExample(4)"),("tick step","(()=>{const t=S.tasks.find(x=>!x.prayer);toggle(t.id)})()"),
+ ("wizard","obOpen()"),("wiz name","obGo(1)"),("wiz city","obGo(1)"),("wiz theme","obGo(1)"),("wiz done","obGo(1)"),
+ ("today","go('today')"),("checklist","obPaint();document.getElementById('obCk').scrollIntoView()"),("coach","window._tipShown=0;S.tips={};scrollTo(0,0);obTipToday()"),("coach close","tipClose()"),
+ ("help","helpOpen()"),("help cat","closePick();helpCat(5)"),("help show","closePick();helpShow(11,5)"),("help close","closeAsk()"),
+ ("tasks empty","go('tasks');tdMode='list';renderTasks()"),("day idea","go('today');S.ob.ck.pray=1;obPaint();document.getElementById('obDay').scrollIntoView()"),("add example","addExample(1);addExample(4)"),("tick step","(()=>{const t=S.tasks.find(x=>!x.prayer);toggle(t.id)})()"),
  ("open step","openStep(S.tasks.find(x=>!x.prayer).id)"),("add sub","document.getElementById('subIn')&&(document.getElementById('subIn').value='سورة الملك',addSub())"),
  ("opts step","closeSheets();openOpts(S.tasks.find(x=>!x.prayer).id)"),("opts prayer","closeSheets();openOpts(S.tasks.find(x=>x.prayer).id)"),
  ("setPQ","closeSheets();setPQ('fajr','jamaah')"),("quick add","openQuick();document.getElementById('qaIn').value='الجيم الساعة 7 مساء';qaPreview()"),("save quick","saveQuick()"),
