@@ -1139,6 +1139,18 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .emp2 .btn{margin-top:6px;min-width:140px}
 .help-a{font-size:15.5px;line-height:1.9;color:var(--tx);margin:4px 0 14px}
 .help-a ul{margin:6px 0;padding-inline-start:20px}.help-a li{margin:4px 0}.help-a b{display:block;margin-bottom:6px}
+
+/* v111 prayer check-in: inline card on Today (no longer floats over screens) */
+.pcpill.pcin{position:static;transform:none!important;width:auto;margin:0 0 12px;padding:12px 12px 12px;border-radius:22px;box-shadow:none;background:var(--s1)!important;color:var(--tx)!important;border:1px solid var(--bd)!important;-webkit-backdrop-filter:none;backdrop-filter:none;opacity:0;transition:opacity .25s}
+.pcpill.pcin.on{opacity:1}
+.pcin .pc-h{padding:0 2px 10px}
+.pcin .pc-tt{flex:1;display:flex;flex-direction:column;line-height:1.5;min-width:0}
+.pcin .pc-tt b{font-size:16px;font-weight:800}
+.pcin .pc-tt small{font-size:12.5px;color:var(--mu);font-weight:600}
+.pcin .pc-ic{width:32px;height:32px;border-radius:10px}
+.pcin .pc-x{background:var(--bd)!important;color:var(--tx)}
+.pcin .pcb span{width:48px;height:48px;box-shadow:none}
+.pcin .pcb i{font-size:13px}
 </style>
 </head>
 <body>
@@ -1158,6 +1170,7 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
     </div>
     <div style="min-width:0;flex:1"><h2 id="heroTitle"></h2><p id="heroSub"></p><div class="hstats" id="stats"></div></div>
   </div>
+  <div id="pcSlot"></div>
   <div id="obCk"></div>
   <div id="obDay"></div>
   <div id="dzPlan"></div>
@@ -1985,7 +1998,7 @@ function tip(key,el,text,scroll){OB();if(S.tips[key]||window._tipShown||!el||doc
  if(R.bottom<0||R.top>vh||(scroll&&(R.top<60||R.bottom>vh-110))){if(!scroll)return false;el.scrollIntoView({block:'center'});R=el.getBoundingClientRect()}
  window._tipShown=1;S.tips[key]=1;save();tipClose();const z=parseFloat(document.body.style.zoom)||1;
  const B=document.createElement('div');B.id='coach';B.className='coach';B.innerHTML=`<span>${text}</span>`;document.body.appendChild(B);
- const top=R.top/z,bot=R.bottom/z,W=innerWidth/z,bh=B.offsetHeight,below=bot+bh+16<vh/z;B.style.top=(below?bot+10:Math.max(8,top-bh-10))+'px';B.classList.add(below?'dn':'up');
+ const top=R.top/z,bot=R.bottom/z,W=innerWidth/z,bh=B.offsetHeight,below=!(top-bh-14>70)&&bot+bh+16<vh/z;B.style.top=(below?bot+10:Math.max(8,top-bh-10))+'px';B.classList.add(below?'dn':'up');
  const cx=Math.min(Math.max((R.left+R.width/2)/z,30),W-30);B.style.setProperty('--ax',cx+'px');
  window._tipAt=Date.now();requestAnimationFrame(()=>B.classList.add('on'));setTimeout(()=>{const f=()=>{document.removeEventListener('pointerdown',f,true);tipClose()};document.addEventListener('pointerdown',f,true)},300);clearTimeout(window._tipT);window._tipT=setTimeout(tipClose,9000);return true}
 addEventListener('scroll',()=>{if(document.getElementById('coach')&&Date.now()-(window._tipAt||0)>700)tipClose()},{passive:true});
@@ -2079,7 +2092,7 @@ function render(){
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">${S.lang==='ar'&&!q.ar?'«'+T(q.en)+'»':'“'+q.en+'”'}</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
  renderGuide();{const sk=(rec.skip||[]).filter(id=>S.tasks.some(t=>t.id===id));document.getElementById('skipped').innerHTML=sk.length?`<button class="link" style="margin:6px auto 0;display:flex" onclick="unskip()">${ic('rotate',14)}${sk.length} skipped today · restore</button>`:''}
  renderToday2(list,rec,now);renderFaithBar();renderCal();schedScore();renderCountdowns();pushWidget();const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();if(vis('faith'))renderFaith();
- firstPaint=false;justDone=null;clearTimeout(window._gdT);window._gdT=setTimeout(()=>{try{gameDaily();publishLeague()}catch(e){}},1200);if(window._wipeDid)setTimeout(()=>{wipeFix();render()},300);try{const b0=JSON.stringify(S.ob||0);obSync();obPaint();if(JSON.stringify(S.ob)!==b0)save()}catch(e){}if(!window._gdAuto){window._gdAuto=1;if(!S.ob1)setTimeout(()=>{if(!S.ob1&&!document.querySelector('.sheet.on'))obOpen()},700);else setTimeout(obTipToday,2500)}
+ firstPaint=false;justDone=null;clearTimeout(window._gdT);window._gdT=setTimeout(()=>{try{gameDaily();publishLeague()}catch(e){}},1200);if(window._wipeDid)setTimeout(()=>{wipeFix();render()},300);try{if(typeof pcShow==='function')pcShow()}catch(e){}try{const b0=JSON.stringify(S.ob||0);obSync();obPaint();if(JSON.stringify(S.ob)!==b0)save()}catch(e){}if(!window._gdAuto){window._gdAuto=1;if(!S.ob1)setTimeout(()=>{if(!S.ob1&&!document.querySelector('.sheet.on'))obOpen()},700);else setTimeout(obTipToday,2500)}
 }
 function renderToday2(list,rec,now){
  const ag=S.goals.filter(g=>!g.archived&&!g.done&&g.type!=='habit').sort((x,y)=>(gDays(x)??9999)-(gDays(y)??9999));const ng=ag[0];
@@ -3787,7 +3800,7 @@ async function doSchedule(){
     out.push({id:(d+1)*1000+i,channelId:t.prayer&&['bell','file'].includes(S.psound)?'prayer':'route',title:S.lang==='ar'?(t.prayer?trS(tName(t,day)):trS(t.name)):(t.prayer?pr+' prayer':t.name),body:S.lang==='ar'?(t.prayer?'حان وقت الصلاة':'حان وقتها'):(t.prayer?'It’s time to pray':'It’s time'),schedule:{at,allowWhileIdle:true}})})}
   if(S.pcheck!==false){try{await pcRegister()}catch(e){}const mins=S.pcheckMin||60;
    for(let d=0;d<14;d++){const day=new Date();day.setHours(0,0,0,0);day.setDate(day.getDate()+d);const pt=prayerTimes(day,c[1],c[2]);
-    S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]).forEach((t,j)=>{if(!onDay(t,day))return;if(d===0&&rec.done.includes(t.id))return;const [h,m]=pt[t.prayer].split(':').map(Number),at=new Date(day);at.setHours(h,m+mins,0,0);if(at.getTime()<=now+20000)return;
+    S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]).forEach((t,j)=>{if(!onDay(t,day))return;if(d===0&&rec.done.includes(t.id))return;const w=pcWin(pt,t.prayer);if(!w)return;const at=new Date(day);at.setHours(0,w[0],0,0);if(at.getTime()<=now+20000)return;
      out.push({id:50000+d*10+j,channelId:'route',actionTypeId:'pcheck',extra:{pc:t.prayer,tid:t.id,day:keyOf(day)},title:pcTitle(t.prayer,day),body:S.lang==='ar'?'سجّلها: 👥 جماعة · ✅ في وقتها · ⏰ متأخرة':'Log it: 👥 Jama\'ah · ✅ On time · ⏰ Late',schedule:{at,allowWhileIdle:true}})})}}
   (((S.todo||{}).items)||[]).filter(x=>x.status!=='done'&&x.due&&x.time&&x.rem!=null).slice(0,900).forEach((x,i)=>{const [h,m]=x.time.split(':').map(Number),at=new Date(x.due+'T00:00');at.setHours(h,m-(x.rem||0),0,0);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:60000+i,channelId:'route',title:(x.pri>=3?'❗ ':'')+x.t,body:S.lang==='ar'?('مهمة · '+fmt(x.time)+(x.rem?' · بعد '+(x.rem>=1440?'يوم':x.rem>=60?'ساعة':x.rem+' دقيقة'):'')):('Task · '+fmt(x.time)),schedule:{at,allowWhileIdle:true}})});
   ((S.cal&&S.cal.ev)||[]).forEach((e,i)=>{if(e.allDay)return;const at=new Date(e.at-10*6e4);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:80000+i,channelId:'route',title:'📅 '+e.t,body:'In 10 minutes · '+clock12(e.at),schedule:{at,allowWhileIdle:true}})});
@@ -3810,14 +3823,17 @@ let _pcReg=false;async function pcRegister(){if(_pcReg||!LN||!LN.registerActionT
 function pcLog(tid,q){const t=S.tasks.find(x=>x.id===tid);if(!t)return;const r=dayRec();if(q==='missed'){r.pmiss=r.pmiss||{};r.pmiss[t.prayer]=1;save();pcHide();toast(S.lang==='ar'?'اقضِها الآن، ثم سجّلها «متأخرة»':'Make it up now, then log it as late','rotate');return}
  if(!r.done.includes(tid))toggle(tid);setPQ(t.prayer,q);pcHide();try{LN&&LN.cancel({notifications:[{id:window._pcNid||0}]})}catch(e){}}
 function pcHide(){const el=document.getElementById('pcPill');if(el){el.classList.remove('on');setTimeout(()=>el.remove(),300)}}
-function pcDue(){if(S.pcheck===false)return null;const r=dayRec(),now=new Date(),mins=S.pcheckMin||60;const ps=S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]&&onDay(t,now));let best=null;
- ps.forEach(t=>{const tm=PT[t.prayer];if(!tm)return;const [h,m]=tm.split(':').map(Number),at=new Date(now);at.setHours(h,m,0,0);const since=(now-at)/6e4;
-  if(since>=mins&&since<mins+240&&!r.done.includes(t.id)&&!((r.pmiss||{})[t.prayer])&&!((r.pcx||{})[t.prayer]))if(!best||at>best.at)best={t,at}});return best}
-function pcShow(force){if(document.body.classList.contains('reading'))return;const d=force||pcDue();if(!d||document.getElementById('pcPill'))return;const t=d.t;
+// v111 (Ahmed: «Ask only during time until the next salah»): ask from prayer time + delay (capped at half the gap) until the next prayer's time; Isha until midnight
+const PC_ORD=['fajr','dhuhr','asr','maghrib','isha'];
+function pcWin(P,k){const toM=x=>{const[a,b]=String(x).split(':').map(Number);return a*60+b},i=PC_ORD.indexOf(k);if(i<0||!P||!P[k])return null;const a=toM(P[k]),n=i<4&&P[PC_ORD[i+1]]?toM(P[PC_ORD[i+1]]):1440;return [Math.round(a+Math.min(S.pcheckMin||60,(n-a)/2)),n,i<4?PC_ORD[i+1]:null]}
+function pcDue(){if(S.pcheck===false)return null;const r=dayRec(),now=new Date(),nm=now.getHours()*60+now.getMinutes();let best=null;
+ S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]&&onDay(t,now)).forEach(t=>{const w=pcWin(PT,t.prayer);if(!w)return;
+  if(nm>=w[0]&&nm<w[1]&&!r.done.includes(t.id)&&!((r.pmiss||{})[t.prayer])&&!((r.pcx||{})[t.prayer]))best={t,w}});return best}
+function pcShow(force){const d=force||pcDue(),cur=document.getElementById('pcPill');if(cur&&(!d||cur.dataset.k!==d.t.prayer)){cur.remove()}if(!d||document.getElementById('pcPill'))return;const slot=document.getElementById('pcSlot');if(!slot)return;const t=d.t,nx=d.w&&d.w[2];
  const B=(q,c,icn,lb)=>`<button class="pcb ${c}" onclick="pcLog('${t.id}','${q}')" aria-label="${lb}"><span>${ic(icn,22)}</span><i>${lb}</i></button>`,ar=S.lang==='ar';
- const el=document.createElement('div');el.id='pcPill';el.className='pcpill';el.innerHTML=`<div class="pc-h"><span class="pc-ic">${ic('mosque',20)}</span><b>${pcTitle(t.prayer)}</b><button class="pc-x" onclick="pcLater('${t.prayer}')" aria-label="close">${ic('x',16)}</button></div>
+ const el=document.createElement('div');el.id='pcPill';el.className='pcpill pcin';el.dataset.k=t.prayer;el.innerHTML=`<div class="pc-h"><span class="pc-ic">${ic('mosque',18)}</span><span class="pc-tt"><b>${pcTitle(t.prayer)}</b>${nx&&PT[nx]?`<small>${ar?'السؤال لحد أذان '+pcName(nx)+' '+fmt(PT[nx]):'Until '+pcName(nx)+' at '+fmt(PT[nx])}</small>`:''}</span><button class="pc-x" onclick="pcLater('${t.prayer}')" aria-label="close">${ic('x',16)}</button></div>
  <div class="pc-row">${B('missed','gray','x',ar?'فاتتني':'Missed')}${B('late','amber','rotate',ar?'متأخرة':'Late')}${B('ontime','violet','check',ar?'في وقتها':'On time')}${B('jamaah','green','users',ar?'جماعة':"Jama'ah")}</div>`;
- document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'))}
+ slot.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'))}
 function pcLater(k){const r=dayRec();r.pcx=r.pcx||{};r.pcx[k]=1;save();pcHide()}
 function togglePCheck(){const L=[60,30,120,0],cur=S.pcheck===false?0:(S.pcheckMin||60);const nx=L[(L.indexOf(cur)+1)%L.length];if(nx===0)S.pcheck=false;else{S.pcheck=true;S.pcheckMin=nx}save();renderSettings();scheduleNative();toast(pcLabel(),'mosque')}
 function pcLabel(){const ar=S.lang==='ar';if(S.pcheck===false)return ar?'متوقف':'Off';const m=S.pcheckMin||60;return ar?(m===30?'بعد ٣٠ دقيقة':m===60?'بعد ساعة':'بعد ساعتين'):(m===30?'After 30 min':m===60?'After 1 hour':'After 2 hours')}
@@ -4227,7 +4243,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=110;
+const APP_VERSION=111;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
