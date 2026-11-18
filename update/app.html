@@ -4266,7 +4266,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=117;
+const APP_VERSION=118;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4290,7 +4290,7 @@ async function checkUpdate(){
  try{const j=await (await updFetch('version.json')).json();setTimeout(()=>apkCheck(j),1500);
   const have=Math.max(APP_VERSION,+localStorage.getItem('appV')||0);
   if(j.v>have){const h=await (await updFetch('app.html')).text();
-   if(h.includes('APP_VERSION='+j.v+';')){localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v));localStorage.setItem('updNote',(S.lang==='ar'&&j.note_ar)||j.note||'');if(S.autoUpd===false)showUpdate((S.lang==='ar'&&j.note_ar)||j.note||'New features are ready.')}}
+   if(h.includes('APP_VERSION='+j.v+';')){localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v));localStorage.setItem('updNote',(S.lang==='ar'&&j.note_ar)||j.note||'');window._updReady=1;if(S.autoUpd===false)showUpdate((S.lang==='ar'&&j.note_ar)||j.note||'New features are ready.')}}
  }catch(e){}
 }
 
@@ -4356,9 +4356,14 @@ async function updateAll(){const b=document.getElementById('updAllBtn'),ar=S.lan
 function showUpdate(note){if(document.getElementById('updBox'))return;const b=document.createElement('div');b.id='updBox';b.className='upd';const ar=S.lang==='ar';
  const pts=String(note||'').split(/(?<=[.!؟])\s+/).map(x=>x.trim()).filter(Boolean);
  b.innerHTML=`<div class="upd-h"><span class="upd-ic">${ic('rocket',22,'draw')}</span><div><b>${T('Update ready')}</b><small>${ar?'ما الجديد':"What's new"}</small></div></div><ul class="upd-l">${pts.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="upd-b"><button class="btn ghost" onclick="const u=document.getElementById('updBox');u.classList.add('bye');setTimeout(()=>u.remove(),220)">${ar?'لاحقًا':'Later'}</button><button class="btn" onclick="location.href='index.html'">${ar?'إعادة تشغيل':'Restart'}</button></div>`;document.body.appendChild(b)}
-if(IS_NATIVE){setTimeout(checkUpdate,2500);let _hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){_hidAt=Date.now();return}
+// v118 (Ahmed: «updates are slow, I have to click manual»): check every 5 min while open; apply a downloaded update at the next calm moment:
+// coming back after 15 s away, or switching tabs — never inside a sheet, reader, typing or a running timer.
+function updApply(){if(S.autoUpd===false||!IS_NATIVE)return false;if((+localStorage.getItem('appV')||0)<=APP_VERSION)return false;
+ const busy=document.querySelector('.sheet.on')||['reading','adkreading','lifeon','guiding','obon'].some(c=>document.body.classList.contains(c))||(document.getElementById('chatScreen')||{classList:{contains:()=>0}}).classList.contains('on')||(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))||(S.timer&&S.timer.running)||rec_;
+ if(busy)return false;localStorage.setItem('justUpd',String(localStorage.getItem('appV')));location.href='index.html';return true}
+if(IS_NATIVE){setTimeout(checkUpdate,2500);setInterval(()=>{if(!document.hidden)checkUpdate()},5*6e4);let _hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){_hidAt=Date.now();return}
  // a downloaded update is applied quietly when you come back after 3+ minutes away (like store apps)
- if(S.autoUpd!==false&&_hidAt&&Date.now()-_hidAt>180000&&(+localStorage.getItem('appV')||0)>APP_VERSION&&!document.querySelector('.sheet.on')&&!document.body.classList.contains('reading')){localStorage.setItem('justUpd',String(localStorage.getItem('appV')));location.href='index.html';return}
+ if(_hidAt&&Date.now()-_hidAt>15000&&updApply())return;
  checkUpdate()})
  setTimeout(()=>{if(S.autoUpd!==false&&APKU&&APKU.setAuto)APKU.setAuto({on:true}).catch(()=>{});const ju=localStorage.getItem('justUpd');if(ju&&+ju===APP_VERSION){localStorage.removeItem('justUpd');const n=localStorage.getItem('updNote');if(n)showUpdated(n)}},2000)}
 function showUpdated(note){if(document.getElementById('updBox'))return;const ar=S.lang==='ar',b=document.createElement('div');b.id='updBox';b.className='upd';
@@ -4751,7 +4756,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)pushWidget(
 // ================= NAV & INIT =================
 const NAV=[['today','map','Today'],['faith','mosque','Faith'],['tasks','check','Tasks'],['journal','book','Journal'],['family','users','Family'],['awards','trophy','Awards']];
 let setFrom='today';function go(v){{const cur=document.querySelector('.view.on');if(cur&&cur.id!=='v-'+v)SFX('nav');if(v==='settings'&&cur&&cur.id!=='v-settings')setFrom=cur.id.slice(2)}document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');
- const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards',ideas:'journal',goals:'tasks'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='tasks')renderTasks();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings();if(v==='faith')renderFaith();else stopCompass();if(v==='ideas')renderIdeas();const fb=document.getElementById('micFab');if(fb)fb.style.display=['today','journal','ideas'].includes(v)?'grid':'none';try{obOnGo(v)}catch(e){}}
+ const b=document.querySelector('.nav button[data-v="'+({prizes:'awards',review:'awards',ideas:'journal',goals:'tasks'}[v]||v)+'"]');if(b){b.classList.add('on');b.querySelector('span').innerHTML=ic(b.dataset.k,22,'draw')}scrollTo(0,0);if(v==='family')renderFamily();if(v==='today')render();if(v==='journal')renderJournal();if(v==='tasks')renderTasks();if(v==='review')renderReview();if(v==='goals')renderGoals();if(v==='awards')renderAwards();if(v==='prizes')renderPrizes();if(v==='settings')renderSettings();if(v==='faith')renderFaith();else stopCompass();if(v==='ideas')renderIdeas();const fb=document.getElementById('micFab');if(fb)fb.style.display=['today','journal','ideas'].includes(v)?'grid':'none';try{obOnGo(v)}catch(e){}if(window._updReady)setTimeout(()=>{try{updApply()}catch(e){}},400)}
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 // ---- phone back button: close what is open, then go to Today, then press twice to leave ----
 const APPP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.App)||null):null;let backAt=0;
