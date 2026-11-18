@@ -1162,6 +1162,9 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .qbtns.kh-q{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10px}.qbtns.kh-q button{width:auto!important;margin:0!important}
 #sbScrim{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--bg);z-index:46;pointer-events:none;box-shadow:0 6px 14px 4px var(--bg)}
 body.reading #sbScrim,body.adkreading #sbScrim{display:none}
+.frole{display:inline-flex;align-items:center;gap:3px;margin-top:3px;padding:1px 7px;border-radius:99px;font-size:10.5px;font-weight:800;background:rgba(124,92,255,.18);color:var(--a1)}
+.frole.own{background:rgba(245,158,11,.2);color:var(--gold)}.frole.lk{background:rgba(244,63,94,.15);color:var(--red);vertical-align:middle}
+.members .m{display:flex;flex-direction:column;align-items:center}
 </style>
 </head>
 <body>
@@ -4269,7 +4272,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=119;
+const APP_VERSION=120;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4401,7 +4404,7 @@ async function famKeyOf(code){const base=await crypto.subtle.importKey('raw',enc
 let FKEY=null;const decCache=new Map();
 async function seal(obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},FKEY,enc8.encode(JSON.stringify(obj)));const out=new Uint8Array(12+ct.byteLength);out.set(iv);out.set(new Uint8Array(ct),12);return b64(out)}
 async function open_(s,key=FKEY){if(!s)return{};if(decCache.has(s))return decCache.get(s);const u=unb64(s);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u.slice(0,12)},key,u.slice(12));const o=JSON.parse(dec8.decode(pt));decCache.set(s,o);return o}
-const famRef=()=>FB.db.collection('families').doc(S.famId);
+const famRef=()=>FB.db.collection('families').doc(S.famId);const famRefId=id=>FB.db.collection('families').doc(id);
 
 function loadScript(src){return new Promise((res,rej)=>{const e=document.createElement('script');e.src=src;e.onload=res;e.onerror=rej;document.head.appendChild(e)})}
 async function fbInit(){
@@ -4415,9 +4418,9 @@ async function fbInit(){
 }
 function subscribeFamily(){
  FB.unsubs.forEach(u=>u());FB.unsubs=[];const f=famRef();
- FB.unsubs.push(f.onSnapshot(async d=>{try{FAM.family=d.exists?await open_(d.data().e):null}catch(e){FAM.family={name:'Family'}}renderFamily()},e=>{FB.err=e.message;renderFamily()}));
+ FB.unsubs.push(f.onSnapshot(async d=>{const dd=d.exists?d.data():{};FAM.meta={owner:dd.owner,admins:dd.admins||[],locked:!!dd.locked,banned:dd.banned||[],bn:dd.bn};if((FAM.meta.banned||[]).includes(FB.uid)){famKicked();return}try{FAM.family=d.exists?await open_(dd.e):null}catch(e){FAM.family={name:'Family'}}renderFamily()},e=>{FB.err=e.message;renderFamily()}));
  FB.unsubs.push(f.collection('members').onSnapshot(async q=>{
-  FAM.members=(await Promise.all(q.docs.map(async d=>{const r=d.data();let p={};try{p=await open_(r.e)}catch(e){}return{id:d.id,...p,lastSeen:r.lastSeen,online:r.lastSeen&&r.lastSeen.toMillis&&Date.now()-r.lastSeen.toMillis()<10*6e4}})));const meM=FAM.members.find(m=>m.id===FB.uid);if(meM&&!meM.pub)publishMe();syncChatSubs();renderFamily()}));
+  FAM.members=(await Promise.all(q.docs.map(async d=>{const r=d.data();let p={};try{p=await open_(r.e)}catch(e){}return{id:d.id,...p,lastSeen:r.lastSeen,online:r.lastSeen&&r.lastSeen.toMillis&&Date.now()-r.lastSeen.toMillis()<10*6e4}})));const meM=FAM.members.find(m=>m.id===FB.uid);if(!meM&&FAM.members.length&&(FAM.meta.banned||[]).includes(FB.uid)){famKicked();return}if(meM&&!meM.pub)publishMe();syncChatSubs();renderFamily()}));
  FB.unsubs.push(f.collection('tasks').orderBy('createdAt','desc').limit(150).onSnapshot(async q=>{
   const prev=new Map(FAM.tasks.map(t=>[t.id,t.status]));
   FAM.tasks=(await Promise.all(q.docs.map(async d=>{const r=d.data();let p={};try{p=await open_(r.e)}catch(e){p={title:'(unreadable)'}}return{id:d.id,...p,from:r.from,to:r.to,status:r.status,pts:r.pts,createdAt:r.createdAt,doneAt:r.doneAt,doneBy:r.doneBy,_e:r.e}})));
@@ -4446,6 +4449,8 @@ async function joinFamily(code){
  if(!saveProfile())return;
  try{const id=await famIdOf(code),key=await famKeyOf(code);const d=await FB.db.collection('families').doc(id).get();if(!d.exists){toast('No family with this code','alert');return}
   let info;try{info=await open_(d.data().e,key)}catch(e){toast('Wrong family code','alert');return}
+  if((d.data().banned||[]).includes(FB.uid)){toast(dzL('مش متاح تنضم للعيلة دي. كلّم المضيف.','You can’t join this family. Talk to the host.'),'lock');return}
+  if(d.data().locked&&!(await famRefId(id).collection('members').doc(FB.uid).get().then(x=>x.exists).catch(()=>false))){toast(dzL('العيلة مقفولة دلوقتي. اطلب من المضيف يفتح الانضمام.','This family is locked. Ask the host to open joining.'),'lock');return}
   if(S.famId&&S.famId!==id)famStop();FKEY=key;S.famId=id;S.famCode=code;famAddMode=false;famRemember(id,code,info.name);
   await famRef().collection('members').doc(FB.uid).set({e:await seal({name:S.name,color:S.color,pub:(await myEcdh()).pub}),joinedAt:SV(),lastSeen:SV()});
   S.famSeen=(S.famSeenBy||{})[id]||[];save();subscribeFamily();burst(80);toast('Welcome to '+info.name+'!','users');renderFamily();render()
@@ -4478,11 +4483,46 @@ async function setFamTask(id,done){const t=FAM.tasks.find(x=>x.id===id);if(!t)re
   if(done){S.famDone=(S.famDone||0)+1;dayRec().famDone=(dayRec().famDone||0)+1;addPts(t.pts||15,'Done for '+nameOf(t.from,t.fromName),'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
 async function tickItem(id,i){const t=FAM.tasks.find(x=>x.id===id);if(!t||!t.items)return;const items=t.items.map((x,j)=>j===i?{...x,done:!x.done,by:!x.done?S.name:null,byUid:!x.done?FB.uid:null}:x);
  try{await patchTask(t,{items});if(items.every(x=>x.done)&&t.status==='open')toast('Everything bought! Tap the check to finish','cart')}catch(e){toast('No connection, try again','alert')}}
-async function delFamTask(id){try{await famRef().collection('tasks').doc(id).delete()}catch(e){}}
+async function delFamTask(id,ok){if(!ok){const t=FAM.tasks.find(x=>x.id===id);askConfirm(dzL('تمسح المهمة «'+(t?t.title:'')+'»؟ هتتمسح عند كل العيلة.','Delete the task «'+(t?t.title:'')+'»? It disappears for the whole family.'),dzL('امسح','Delete'),()=>delFamTask(id,1),1);return}try{await famRef().collection('tasks').doc(id).delete();toast(dzL('المهمة اتمسحت','Task deleted'),'trash')}catch(e){famErr(e)}}
+// ===== v120 FAMILY HOST / ADMIN POWERS (Ahmed: «As host of fam I don't have privileges?» → rename, lock joining, remove member, delete any message/task, add admins; every action asks «are you sure?» first) =====
+// Data on families/{id}: owner (creator), admins:[uid], locked:bool, banned:[uid], bn:sealed {uid:name}. Needs the v120 firestore.rules.
+FAM.meta=FAM.meta||{};
+function famIsOwner(u){return !!FAM.meta.owner&&FAM.meta.owner===(u||FB.uid)}
+function famIsAdmin(u){u=u||FB.uid;return famIsOwner(u)||(FAM.meta.admins||[]).includes(u)}
+const FV=()=>firebase.firestore.FieldValue;
+function famRoleTag(id){return famIsOwner(id)?`<span class="frole own">${dzL('المضيف','Host')}</span>`:famIsAdmin(id)?`<span class="frole">${dzL('مشرف','Admin')}</span>`:''}
+function famAdminMenu(){if(!famIsAdmin())return;const ar=S.lang==='ar',m=FAM.meta,nb=(m.banned||[]).length;
+ openMenu(dzL('إدارة العيلة','Manage family'),[
+  {k:'rename',label:dzL('غيّر اسم العيلة','Rename the family'),sub:FAM.family&&FAM.family.name||'',icon:'pen',c:'violet'},
+  {k:'lock',label:m.locked?dzL('افتح الانضمام','Open joining'):dzL('اقفل الانضمام','Lock joining'),sub:m.locked?dzL('مقفولة: محدش جديد يقدر ينضم حتى بالكود','Locked: nobody new can join, even with the code'):dzL('مفتوحة: أي حد معاه الكود يقدر ينضم','Open: anyone with the code can join'),icon:'lock',c:m.locked?'red':'teal'},
+  {k:'members',label:dzL('الأعضاء والصلاحيات','Members & roles'),sub:ar?FAM.members.length+' أعضاء':FAM.members.length+' members',icon:'users',c:'pink'},
+  {k:'tasks',label:dzL('كل مهام العيلة','All family tasks'),sub:dzL('تقدر تمسح أي مهمة','You can delete any task'),icon:'list',c:'amber'}
+ ].concat(nb?[{k:'banned',label:dzL('المطرودين','Removed members'),sub:ar?nb+' ':nb+'',icon:'x',c:'red'}]:[]),k=>{
+  if(k==='rename')askText(dzL('اسم العيلة الجديد','New family name'),FAM.family&&FAM.family.name||'',v=>{v=(v||'').trim();if(!v)return;setTimeout(()=>askConfirm(dzL('تغيّر اسم العيلة لـ «'+v+'»؟','Rename the family to «'+v+'»?'),dzL('غيّر','Rename'),async()=>{try{await famRef().update({e:await seal({name:v})});toast(dzL('اسم العيلة اتغيّر','Family renamed'),'pen')}catch(e){famErr(e)}}),350)});
+  else if(k==='lock')askConfirm(m.locked?dzL('تفتح الانضمام؟ أي حد معاه الكود هيقدر ينضم.','Open joining? Anyone with the code will be able to join.'):dzL('تقفل الانضمام؟ محدش جديد هيقدر ينضم لحد ما تفتحها تاني.','Lock joining? Nobody new can join until you open it again.'),m.locked?dzL('افتح','Open'):dzL('اقفل','Lock'),async()=>{try{await famRef().update({locked:!m.locked});toast(m.locked?dzL('الانضمام اتفتح','Joining opened'):dzL('الانضمام اتقفل','Joining locked'),'lock')}catch(e){famErr(e)}},!m.locked);
+  else if(k==='members')famMembersMenu();
+  else if(k==='tasks'){famView='tasks';famTab='all';renderFamily()}
+  else if(k==='banned')famBannedMenu()})}
+function famMembersMenu(){openMenu(dzL('الأعضاء والصلاحيات','Members & roles'),FAM.members.map(x=>({k:x.id,label:(x.id===FB.uid?dzL('إنت','You'):String(nameOf(x.id))),sub:famIsOwner(x.id)?dzL('المضيف','Host'):famIsAdmin(x.id)?dzL('مشرف','Admin'):dzL('عضو','Member'),icon:famIsAdmin(x.id)?'crown':'user',c:famIsOwner(x.id)?'amber':famIsAdmin(x.id)?'violet':'teal'})),id=>{if(id!==FB.uid)famMemberActions(id)})}
+function famMemberActions(id){const n=String(nameOf(id)),it=[];
+ if(famIsOwner()&&!famIsOwner(id))it.push(famIsAdmin(id)?{k:'unadmin',label:dzL('شيل الإشراف من '+n,'Remove admin from '+n),icon:'crown',c:'amber'}:{k:'admin',label:dzL('خلّي '+n+' مشرف','Make '+n+' an admin'),sub:dzL('هيقدر يعمل نفس اللي إنت بتعمله، ماعدا تعيين مشرفين','Can do what you do, except appoint admins'),icon:'crown',c:'violet'});
+ if(famIsAdmin()&&!famIsOwner(id)&&!(famIsAdmin(id)&&!famIsOwner()))it.push({k:'kick',label:dzL('اطرد '+n+' من العيلة','Remove '+n+' from the family'),sub:dzL('مش هيقدر يرجع إلا لو رجّعته','Can’t come back unless you let them'),icon:'x',c:'red'});
+ if(!it.length){toast(dzL('مفيش صلاحيات على العضو ده','No actions for this member'),'users');return}
+ openMenu(n,it,k=>{
+  if(k==='admin')askConfirm(dzL('تخلّي '+n+' مشرف؟ هيقدر يغيّر الاسم ويقفل الانضمام ويطرد أعضاء ويمسح رسايل ومهام.','Make '+n+' an admin? They can rename, lock joining, remove members and delete messages and tasks.'),dzL('خليه مشرف','Make admin'),async()=>{try{await famRef().update({admins:FV().arrayUnion(id)});toast(dzL(n+' بقى مشرف','Now an admin: '+n),'crown')}catch(e){famErr(e)}});
+  else if(k==='unadmin')askConfirm(dzL('تشيل الإشراف من '+n+'؟','Remove admin from '+n+'?'),dzL('شيل','Remove'),async()=>{try{await famRef().update({admins:FV().arrayRemove(id)});toast(dzL('الإشراف اتشال','Admin removed'),'crown')}catch(e){famErr(e)}},1);
+  else if(k==='kick')askConfirm(dzL('تطرد '+n+' من العيلة؟ هيتشال من المهام والمحادثات ومش هيقدر يرجع إلا لو رجّعته.','Remove '+n+' from the family? They lose access and can’t rejoin unless you let them.'),dzL('اطرده','Remove'),()=>famKick(id),1)})}
+async function famKick(id){try{let bn={};try{bn=FAM.meta.bn?await open_(FAM.meta.bn):{}}catch(e){}bn[id]=String(nameOf(id));
+ const up={banned:FV().arrayUnion(id),bn:await seal(bn)};if(famIsAdmin(id))up.admins=FV().arrayRemove(id);await famRef().update(up);await famRef().collection('members').doc(id).delete();toast(dzL('العضو اتشال من العيلة','Member removed'),'x')}catch(e){famErr(e)}}
+async function famBannedMenu(){let bn={};try{bn=FAM.meta.bn?await open_(FAM.meta.bn):{}}catch(e){}
+ openMenu(dzL('المطرودين','Removed members'),(FAM.meta.banned||[]).map(u=>({k:u,label:bn[u]||dzL('عضو','Member'),sub:dzL('اضغط عشان تسمحله يرجع','Tap to let them rejoin'),icon:'user',c:'red'})),u=>askConfirm(dzL('تسمح لـ «'+(bn[u]||'العضو')+'» يرجع ينضم بالكود؟','Let «'+(bn[u]||'this member')+'» rejoin with the code?'),dzL('اسمح','Allow'),async()=>{try{delete bn[u];await famRef().update({banned:FV().arrayRemove(u),bn:await seal(bn)});toast(dzL('يقدر يرجع بالكود','They can rejoin with the code'),'users')}catch(e){famErr(e)}}))}
+function famErr(e){const m=String(e&&e.message||e);toast(/permission|insufficient/i.test(m)?dzL('مش مسموح. لازم قواعد Firebase الجديدة تتنشر الأول.','Not allowed. The new Firebase rules must be published first.'):dzL('ماقدرناش: ','Could not: ')+m,'alert')}
+function famKicked(){if(window._famKicked)return;window._famKicked=1;const id=S.famId;famStop();S.fams=(S.fams||[]).filter(f=>f.id!==id);S.famCode=null;S.famId=null;FKEY=null;FAM.family=null;FAM.members=[];FAM.tasks=[];FAM.meta={};save();toast(dzL('المضيف شالك من العيلة دي','The host removed you from this family'),'users');setTimeout(()=>{window._famKicked=0},3000);if(S.fams.length)famSwitch(S.fams[0].id);else{renderFamily();render()}}
+
 function openMember(id){const m=FAM.members.find(x=>x.id===id);if(!m)return;
  document.getElementById('memberBody').innerHTML=`<div style="display:flex;gap:14px;align-items:center;margin-bottom:6px">${av(m)}<div><b style="font-size:18px">${esc(nameOf(id))}</b><div class="meta">${(S.aliases||{})[id]?'Real name: '+esc(m.name)+' · ':''}${m.online?'Online now':'Seen '+ago(m.lastSeen)}</div></div></div>
   <label>Nickname (only you see this)</label><input id="aliasIn" value="${esc((S.aliases||{})[id]||'')}" placeholder="e.g. Mama, Baba, Habibti…">
-  <div class="row"><button class="btn ghost" onclick="saveAlias('${id}')">Save nickname</button><button class="btn ghost" onclick="closeSheets();openChat(chatIdWith('${id}'))">${ic('heart',16)}Message</button><button class="btn" onclick="closeSheets();openSend('${id}')">${ic('plus',16)}Task</button></div>`;
+  <div class="row"><button class="btn ghost" onclick="saveAlias('${id}')">Save nickname</button><button class="btn ghost" onclick="closeSheets();openChat(chatIdWith('${id}'))">${ic('heart',16)}Message</button><button class="btn" onclick="closeSheets();openSend('${id}')">${ic('plus',16)}Task</button></div>${famIsAdmin()&&!famIsOwner(id)?`<button class="btn ghost wide" style="margin-top:10px" onclick="closeSheets();setTimeout(()=>famMemberActions('${id}'),250)">${ic('crown',16)}${dzL('صلاحيات العضو','Member actions')}</button>`:''}`;
  document.getElementById('memberSheet').classList.add('on')}
 function saveAlias(id){S.aliases=S.aliases||{};const v=document.getElementById('aliasIn').value.trim();if(v)S.aliases[id]=v;else delete S.aliases[id];save();closeSheets();renderFamily();render();toast(v?'Nickname saved':'Nickname removed','user')}
 function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
@@ -4591,13 +4631,14 @@ function toggleEmoji(){const p=document.getElementById('epanel');if(!p.innerHTML
 function addEmoji(e){const i=document.getElementById('cinput');i.value+=e;i.dispatchEvent(new Event('input'))}
 function openRbar(ev,mid){ev.stopPropagation();const C=CHATS[curChat],m=C&&C.msgs.find(x=>x.id===mid);if(!m)return;const mine=(m.re||{})[FB.uid];
  const r=document.getElementById('rbar');r.className='rbar';r.style.top=Math.max(70,Math.min(ev.clientY-110,innerHeight-200))+'px';
- r.innerHTML=`<div class="em">${REACTS.map(e=>`<button class="${mine===e?'on':''}" onclick="react('${mid}','${e}')">${e}</button>`).join('')}</div><div class="acts"><button onclick="copyMsg('${mid}')">${ic('clipboard',14)}Copy</button>${m.from===FB.uid?`<button onclick="delMsg('${mid}')" style="color:var(--red)">${ic('trash',14)}Delete</button>`:''}</div>`;
+ r.innerHTML=`<div class="em">${REACTS.map(e=>`<button class="${mine===e?'on':''}" onclick="react('${mid}','${e}')">${e}</button>`).join('')}</div><div class="acts"><button onclick="copyMsg('${mid}')">${ic('clipboard',14)}Copy</button>${m.from===FB.uid||(curChat==='group'&&famIsAdmin())?`<button onclick="delMsgAsk('${mid}',${m.from===FB.uid?1:0})" style="color:var(--red)">${ic('trash',14)}Delete</button>`:''}</div>`;
  setTimeout(()=>document.addEventListener('click',closeRbar,{once:true}),10)}
 function closeRbar(){const r=document.getElementById('rbar');r.className='';r.innerHTML=''}
 async function react(mid,e){closeRbar();const cid=curChat,C=CHATS[cid],m=C.msgs.find(x=>x.id===mid),key=await keyFor(cid);if(!m||!key)return;
  const ref=famRef().collection('chats').doc(cid).collection('messages').doc(mid);
  try{await ref.update({['r.'+FB.uid]:(m.re||{})[FB.uid]===e?firebase.firestore.FieldValue.delete():await sealK(key,{e})})}catch(err){}}
 function copyMsg(mid){const m=CHATS[curChat].msgs.find(x=>x.id===mid);closeRbar();try{navigator.clipboard.writeText(m.t).then(()=>toast('Copied','clipboard'))}catch(e){}}
+function delMsgAsk(mid,mine){closeRbar();askConfirm(mine?dzL('تمسح الرسالة دي؟','Delete this message?'):dzL('تمسح رسالة العضو ده من محادثة العيلة؟','Delete this member’s message from the family chat?'),dzL('امسح','Delete'),()=>delMsg(mid),1)}
 async function delMsg(mid){closeRbar();try{await famRef().collection('chats').doc(curChat).collection('messages').doc(mid).delete()}catch(e){}}
 addEventListener('popstate',()=>{if(curChat)closeChat(true)});
 document.getElementById('cinput')&&document.getElementById('cinput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!IS_NATIVE){e.preventDefault();sendMsg()}});
@@ -4631,7 +4672,7 @@ function renderFamily(){
    :`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">Start your family group</span></h3><div class="sub">You'll get a code to share with your family</div><input id="fName" placeholder="e.g. Rawhy Family"><button class="btn wide" style="margin-top:12px" onclick="createFamily()">Create family</button></div>`}`;
   return}
  const mine=FAM.tasks.filter(forMe),sent=FAM.tasks.filter(t=>t.from===FB.uid);
- const openMine=mine.filter(t=>t.status==='open'),isSent=famTab==='sent',list=isSent?sent:mine;
+ if(famTab==='all'&&!famIsAdmin())famTab='mine';const openMine=mine.filter(t=>t.status==='open'),isAll=famTab==='all',isSent=famTab==='sent'||isAll,list=isAll?FAM.tasks:isSent?sent:mine;
  const row=t=>{const other=FAM.members.find(m=>m.id===(isSent?t.to:t.from))||{name:isSent?t.toName:t.fromName,color:'#555'};
   const ty=FTYPES[t.type||'task'],its=t.items||[],nd=its.filter(x=>x.done).length,canTick=!isSent||t.to==='*';
   const itemsHtml=its.length?`<div class="items">${its.map((x,i)=>`<div class="li ${x.done?'done':''}"><button class="cb" ${canTick||isSent?`onclick="tickItem('${t.id}',${i})"`:''}>${x.done?ic('check',12,'',3):''}</button><span class="t" style="font-size:14px;font-weight:500">${esc(x.t)}</span>${x.done&&(x.byUid||x.by)?`<span style="font-size:10px;color:var(--mu)">${esc(x.byUid?nameOf(x.byUid,x.by):x.by)}</span>`:''}</div>`).join('')}</div><div class="pbar" style="height:5px;margin:8px 0 0"><i style="width:${its.length?nd/its.length*100:0}%"></i></div>`:'';
@@ -4641,14 +4682,14 @@ function renderFamily(){
    ${isSent?`<div style="display:flex;gap:8px;margin-top:8px">${t.status==='open'?`<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="tellWhatsApp('${t.id}')">Remind on WhatsApp</button>`:''}<button class="btn ghost" style="padding:7px 10px;font-size:12px" onclick="delFamTask('${t.id}')">${ic('trash',13)}Delete</button></div>`:''}</div>
    ${!isSent?`<button class="check" style="${t.status==='done'?'background:var(--ok);border-color:var(--ok)':'border-color:var(--a1)'}" onclick="setFamTask('${t.id}',${t.status!=='done'})">${t.status==='done'?ic('check',18,'',3):''}</button>`:''}</div>`};
  if(FAM.family&&FAM.family.name){const cf=(S.fams||[]).find(f=>f.id===S.famId);if(cf&&cf.name!==FAM.family.name){cf.name=FAM.family.name;save()}}
- el.innerHTML=famSwitcherHtml()+deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}</span><button class="iconbtn" onclick="showFamQR()" aria-label="Show QR">${ic('qr',16)}</button><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
+ el.innerHTML=famSwitcherHtml()+deedHtml+`<div class="card"><h3><span class="ico c-pink">${ic('heart',18)}</span><span class="sp">${esc(FAM.family?FAM.family.name:'Family')}${FAM.meta.locked?` <span class="frole lk">${ic('lock',11)}${dzL('مقفولة','Locked')}</span>`:''}</span>${famIsAdmin()?`<button class="iconbtn" onclick="famAdminMenu()" aria-label="Manage">${ic('crown',16)}</button>`:''}<button class="iconbtn" onclick="showFamQR()" aria-label="Show QR">${ic('qr',16)}</button><button class="iconbtn" onclick="copyCode()">${ic('clipboard',16)}</button></h3>
    <div style="margin:10px 0 14px"><span style="font-size:12px;color:var(--mu)">Family code · keep it private</span><div class="code" style="font-size:19px" onclick="showFamQR()">${S.famCode} <span style="vertical-align:middle;opacity:.7">${ic('qr',16)}</span></div><div class="meta" style="margin-top:4px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted: only your family can read tasks and messages</span></div></div>
-   <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}</div>`).join('')}
+   <div class="members">${FAM.members.map(m=>`<div class="m" onclick="${m.id===FB.uid?'':`openMember('${m.id}')`}">${av(m)}${esc(m.id===FB.uid?'You':String(nameOf(m.id)).split(' ')[0])}${famRoleTag(m.id)}</div>`).join('')}
    <div class="m" onclick="shareInvite()"><span class="av" style="background:var(--s2);color:var(--mu)">${ic('plus',18)}</span>Invite</div></div></div>
   ${challengeHtml()}
   <div class="tabs2"><button class="${famView==='tasks'?'on':''}" onclick="famView='tasks';renderFamily()">${'Tasks'}${FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length?' ('+FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length+')':''}</button><button class="${famView==='chats'?'on':''}" onclick="famView='chats';renderFamily()">Chats${Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)?' ('+Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)+')':''}</button></div>
   ${famView==='chats'?chatListHtml():`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${Object.entries(FTYPES).map(([k,[n,i,c]])=>`<button class="card" style="margin:0;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700" onclick="openSend(null,'${k}')"><span class="ico c-${c}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(i,18)}</span>${n}</button>`).join('')}</div>
-  <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${isSent?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button></div>
+  <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${famTab==='sent'?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button>${famIsAdmin()?`<button class="${isAll?'on':''}" onclick="famTab='all';renderFamily()">${dzL('الكل','All')}</button>`:''}</div>
   ${list.length?list.map(row).join(''):(isSent?`<div class="empty">${T('Tasks you send will show here with their status.')}</div>`:emptyHtml('family',dzL('لسه مفيش مهام','No tasks yet'),dzL('لما عيلتك تبعتلك حاجة، هتظهر هنا على طول.','When your family sends you something, it appears here instantly.')))}`}
   <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}" placeholder="${S.lang==='ar'?'مثال: أحمد':'e.g. Ahmed'}" oninput="this.classList.remove('need')"><div class="sub nm-hint">${S.lang==='ar'?'ده نفس اسمك في الإعدادات والتحية، لو غيّرته هنا هيتغيّر هناك':'Same name as in Settings and the greeting; change it here and it changes there'}</div><label>Color</label>${colorPicker()}
    <div class="row"><button class="btn red" onclick="askConfirm(dzL('تخرج من العيلة؟ هتقدر ترجع بالكود تاني.','Leave the family? You can rejoin with the code.'),dzL('اخرج','Leave'),leaveFamily,1)">Leave family</button><button class="btn" onclick="updateProfile()">Save</button></div></div>`;

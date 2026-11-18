@@ -5,6 +5,11 @@ service cloud.firestore {
     function isMember(f) {
       return signedIn() && exists(/databases/$(database)/documents/families/$(f)/members/$(request.auth.uid));
     }
+    function famDoc(f) { return get(/databases/$(database)/documents/families/$(f)).data; }
+    // Host (owner) or someone the host made an admin.
+    function isAdmin(f) {
+      return signedIn() && (famDoc(f).owner == request.auth.uid || request.auth.uid in famDoc(f).get('admins', []));
+    }
 
     // Each person's own encrypted backup/sync. Only that signed-in account can read or write it.
     match /users/{uid}/{document=**} {
@@ -16,11 +21,19 @@ service cloud.firestore {
       allow get: if signedIn();
       allow list: if false;
       allow create: if signedIn() && request.resource.data.owner == request.auth.uid;
-      allow update, delete: if isMember(f) && resource.data.owner == request.auth.uid;
+      // Admins can rename, lock joining and remove members; only the host can change who is host or admin.
+      allow update: if isMember(f) && isAdmin(f) &&
+        (resource.data.owner == request.auth.uid || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['owner', 'admins']));
+      allow delete: if isMember(f) && resource.data.owner == request.auth.uid;
 
       match /members/{uid} {
         allow read: if isMember(f);
-        allow create, update, delete: if signedIn() && request.auth.uid == uid;
+        // Joining: not removed (banned) and the family is not locked.
+        allow create: if signedIn() && request.auth.uid == uid
+          && !(uid in famDoc(f).get('banned', [])) && famDoc(f).get('locked', false) == false;
+        allow update: if signedIn() && request.auth.uid == uid && !(uid in famDoc(f).get('banned', []));
+        // Leave yourself, or an admin removes a member (never the host).
+        allow delete: if signedIn() && (request.auth.uid == uid || (isAdmin(f) && uid != famDoc(f).owner));
       }
 
       // Chats: 'group' for the whole family, or 'uidA__uidB' for a private chat (only those two can open it).
@@ -31,14 +44,14 @@ service cloud.firestore {
           allow read: if inChat();
           allow create: if inChat() && request.resource.data.from == request.auth.uid;
           allow update: if inChat() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['r']);
-          allow delete: if inChat() && resource.data.from == request.auth.uid;
+          allow delete: if inChat() && (resource.data.from == request.auth.uid || (c == 'group' && isAdmin(f)));
         }
       }
 
       // Weekly challenges: anyone in the family can start one; each person writes only their own score.
       match /challenges/{w} {
         allow read, create, update: if isMember(f);
-        allow delete: if isMember(f) && resource.data.by == request.auth.uid;
+        allow delete: if isMember(f) && (resource.data.by == request.auth.uid || isAdmin(f));
         match /scores/{uid} {
           allow read: if isMember(f);
           allow write: if isMember(f) && request.auth.uid == uid;
@@ -49,7 +62,7 @@ service cloud.firestore {
         allow read: if isMember(f);
         allow create: if isMember(f) && request.resource.data.from == request.auth.uid;
         allow update: if isMember(f) && (resource.data.to == request.auth.uid || resource.data.to == "*" || resource.data.from == request.auth.uid);
-        allow delete: if isMember(f) && resource.data.from == request.auth.uid;
+        allow delete: if isMember(f) && (resource.data.from == request.auth.uid || isAdmin(f));
       }
     }
   }
