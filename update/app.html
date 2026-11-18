@@ -1165,6 +1165,9 @@ body.reading #sbScrim,body.adkreading #sbScrim{display:none}
 .frole{display:inline-flex;align-items:center;gap:3px;margin-top:3px;padding:1px 7px;border-radius:99px;font-size:10.5px;font-weight:800;background:rgba(124,92,255,.18);color:var(--a1)}
 .frole.own{background:rgba(245,158,11,.2);color:var(--gold)}.frole.lk{background:rgba(244,63,94,.15);color:var(--red);vertical-align:middle}
 .members .m{display:flex;flex-direction:column;align-items:center}
+/* v121: switch knob always reaches the end (a .btn min-width made .swb 64px wide while the knob stopped at 25px) */
+button.btn.swb{min-width:54px!important;max-width:54px!important;flex:none!important}
+.swb.on::after,input.sw:checked::after{inset-inline-start:calc(100% - 27px)!important}
 </style>
 </head>
 <body>
@@ -4272,7 +4275,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=120;
+const APP_VERSION=121;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
