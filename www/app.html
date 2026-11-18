@@ -1209,7 +1209,7 @@ html.light .dz-ac{background:#fff}
 <nav class="nav" id="nav"></nav>
 
 <!-- Sheets -->
-<div class="sheet" id="editSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Edit your route</h3><div id="editList"></div><div class="row"><button class="btn ghost" onclick="openTask()">Add step</button><button class="btn" onclick="closeSheets()">Done</button></div><button class="link" style="margin:14px auto 0;display:flex;color:var(--red)" onclick="keepPrayersOnly(this)">Keep only prayers</button></div></div>
+<div class="sheet" id="editSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Edit your route</h3><div id="editList"></div><div class="row"><button class="btn ghost" onclick="openTask()">Add step</button><button class="btn" onclick="closeSheets()">Done</button></div><button class="link" style="margin:14px auto 0;display:flex;color:var(--red)" onclick="keepPrayersOnly(this)">Keep only prayers</button><div id="wipeRest"></div></div></div>
 <div class="sheet" id="taskSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3 id="taskTitle">New step</h3>
   <label>Name</label><input id="tName" placeholder="e.g. Read Quran">
   <label>Time</label><input id="tTime" type="time">
@@ -1407,6 +1407,8 @@ const DEFAULT_TASKS=[['mosque','Pray Fajr','04:50',20],['mosque','Pray Dhuhr','1
 const DEFAULT_REWARDS=[{id:uid(),icon:'coffee',name:'Special coffee',cost:80},{id:uid(),icon:'cake',name:'Favorite dessert',cost:150},{id:uid(),icon:'video',name:'Movie night',cost:300},{id:uid(),icon:'cart',name:'Buy something you want',cost:800}];
 let S=store.get()||{fri1:1,lang:'ar',goals:[],name:'',tasks:DEFAULT_TASKS,rewards:DEFAULT_REWARDS,claimed:[],history:{},points:0,earned:0,badges:[],notif:false,sound:true,notified:{}};
 if(!S.thMig){S.thMig=1;if(!S.theme||S.theme==='dark')S.theme='cream'}
+// v104 (Ahmed, Nov 18): one-time reset for everyone — keep only the prayers, remove all goals. Backup kept in S._wipeBak (restore button in Edit route).
+if(!S.wipe1){S.wipe1=1;const rmT=(S.tasks||[]).filter(t=>!t.prayer),G0=S.goals||[];if(rmT.length||G0.length){S._wipeBak={at:Date.now(),tasks:rmT,goals:G0,wk:S.wkPlan||{}};S.tasks=(S.tasks||[]).filter(t=>t.prayer);S.goals=[];S.wkPlan={};window._wipeDid=1}}
 if(!S.colMig){S.colMig=1;if(!S.color||S.color==='#7C5CFF'){S.color='#8A5A2B';if(S.famId)setTimeout(()=>{try{publishMe().catch(()=>{})}catch(e){}},5000)}}
 let save=()=>{store.set(S);if(typeof scheduleSync==='function')scheduleSync()};
 // migrations
@@ -1619,6 +1621,8 @@ function dzGoalFields(G){return `<label>${dzL('ليه الهدف ده مهم ل�
  <label>${dzL('خطة «لو… هعمل…» (اختياري)','If-then plan (optional)')}</label><input id="ngIfThen" value="${esc(G.ifThen||'')}" placeholder="${dzL('لو رجعت تعبان، هعمل 10 دقايق بس','If I come home tired, I’ll do just 10 minutes')}">`}
 function dzSaveFields(G){const v=id=>{const e=document.getElementById(id);return e?e.value.trim():undefined};['Why','Next','Mini','IfThen'].forEach(n=>{const x=v('ng'+n);if(x!==undefined)G[n==='IfThen'?'ifThen':n.toLowerCase()]=x})}
 
+function wipeFix(){if(!window._wipeDid)return;window._wipeDid=0;try{const r=S.history[today()];if(r){r.done=(r.done||[]).filter(id=>S.tasks.some(t=>t.id===id));r.total=dayTasks().length}if(S.timer&&S.timer.cat&&!AREAS[S.timer.cat])S.timer.cat='study';save();scheduleNative();setTimeout(()=>toast(dzL('بدأنا من جديد: الصلوات بس. ضيف خطواتك وأهدافك بنفسك','Fresh start: prayers only. Add your own steps and goals'),'sparkles'),1500)}catch(e){}}
+function wipeRestore(b){const B=S._wipeBak;if(!B)return;if(!b.dataset.sure){b.dataset.sure=1;b.textContent=dzL('اضغط تاني للتأكيد','Tap again to confirm');return}const ids=new Set(S.tasks.map(t=>t.id));B.tasks.forEach(t=>{if(!ids.has(t.id))S.tasks.push(t)});const gids=new Set(S.goals.map(g=>g.id));B.goals.forEach(g=>{if(!gids.has(g.id))S.goals.push(g)});S.wkPlan=Object.assign({},B.wk||{},S.wkPlan);delete S._wipeBak;save();closeSheets();render();scheduleNative();toast(dzL('رجعت الخطوات والأهداف القديمة','Old steps and goals restored'),'check')}
 function render(){
  applyPrayers();
  const rec=dayRec();const list=sorted();rec.total=list.length;const done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
@@ -1649,7 +1653,7 @@ function render(){
  document.getElementById('quote').innerHTML=(q.ar?`<div class="ar">${q.ar}</div>`:'')+`<div class="en">“${q.en}”</div><small>${ic('heart',13)}${q.src} · Today's reminder</small>`;
  renderGuide();{const sk=(rec.skip||[]).filter(id=>S.tasks.some(t=>t.id===id));document.getElementById('skipped').innerHTML=sk.length?`<button class="link" style="margin:6px auto 0;display:flex" onclick="unskip()">${ic('rotate',14)}${sk.length} skipped today · restore</button>`:''}
  renderToday2(list,rec,now);renderFaithBar();renderCal();schedScore();renderCountdowns();pushWidget();const vis=v=>{const e=document.getElementById('v-'+v);return e&&e.classList.contains('on')};if(vis('goals'))renderGoals();if(vis('awards'))renderAwards();if(vis('prizes'))renderPrizes();if(vis('settings'))renderSettings();if(vis('faith'))renderFaith();
- firstPaint=false;justDone=null;clearTimeout(window._gdT);window._gdT=setTimeout(()=>{try{gameDaily();publishLeague()}catch(e){}},1200);
+ firstPaint=false;justDone=null;clearTimeout(window._gdT);window._gdT=setTimeout(()=>{try{gameDaily();publishLeague()}catch(e){}},1200);if(window._wipeDid)setTimeout(()=>{wipeFix();render()},300);
 }
 function renderToday2(list,rec,now){
  const ag=S.goals.filter(g=>!g.archived&&!g.done&&g.type!=='habit').sort((x,y)=>(gDays(x)??9999)-(gDays(y)??9999));const ng=ag[0];
@@ -1952,7 +1956,7 @@ function resetToday(){const rec=dayRec();rec.done.forEach(id=>{const t=S.tasks.f
 
 // ================= EDITING =================
 let editId=null,pickIcon='target',pickRIcon='gift',pickDays=[0,1,2,3,4,5,6],pickDate=null;
-function openEdit(){closeSheets();renderEdit();document.getElementById('editSheet').classList.add('on')}
+function openEdit(){closeSheets();renderEdit();{const w=document.getElementById('wipeRest');if(w)w.innerHTML=S._wipeBak?`<button class="link" style="margin:10px auto 0;display:flex" onclick="wipeRestore(this)">${ic('rotate',14)}${dzL('رجّع الخطوات والأهداف القديمة','Restore old steps and goals')}</button>`:''}document.getElementById('editSheet').classList.add('on')}
 function renderEdit(){document.getElementById('editList').innerHTML=allSorted().map(t=>{const k=taskIcon(t);return `<div class="edit-row"><span class="ico ${col(k)}">${ic(k,20)}</span><div class="info" style="flex:1"><b>${esc(t.name)}</b><div class="meta">${fmt(t.time)} · ${t.pts} pts · ${daysTxt(t)}</div></div>${t.prayer?`<span class="lock">${ic('lock',13)}Auto</span>`:`<button class="iconbtn" onclick="openTask('${t.id}')">${ic('pen',15)}</button><button class="iconbtn" onclick="delTask('${t.id}')">${ic('trash',15)}</button>`}</div>`}).join('')}
 function openTask(id){editId=id||null;const t=S.tasks.find(x=>x.id===id);if(t&&t.prayer)return;
  document.getElementById('taskTitle').textContent=t?'Edit step':'New step';
@@ -3795,7 +3799,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=103;
+const APP_VERSION=104;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
