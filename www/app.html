@@ -1030,6 +1030,14 @@ html.light .kh-st.late{color:#9F1239}
 html.light .dz-gb{background:#fff}
 #stepList .li{transition:transform .18s ease;position:relative}#stepList .li.dragging{transition:none;z-index:5;background:var(--s2);border-radius:14px;box-shadow:0 10px 24px -10px rgba(0,0,0,.45)}.st-grip{width:28px;height:40px;display:grid;place-items:center;color:var(--mu);touch-action:none;cursor:grab;flex:none;opacity:.7}#stepList .li .t{-webkit-touch-callout:none}
 .st-hint{font-size:12px;margin:6px 2px 0}
+.dz-iw{flex:1;position:relative;display:flex}.dz-iw input{flex:1;padding-inline-end:44px}
+.dz-clr{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--mu)}
+.dz-ac{display:none;margin:-2px 0 8px;margin-inline-start:40px;border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:var(--s2)}
+.dz-ac.on{display:block}.dz-ac button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;text-align:start;border-top:1px solid var(--bd);color:var(--tx)}
+.dz-ac button:first-child{border-top:0}.dz-ac span{display:flex;flex-direction:column;min-width:0;flex:1}.dz-ac em{font-style:normal;font-size:15px;line-height:1.6}.dz-ac em b{color:var(--a1)}
+.dz-ac small{font-size:12px;color:var(--mu)}.dz-ac .dz-new svg{color:var(--ok)}
+.dz-rm{width:32px;height:32px;opacity:.7}
+html.light .dz-ac{background:#fff}
 </style>
 </head>
 <body>
@@ -1502,8 +1510,8 @@ function dzHeat(fnOk,days){days=days||30;let h='';for(let i=days-1;i>=0;i--){con
 function dzRouteLvl(k){if(!S.history[k])return -1;const p=pctOf(k);return p>=80?2:p>0?1:0}
 // ---------- daily plan (top 3)
 function dzSuggest(){const out=[],seen=new Set(),push=(t,gid,ico)=>{if(!t||seen.has(t))return;seen.add(t);out.push({t,gid:gid||null,ico:ico||'target'})};
- (S.goals||[]).filter(g=>!g.archived&&!g.done).forEach(g=>{if(g.type==='project'){const st=(g.steps||[]).find(x=>!x.done);if(st)push(st.name,g.id,gIcon(g))}else if(g.type==='habit'){if(habitCount(g)<g.target)push(trS(g.title),g.id,gIcon(g))}else if(g.next)push(g.next,g.id,gIcon(g));else if(g.type==='number')push(trS(g.title),g.id,gIcon(g))});
- try{(S.todo&&S.todo.items||[]).filter(x=>x.status!=='done'&&x.due&&x.due<=today()).slice(0,6).forEach(x=>push(x.t,null,'check'))}catch(e){}
+ (S.goals||[]).filter(g=>!g.archived&&!g.done).forEach(g=>{if(g.type==='project'){const st=(g.steps||[]).find(x=>!x.done);if(st){push(trS(st.name),g.id,gIcon(g));out[out.length-1]&&out[out.length-1].t===trS(st.name)&&(out[out.length-1].sid=st.id)}}else if(g.type==='habit'){if(habitCount(g)<g.target)push(trS(g.title),g.id,gIcon(g))}else if(g.next)push(g.next,g.id,gIcon(g));else if(g.type==='number')push(trS(g.title),g.id,gIcon(g))});
+ try{(S.todo&&S.todo.items||[]).filter(x=>x.status!=='done'&&x.due&&x.due<=today()).slice(0,6).forEach(x=>{push(x.t,null,'check');const o=out[out.length-1];if(o&&o.t===x.t)o.tid=x.id})}catch(e){}
  return out.slice(0,10)}
 let _dzDraft=null;
 function planOpen(forK){const k=forK||today(),cur=(S.plan||{})[k],ar=S.lang==='ar';_dzDraft={k,top:cur?cur.top.map(x=>({...x})):[]};while(_dzDraft.top.length<3)_dzDraft.top.push({t:'',gid:null,done:false});
@@ -1511,25 +1519,45 @@ function planOpen(forK){const k=forK||today(),cur=(S.plan||{})[k],ar=S.lang==='a
  const tom=k!==today(),sg=dzSuggest();
  document.getElementById('planBody').innerHTML=`<h3><span class="ico c-amber">${ic('target',18)}</span>${tom?dzL('أهم 3 حاجات بكرة','Tomorrow’s top 3'):dzL('أهم 3 حاجات النهارده','Today’s top 3')}</h3>
   <div class="sub">${dzL('لو عملت الـ 3 دول بس، يبقى يومك ناجح. ابدأ بالأصعب.','If you only do these 3, the day is a win. Start with the hardest.')}</div>
-  ${_dzDraft.top.map((x,i)=>`<div class="dz-in"><span class="dz-n">${i+1}</span><input id="dzT${i}" value="${esc(x.t)}" placeholder="${[dzL('أهم حاجة','The most important thing'),dzL('تاني حاجة','Second'),dzL('تالت حاجة','Third')][i]}" oninput="_dzDraft.top[${i}].t=this.value;_dzDraft.top[${i}].gid=null"></div>`).join('')}
+  ${_dzDraft.top.map((x,i)=>`<div class="dz-in"><span class="dz-n">${i+1}</span><div class="dz-iw"><input id="dzT${i}" autocomplete="off" value="${esc(x.t)}" placeholder="${[dzL('أهم حاجة','The most important thing'),dzL('تاني حاجة','Second'),dzL('تالت حاجة','Third')][i]}" oninput="dzType(${i},this.value)" onfocus="dzAc(${i})" onblur="setTimeout(()=>dzAcHide(${i}),180)"><button class="dz-clr" onclick="dzClear(${i})" aria-label="clear" style="${x.t?'':'display:none'}">${ic('x',15)}</button></div></div><div class="dz-ac" id="dzAc${i}"></div>`).join('')}
   ${sg.length?`<label>${dzL('اقتراحات من أهدافك ومهامك','From your goals and tasks')}</label><div class="tpl dz-sg">${sg.map((x,i)=>`<button onclick="dzPick(${i})">${ic(x.ico,14)}${esc(x.t)}</button>`).join('')}</div>`:''}
   <div class="row"><button class="btn ghost" onclick="closeSheets()">${dzL('إلغاء','Cancel')}</button><button class="btn" onclick="planSave()">${ic('check',16)}${dzL('حفظ الخطة','Save plan')}</button></div>`;
  window._dzSg=sg;closeSheets();sh.classList.add('on');setTimeout(()=>{const e=document.getElementById('dzT'+Math.max(0,_dzDraft.top.findIndex(x=>!x.t)));if(e&&!_dzDraft.top[0].t)e.focus()},350)}
-function dzPick(i){const x=(window._dzSg||[])[i];if(!x)return;let j=_dzDraft.top.findIndex(y=>!y.t.trim());if(j<0)j=2;_dzDraft.top[j]={t:x.t,gid:x.gid,done:false};const e=document.getElementById('dzT'+j);if(e)e.value=x.t;SFX('click')}
-function planSave(){const top=_dzDraft.top.map((x,i)=>({t:(document.getElementById('dzT'+i)||{}).value!==undefined?document.getElementById('dzT'+i).value.trim():x.t,gid:x.gid,done:!!x.done})).filter(x=>x.t);
+function dzPick(i){const x=(window._dzSg||[])[i];if(!x)return;let j=_dzDraft.top.findIndex(y=>!y.t.trim());if(j<0)j=2;dzSet(j,x)}
+function dzSet(j,x){_dzDraft.top[j]={t:x.t,gid:x.gid||null,tid:x.tid||null,sid:x.sid||null,done:false};const e=document.getElementById('dzT'+j);if(e){e.value=x.t;const c=e.parentElement.querySelector('.dz-clr');if(c)c.style.display=''}dzAcHide(j);SFX('click')}
+function dzClear(i){_dzDraft.top[i]={t:'',gid:null,done:false};const e=document.getElementById('dzT'+i);if(e){e.value='';e.focus();const c=e.parentElement.querySelector('.dz-clr');if(c)c.style.display='none'}dzAc(i)}
+function dzType(i,v){_dzDraft.top[i]={t:v,gid:null,tid:null,sid:null,done:false};const e=document.getElementById('dzT'+i);const c=e&&e.parentElement.querySelector('.dz-clr');if(c)c.style.display=v?'':'none';dzAc(i)}
+function dzCands(){const out=[];(S.goals||[]).filter(g=>!g.archived&&!g.done).forEach(g=>{if(g.type==='project')(g.steps||[]).filter(x=>!x.done).forEach(st=>out.push({t:trS(st.name),gid:g.id,sid:st.id,ico:gIcon(g),src:trS(g.title)}));else out.push({t:g.next||trS(g.title),gid:g.id,ico:gIcon(g),src:dzL('هدف','Goal')})});
+ try{(S.todo&&S.todo.items||[]).filter(x=>x.status!=='done').forEach(x=>out.push({t:x.t,tid:x.id,ico:'check',src:x.due?(x.due===today()?dzL('مهمة النهارده','Task today'):x.due<today()?dzL('مهمة متأخرة','Overdue task'):dzL('مهمة','Task')):dzL('مهمة','Task')}))}catch(e){}
+ (S.tasks||[]).filter(t=>!t.prayer).forEach(t=>out.push({t:tName(t),ico:taskIcon(t),src:dzL('خطوة في المسار','Route step')}));return out}
+function dzAc(i){const box=document.getElementById('dzAc'+i);if(!box)return;const v=((document.getElementById('dzT'+i)||{}).value||'').trim(),q=adkNorm(v);if(q.length<1){box.innerHTML='';box.classList.remove('on');return}
+ const used=new Set(_dzDraft.top.filter((x,j)=>j!==i).map(x=>adkNorm(x.t)));const C=dzCands().filter(c=>!used.has(adkNorm(c.t)));
+ const sc=c=>{const n=adkNorm(c.t);return n===q?0:n.startsWith(q)?1:n.split(' ').some(w=>w.startsWith(q))?2:n.includes(q)?3:9};
+ const M=C.map(c=>({c,s:sc(c)})).filter(x=>x.s<9).sort((a,b)=>a.s-b.s).slice(0,5);window['_dzM'+i]=M.map(x=>x.c);
+ const exact=M.some(x=>x.s===0);
+ const hl=t=>{const n=adkNorm(t),k=n.indexOf(q);if(k<0||t.length!==n.length)return esc(t);return esc(t.slice(0,k))+'<b>'+esc(t.slice(k,k+q.length))+'</b>'+esc(t.slice(k+q.length))};
+ box.innerHTML=M.map((x,k)=>`<button onmousedown="event.preventDefault()" onclick="dzSet(${i},window._dzM${i}[${k}])">${ic(x.c.ico,15)}<span><em>${hl(x.c.t)}</em><small>${esc(x.c.src)}</small></span></button>`).join('')+(exact?'':`<button class="dz-new" onmousedown="event.preventDefault()" onclick="dzAcHide(${i})">${ic('plus',15)}<span><em>${esc(v)}</em><small>${dzL('مهمة جديدة، هتتضاف لمهامك لما تحفظ','New task, added to your tasks when you save')}</small></span></button>`);
+ box.classList.toggle('on',!!box.innerHTML)}
+function dzAcHide(i){const b=document.getElementById('dzAc'+i);if(b){b.classList.remove('on')}}
+function planSave(){let made=0;const C=dzCands();const top=_dzDraft.top.map((x,i)=>{const t=(document.getElementById('dzT'+i)||{}).value!==undefined?document.getElementById('dzT'+i).value.trim():x.t;if(!t)return null;let o={t,gid:x.gid||null,tid:x.tid||null,sid:x.sid||null,done:!!x.done};
+  if(!o.gid&&!o.tid){const m=C.find(c=>adkNorm(c.t)===adkNorm(t));if(m){o.gid=m.gid||null;o.tid=m.tid||null;o.sid=m.sid||null}else if(typeof TD==='function'){const it={id:uid(),t,list:null,pri:2,due:_dzDraft.k,time:null,rem:null,rep:null,tags:[],notes:'',subs:[],status:'todo',created:Date.now()};TD().items.push(it);o.tid=it.id;made++}}
+  return o}).filter(Boolean);if(made)setTimeout(()=>toast(made===1?dzL('اتعملت مهمة جديدة في المهام','Added 1 new task to Tasks'):dzL('اتعملوا '+made+' مهام جديدة في المهام','Added '+made+' new tasks'),'check'),900);
  if(!top.length){toast(dzL('اكتب حاجة واحدة على الأقل','Write at least one thing'),'target');return}
  S.plan=S.plan||{};const was=S.plan[_dzDraft.k];S.plan[_dzDraft.k]={top,set:Date.now()};
  const pk=Object.keys(S.plan).sort();if(pk.length>120)pk.slice(0,pk.length-120).forEach(k=>delete S.plan[k]);
  save();closeSheets();if(!was&&_dzDraft.k===today())addPts(5,dzL('الخطة جاهزة، يلا نبدأ','Plan set. Let’s go'),'target');else{render();toast(dzL('الخطة اتحفظت','Plan saved'),'check')}scheduleNative()}
 function planToggle(i){const p=dzPlan();if(!p||!p.top[i])return;const x=p.top[i];x.done=!x.done;HAP();
- if(x.done){if(x.gid){const g=S.goals.find(z=>z.id===x.gid);if(g&&g.type==='project'){const st=(g.steps||[]).find(s=>!s.done&&s.name===x.t);if(st){st.done=true}}}
+ if(x.done){if(x.gid){const g=S.goals.find(z=>z.id===x.gid);if(g&&g.type==='project'){const st=(g.steps||[]).find(s=>x.sid?s.id===x.sid:(!s.done&&(s.name===x.t||trS(s.name)===x.t)));if(st){st.done=true}}}if(x.tid&&typeof TD==='function'){const it=TD().items.find(z=>z.id===x.tid);if(it&&it.status!=='done'){it.status='done';it.doneAt=Date.now()}}
   const all=p.top.every(y=>y.done);if(all){addPts(25,dzL('خلّصت أهم 3 حاجات! يوم ناجح','Top 3 done! A winning day'),'trophy');burst(120)}else addPts(10,x.t,'check')}
- else{subPts(p.top.filter(y=>y.done).length===p.top.length-1?25:10);save();render()}}
+ else{if(x.tid&&typeof TD==='function'){const it=TD().items.find(z=>z.id===x.tid);if(it&&it.status==='done'){it.status='todo';delete it.doneAt}}if(x.gid&&x.sid){const g=S.goals.find(z=>z.id===x.gid),st=g&&(g.steps||[]).find(s=>s.id===x.sid);if(st)st.done=false}subPts(p.top.filter(y=>y.done).length===p.top.length-1?25:10);save();render()}}
+function planRemove(i){const p=dzPlan();if(!p||!p.top[i])return;const [x]=p.top.splice(i,1);if(!p.top.length)delete S.plan[today()];save();render();toast(dzL('اتشالت من الخطة: ','Removed from plan: ')+x.t,'x')}
+function planRowMenu(i){const p=dzPlan(),x=p&&p.top[i];if(!x)return;HAP();openMenu(x.t,[{k:'rm',label:dzL('شيلها من الخطة','Remove from plan'),icon:'trash',c:'red'},{k:'ed',label:dzL('تعديل الخطة','Edit plan'),icon:'pen'},{k:'fo',label:dzL('ركّز عليها','Focus on it'),icon:'clock'}],k=>{if(k==='rm')planRemove(i);else if(k==='ed')planOpen();else dzFocusOn(i)})}
+(function(){let t=null,x0=0,y0=0;document.addEventListener('pointerdown',e=>{const r=e.target.closest&&e.target.closest('#dzPlan .dz-row[data-pi]');if(!r||e.target.closest('button'))return;x0=e.clientX;y0=e.clientY;clearTimeout(t);t=setTimeout(()=>{window._dzLP=1;planRowMenu(+r.dataset.pi)},520)});document.addEventListener('pointermove',e=>{if(t&&(Math.abs(e.clientX-x0)>8||Math.abs(e.clientY-y0)>8)){clearTimeout(t);t=null}});['pointerup','pointercancel'].forEach(k=>document.addEventListener(k,()=>{clearTimeout(t);t=null}))})();
 function planCardHtml(){const p=dzPlan(),ar=S.lang==='ar',h=new Date().getHours();
  if(!p){return `<button class="card dz-plan empty-plan" onclick="planOpen()"><span class="ico c-amber">${ic('target',20)}</span><span class="dz-pt"><b>${dzL('خطة النهارده','Today’s plan')}</b><small>${dzL('حدّد أهم 3 حاجات، وابدأ بالأصعب','Pick your top 3, start with the hardest')}</small></span><span class="dz-go">${ic('plus',18)}</span></button>`}
  const d=p.top.filter(x=>x.done).length,n=p.top.length;
  return `<div class="card dz-plan"><div class="dz-ph"><span class="ico c-amber">${ic('target',18)}</span><b>${dzL('أهم 3 النهارده','Today’s top 3')}</b><span class="dz-cnt">${d} ${dzL('من','of')} ${n}</span><button class="link" onclick="planOpen()">${ic('pen',14)}${dzL('تعديل','Edit')}</button></div>
-  ${p.top.map((x,i)=>{const g=x.gid&&S.goals.find(z=>z.id===x.gid);return `<div class="dz-row ${x.done?'done':''}" onclick="planToggle(${i})"><span class="cb">${x.done?ic('check',14,'',3):''}</span><span class="dz-t"><span class="dz-tt">${esc(x.t)}</span>${g?`<small>${ic(gIcon(g),11)}${esc(trS(g.title))}</small>`:''}</span><button class="dz-f" onclick="event.stopPropagation();dzFocusOn(${i})" aria-label="focus">${ic('clock',16)}</button></div>`}).join('')}
+  ${p.top.map((x,i)=>{const g=x.gid&&S.goals.find(z=>z.id===x.gid);return `<div class="dz-row ${x.done?'done':''}" onclick="if(!window._dzLP)planToggle(${i});window._dzLP=0" oncontextmenu="event.preventDefault()" data-pi="${i}"><span class="cb">${x.done?ic('check',14,'',3):''}</span><span class="dz-t"><span class="dz-tt">${esc(x.t)}</span>${g?`<small>${ic(gIcon(g),11)}${esc(trS(g.title))}</small>`:''}</span><button class="dz-f" onclick="event.stopPropagation();dzFocusOn(${i})" aria-label="focus">${ic('clock',16)}</button><button class="dz-f dz-rm" onclick="event.stopPropagation();planRemove(${i})" aria-label="remove">${ic('x',15)}</button></div>`}).join('')}
   <div class="pbar" style="height:6px;margin-top:10px"><i style="width:${n?d/n*100:0}%"></i></div></div>`}
 function dzFocusOn(i){const p=dzPlan();const x=p&&p.top[i];if(!x)return;if(x.gid)S.timer.cat=x.gid;save();go('goals');setTimeout(()=>{const t=document.getElementById('tRing')||document.querySelector('.tring');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});toast(dzL('ركّز على: ','Focus on: ')+x.t,'clock')},200)}
 // ---------- never miss twice
@@ -3767,7 +3795,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=102;
+const APP_VERSION=103;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
