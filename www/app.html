@@ -1152,6 +1152,12 @@ html[dir=rtl] .obck-go svg{transform:scaleX(-1)}
 .emp2-art{width:96px;height:64px;background:#fff;border:1px solid #e6e6e6;border-radius:16px;display:grid;place-items:center;padding:6px}
 .emp2-art svg{width:100%;height:100%;fill:none;stroke:#111;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .emp2-art svg .f{fill:#111}.emp2-art svg .w{stroke:#fff;stroke-width:2}
+/* v128: diagrams follow the theme — soft accent-tinted card, lines in the text colour, filled shapes in the accent */
+.gd-art,.emp2-art{background:radial-gradient(130% 150% at 85% 0%,color-mix(in srgb,var(--a1) 22%,transparent),transparent 62%),radial-gradient(120% 140% at 0% 100%,color-mix(in srgb,var(--a2) 14%,transparent),transparent 60%),var(--s2)!important;border:1px solid var(--bd2)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+html.light .gd-art,html.light .emp2-art{background:radial-gradient(130% 150% at 85% 0%,color-mix(in srgb,var(--a1) 14%,transparent),transparent 62%),radial-gradient(120% 140% at 0% 100%,color-mix(in srgb,var(--a2) 10%,transparent),transparent 60%),#fff!important}html.cream .gd-art,html.cream .emp2-art{background:radial-gradient(130% 150% at 85% 0%,rgba(122,78,36,.14),transparent 62%),radial-gradient(120% 140% at 0% 100%,rgba(139,94,10,.10),transparent 60%),#FFFBF2!important}
+.gd-art svg,.emp2-art svg{stroke:var(--tx)!important;opacity:.95}.gd-art svg .f,.emp2-art svg .f{fill:var(--a1)!important;stroke:var(--a1)!important}.gd-art svg .w,.emp2-art svg .w{stroke:#fff!important;fill:none!important}.gd-art svg .a,.emp2-art svg .a{stroke:var(--a2)!important}
+.emp2-art{width:132px!important;height:88px!important;border-radius:20px!important;padding:10px!important}.emp2-art svg{stroke-width:3.2!important}
+@keyframes artIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}.emp2-art,.gd-art svg{animation:artIn .45s cubic-bezier(.2,.8,.2,1) both}
 .emp2 b{font-size:16px;font-weight:800;color:var(--tx)}
 .emp2 p{margin:0;font-size:14px;color:var(--mu);line-height:1.7}
 .emp2 .btn{margin-top:6px;min-width:140px}
@@ -1186,6 +1192,13 @@ body.reading #sbScrim,body.adkreading #sbScrim{display:none}
 /* v121: switch knob always reaches the end (a .btn min-width made .swb 64px wide while the knob stopped at 25px) */
 button.btn.swb{min-width:54px!important;max-width:54px!important;flex:none!important}
 .swb.on::after,input.sw:checked::after{inset-inline-start:calc(100% - 27px)!important}
+.pf{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:4px 0 14px}
+.pf-av{position:relative;width:104px;height:104px;border-radius:50%;padding:0;border:3px solid var(--bd2);background:none;overflow:visible;margin-bottom:6px}.pf-av>span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;color:#fff;font-weight:800;font-size:38px}
+.pf-cam{position:absolute;bottom:2px;inset-inline-end:2px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--a1);color:#fff;border:3px solid var(--bg);font-style:normal}
+.pf-n{font-size:22px;font-weight:900;color:var(--tx);line-height:1.5}.pf-s{font-size:14px;color:var(--mu)}
+.pf-st{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:10px}.pf-st span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:16px;background:var(--s1);border:1px solid var(--bd);color:var(--a1)}.pf-st b{font-size:18px;color:var(--tx)}.pf-st small{font-size:12px;color:var(--mu)}
+.pf-f{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mu);margin-top:4px}
+.pf-rows{display:flex;flex-direction:column;gap:8px}.pf-row{width:100%}
 .meav{width:44px;height:44px;border-radius:50%;padding:0;border:2px solid var(--bd2);background:none;overflow:hidden;flex:none}
 .meav span,.phprev span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;color:#fff;font-weight:800;font-size:15px}
 .phprev{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none;border:2px solid var(--bd2);cursor:pointer}
@@ -1207,7 +1220,7 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
 <section class="view on" id="v-today">
   <div class="top">
     <div class="greet"><p id="dateTxt"></p><h1 id="hello">Good morning</h1><button class="link nm-ask" id="nameAsk" onclick="setName()" style="display:none"></button></div>
-    <div class="hdr-btns"><div class="pill" id="ptsPill"></div><button class="iconbtn" onclick="go('settings')" data-i="settings" data-s="18"></button><button class="meav" id="meAv" onclick="photoMenu()" aria-label="Profile photo"></button></div>
+    <div class="hdr-btns"><div class="pill" id="ptsPill"></div><button class="iconbtn" onclick="go('settings')" data-i="settings" data-s="18"></button><button class="meav" id="meAv" onclick="profileOpen()" aria-label="Profile"></button></div>
   </div>
   <div class="hero">
     <div class="ring">
@@ -1804,6 +1817,10 @@ function dzSaveFields(G){const v=id=>{const e=document.getElementById(id);return
 
 // ===== v105 APP GUIDE (minimalist abstract line-art: straight lines + dots, black on white, no figures) =====
 const GD_SVG={
+ chat:'<rect x="26" y="18" width="96" height="46" rx="14"/><polyline points="44,64 40,80 60,64"/><line x1="44" y1="36" x2="100" y2="36"/><line x1="44" y1="48" x2="84" y2="48"/><rect x="82" y="56" width="92" height="44" rx="14" class="f"/><polyline points="156,100 160,112 142,100" class="f"/><line x1="100" y1="73" x2="156" y2="73" class="w"/><line x1="100" y1="85" x2="138" y2="85" class="w"/>',
+ goal:'<circle cx="92" cy="64" r="44"/><circle cx="92" cy="64" r="28" class="a"/><circle cx="92" cy="64" r="11" class="f"/><line x1="92" y1="64" x2="160" y2="18"/><polyline points="146,16 162,16 162,32"/><line x1="40" y1="112" x2="144" y2="112" stroke-dasharray="2 8"/>',
+ inbox:'<rect x="34" y="40" width="132" height="66" rx="12"/><polyline points="34,76 72,76 82,90 118,90 128,76 166,76"/><line x1="100" y1="10" x2="100" y2="52" class="a"/><polyline points="84,38 100,54 116,38" class="a"/><circle cx="100" cy="10" r="5" class="f"/>',
+ todo:'<rect x="40" y="16" width="120" height="92" rx="12"/><rect x="56" y="34" width="14" height="14" rx="4" class="f"/><polyline points="59,41 62,44 67,38" class="w"/><line x1="80" y1="41" x2="140" y2="41"/><rect x="56" y="58" width="14" height="14" rx="4"/><line x1="80" y1="65" x2="128" y2="65"/><rect x="56" y="82" width="14" height="14" rx="4" stroke-dasharray="3 4"/><line x1="80" y1="89" x2="114" y2="89" stroke-dasharray="3 6"/><circle cx="162" cy="102" r="16" class="f"/><line x1="162" y1="94" x2="162" y2="110" class="w"/><line x1="154" y1="102" x2="170" y2="102" class="w"/>',
  theme:'<rect x="28" y="26" width="40" height="68" rx="8" class="f"/><rect x="80" y="26" width="40" height="68" rx="8"/><rect x="132" y="26" width="40" height="68" rx="8"/><line x1="90" y1="44" x2="110" y2="44"/><line x1="90" y1="56" x2="104" y2="56"/><line x1="142" y1="44" x2="162" y2="44"/><line x1="142" y1="56" x2="156" y2="56"/><polyline points="38,62 46,70 58,52" class="w"/>',
  hello:'<polyline points="20,90 60,50 100,80 140,40 180,60"/><circle cx="20" cy="90" r="5" class="f"/><circle cx="60" cy="50" r="5" class="f"/><circle cx="100" cy="80" r="5" class="f"/><circle cx="140" cy="40" r="5" class="f"/><circle cx="180" cy="60" r="7"/>',
  route:'<polyline points="100,12 60,36 140,60 60,84 100,108" stroke-dasharray="2 7"/><circle cx="100" cy="12" r="8" class="f"/><circle cx="60" cy="36" r="8" class="f"/><circle cx="140" cy="60" r="8"/><circle cx="60" cy="84" r="8"/><circle cx="100" cy="108" r="8"/><polyline points="96,12 99,15 104,9" class="w"/><polyline points="56,36 59,39 64,33" class="w"/>',
@@ -2285,7 +2302,7 @@ function renderGoals(){
  let list=act.filter(g=>gFilter==='all'?(g.type!=='habit'&&!g.parent):g.type===gFilter);
  list.sort((x,y)=>(x.done-y.done)||((gDays(x)??9999)-(gDays(y)??9999)));
  document.getElementById('gList').innerHTML=list.length?list.map(g=>goalCard(g)+(g.type==='life'&&gFilter==='all'?`<div class="gsub">${S.goals.filter(k=>k.parent===g.id&&!k.archived).map(k=>goalCard(k,true)).join('')}</div>`:'')).join('')
-  :gFilter==='all'?emptyHtml('top3',dzL('مفيش أهداف','No goals yet'),dzL('هدف واحد واضح أحسن من عشرة.','One clear goal beats ten.'),dzL('+ هدف','+ Goal'),'openNewGoal()'):`<div class="card" style="text-align:center;padding:26px 16px"><span class="ico c-violet" style="width:56px;height:56px;border-radius:18px;display:grid;place-items:center;margin:0 auto">${ic('target',26,'draw')}</span><h3 style="justify-content:center;margin-top:12px">${gFilter==='all'?'No goals yet':'No '+F.find(f=>f[0]===gFilter)[1].toLowerCase()+' yet'}</h3><div class="sub">Tap + to add a project, habit, number target or life goal.</div><button class="btn" onclick="openNewGoal(${gFilter==='all'?'':`'${gFilter}'`})">${ic('plus',16)}New goal</button></div>`;
+  :gFilter==='all'?emptyHtml('goal',dzL('مفيش أهداف','No goals yet'),dzL('هدف واحد واضح أحسن من عشرة.','One clear goal beats ten.'),dzL('+ هدف','+ Goal'),'openNewGoal()'):`<div class="card" style="text-align:center;padding:26px 16px"><span class="ico c-violet" style="width:56px;height:56px;border-radius:18px;display:grid;place-items:center;margin:0 auto">${ic('target',26,'draw')}</span><h3 style="justify-content:center;margin-top:12px">${gFilter==='all'?'No goals yet':'No '+F.find(f=>f[0]===gFilter)[1].toLowerCase()+' yet'}</h3><div class="sub">Tap + to add a project, habit, number target or life goal.</div><button class="btn" onclick="openNewGoal(${gFilter==='all'?'':`'${gFilter}'`})">${ic('plus',16)}New goal</button></div>`;
  // focus timer
  const sel=document.getElementById('catSel');if(sel){sel.innerHTML=focusOptions()}
  document.getElementById('tReset').innerHTML=ic('rotate',18);document.getElementById('tAdjust').innerHTML=timerAdjustHtml();
@@ -2597,6 +2614,22 @@ function photoPaint(){const a=document.getElementById('meAv'),p=document.getElem
  if(b)b.textContent=ph?dzL('غيّر','Change'):dzL('اختار','Choose');if(t)t.textContent=ph?dzL('بتظهر في الرئيسية ولعيلتك','Shown on Today and to your family'):dzL('لسه ماحطّيتش صورة','No photo yet')}
 function photoMenu(){if(!S.photo){photoPick();return}openMenu(dzL('صورتك','Your photo'),[{k:'pick',label:dzL('اختار صورة تانية','Choose another photo'),icon:'image',c:'violet'},{k:'rm',label:dzL('شيل الصورة','Remove the photo'),icon:'trash',c:'red'}],k=>{if(k==='pick')photoPick();else askConfirm(dzL('تشيل صورتك؟ هيرجع يظهر أول حرف من اسمك.','Remove your photo? Your initials will show instead.'),dzL('شيل','Remove'),()=>{S.photo='';save();photoDone()},1)})}
 function photoPick(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{try{const n=Math.min(im.naturalWidth,im.naturalHeight),c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,(im.naturalWidth-n)/2,(im.naturalHeight-n)/2,n,n,0,0,160,160);S.photo=c.toDataURL('image/jpeg',.82);save();photoDone();toast(dzL('صورتك اتحطت','Photo updated'),'user')}catch(e){toast(dzL('ماقدرناش نقرا الصورة','Couldn’t read that image'),'alert')}URL.revokeObjectURL(u)};im.onerror=()=>{URL.revokeObjectURL(u);toast(dzL('ماقدرناش نقرا الصورة','Couldn’t read that image'),'alert')};im.src=u};i.click()}
+// v128 (Ahmed: «When I click B make a pop-up with details and an option to upload a pic, not upload direct»)
+function profileOpen(){const P=document.getElementById('askPanel'),ph=S.photo,lv=level(),tt=titleOf(lv),fam=S.famId&&FAM.family&&FAM.family.name;
+ const av=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${S.color||'#8A5A2B'}">${esc(initials(S.name||'?'))}</span>`;
+ const row=(fn,icon,c,t,sub,red)=>`<button class="fsel pf-row" onclick="${fn}"><span class="ico c-${c}">${ic(icon,18)}</span><span class="fs-t"><b${red?' style="color:var(--red)"':''}>${t}</b>${sub?`<small>${sub}</small>`:''}</span></button>`;
+ P.innerHTML=`<div class="pf"><button class="pf-av" onclick="closeAsk();setTimeout(photoPick,250)" aria-label="photo">${av}<i class="pf-cam">${ic('image',15)}</i></button>
+ <b class="pf-n notr">${esc(S.name||dzL('من غير اسم','No name yet'))}</b><div class="pf-s">${dzL('مستوى '+lv+'، '+tt.adv,'Level '+lv+', '+tt.adv)}</div>
+ <div class="pf-st"><span>${ic('star',15)}<b>${S.points||0}</b><small>${dzL('نقطة','points')}</small></span><span>${ic('flame',15)}<b>${streak()}</b><small>${dzL('يوم ورا بعض','day streak')}</small></span><span>${ic('trophy',15)}<b>${lv}</b><small>${dzL('المستوى','level')}</small></span></div>
+ ${fam?`<div class="pf-f">${ic('users',14)}${dzL('في عيلة «'+esc(fam)+'»','In the family «'+esc(fam)+'»')}</div>`:''}</div>
+ <div class="pf-rows">${row("closeAsk();setTimeout(photoPick,250)",'image','violet',ph?dzL('غيّر الصورة','Change photo'):dzL('ضيف صورة','Add a photo'),dzL('من معرض الصور','From your gallery'))}
+ ${ph?row("photoRmAsk()",'trash','red',dzL('شيل الصورة','Remove photo'),'',1):''}
+ ${row("closeAsk();setTimeout(setName,250)",'pen','blue',dzL('عدّل الاسم','Edit name'),dzL('بيظهر في التحية ولعيلتك','Shown in the greeting and to your family'))}
+ ${row("closeAsk();go('family')",'users','pink',dzL('العيلة','Family'),fam?esc(fam):dzL('اعمل مجموعة أو انضم لواحدة','Create or join one'))}
+ ${row("closeAsk();go('settings')",'settings','teal',dzL('الإعدادات','Settings'),'')}</div>
+ <button class="btn ghost" style="width:100%;margin-top:6px" onclick="closeAsk()">${dzL('قفل','Close')}</button>`;
+ document.getElementById('askSheet').classList.add('on')}
+function photoRmAsk(){askConfirm(dzL('تشيل صورتك؟ هيرجع يظهر أول حرف من اسمك.','Remove your photo? Your initials will show instead.'),dzL('شيل','Remove'),()=>{S.photo='';save();photoDone()},1)}
 function photoDone(){photoPaint();if(S.famId&&typeof publishMe==='function')publishMe().then(()=>{try{renderFamily()}catch(e){}});try{render()}catch(e){}}
 function nameRow(){try{photoPaint()}catch(e){}const p=document.getElementById('nameSub'),b=document.getElementById('nameBtn'),ar=S.lang==='ar';if(p)p.textContent=S.name?(ar?S.name+'، بيظهر في التحية ولعيلتك':S.name+' · shown in the greeting and to your family'):(ar?'لسه ماكتبتش اسمك. اكتبه عشان التحية وعيلتك':'You haven’t added your name yet');if(b)b.textContent=S.name?(ar?'تعديل':'Edit'):(ar?'أضف اسمك':'Add name')}
 function openCity(){document.getElementById('cityList').innerHTML=CITIES.map(c=>`<button class="edit-row" style="${c[0]===S.city?'border-color:var(--a1)':''}" onclick="pickCity('${c[0]}')"><span class="ico ${c[0]===S.city?'c-green':'c-violet'}">${ic(c[0]===S.city?'check':'pin',18)}</span><b style="flex:1">${c[0]}</b></button>`).join('');document.getElementById('citySheet').classList.add('on')}
@@ -3155,7 +3188,7 @@ function renderTasks(){const el=document.getElementById('tdBody');if(!el)return;
  let h=`<button class="fsel" onclick="tdMenu()"><span class="ico c-${V.c}">${ic(V.i,20)}</span><span class="fs-t"><small>${L('القائمة','List')} · ${S.lang==='ar'?arNum(items.length):items.length}</small><b>${esc(V.n)}</b></span><span class="fs-c">${ic('chevron',18)}</span></button>
  <div class="td-modes">${[['list',L('قائمة','List'),'list'],['board',L('لوحة','Board'),'columns'],['mx',L('الأولويات','Matrix'),'target'],['cal',L('تقويم','Calendar'),'calendar']].map(([k,n,i])=>`<button class="${tdMode===k?'on':''}" onclick="tdMode='${k}';renderTasks()">${ic(i,16)}${n}</button>`).join('')}</div>
  <div class="td-add"><input id="tdIn" placeholder="${L('أضف مهمة… مثال: اتصل بعلي بكرة ٥م #شغل !٢','Add a task… e.g. Call Ali tomorrow 5pm #work !2')}" onkeydown="if(event.key==='Enter')tdQuickAdd()"><button class="btn" onclick="tdQuickAdd()" aria-label="add">${ic('plus',18)}</button></div>`;
- if(tdMode==='list'){if(!items.length)h+=V.k==='done'?`<div class="empty">${ic('check',22)}<p>${L('لسه مافيش مهام خلصت','Nothing completed yet')}</p></div>`:emptyHtml('tasks',L('مفيش مهام','No tasks'),L('اكتب أول حاجة في دماغك.','Write the first thing on your mind.'),L('+ مهمة','+ Task'),"const i=document.getElementById('tdIn');if(i){i.scrollIntoView({block:'center'});i.focus()}");
+ if(tdMode==='list'){if(!items.length)h+=V.k==='done'?`<div class="empty">${ic('check',22)}<p>${L('لسه مافيش مهام خلصت','Nothing completed yet')}</p></div>`:emptyHtml('todo',L('مفيش مهام','No tasks'),L('اكتب أول حاجة في دماغك.','Write the first thing on your mind.'),L('+ مهمة','+ Task'),"const i=document.getElementById('tdIn');if(i){i.scrollIntoView({block:'center'});i.focus()}");
   else if(V.k==='week'||V.k==='all'){const g={};items.forEach(x=>{const k=x.due?(x.due<today()?'ov':x.due):'none';(g[k]=g[k]||[]).push(x)});Object.keys(g).sort((a,b)=>a==='ov'?-1:b==='ov'?1:a==='none'?1:b==='none'?-1:a<b?-1:1).forEach(k=>{h+=`<div class="td-h">${k==='ov'?L('متأخرة','Overdue'):k==='none'?L('بدون تاريخ','No date'):tdDueTxt({due:k})}<i>${g[k].length}</i></div>`+g[k].map(tdRow).join('')})}
   else h+=items.map(tdRow).join('')}
  else if(tdMode==='board'){const all=TD().items.filter(x=>V.k==='done'?true:tdIn(V.k,x)||(x.status==='done'&&tdIn(V.k,{...x,status:'todo'}))).sort(tdSort);
@@ -3767,7 +3800,7 @@ let _usr=null,_usrAt=0;function usrSet(){const n=Date.now();if(_usr&&n-_usrAt<40
   Object.values(S.plan||{}).forEach(p=>((p&&p.top)||[]).forEach(x=>a(x.t)));(S.tasks||[]).forEach(t=>{if(t.own)a(t.name);(t.subs||[]).forEach(y=>a(y.t||y.name))});a(S.name)}catch(e){}_usrAt=n;return _usr=u}
 function trS(x){if(typeof x==='string'&&usrSet().has(x.trim()))return x;return trS0(x)}
 function trS0(x){if(AR[x])return AR[x];{const y=x.replace(/←/g,'→');if(y!==x&&AR[y])return AR[y].replace(/→/g,'←')}for(const [re,f] of AR_PAT){const m=x.match(re);if(m){const r=f(m);if(r!=null)return r}}return x.replace(/\b(\d{1,2}:\d\d) (AM|PM)\b/g,(a,t,ap)=>t+' '+(ap==='AM'?'ص':'م'))}
-const AR_SKIP='.bub,.idea .t,textarea,#recTxt,.code,.ar,.ar2,#jBody .jtext,script,style';
+const AR_SKIP='.bub,.idea .t,textarea,#recTxt,.code,.ar,.ar2,#jBody .jtext,.notr,script,style';
 function arSep(x){return typeof x==='string'?latD(S.lang==='ar'?x.replace(/ ?· ?/g,'، ').replace(/، $/,''):x):x}
 function arSepN(o){if(S.lang==='ar'&&o&&o.notifications)o.notifications.forEach(n=>{n.title=arSep(n.title);n.body=arSep(n.body)});return o}
 function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(p&&/[٠-٩۰-۹٪]/.test(root.nodeValue)&&!p.closest('.mushaf,.qreader,.qr-inner,.qtext,.adk-t,.adkr-t,.bub,textarea,script,style'))root.nodeValue=latD(root.nodeValue);if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue,o=raw;if(raw.includes('→'))raw=raw.replace(/→/g,'←');const t=raw.trim();if(t&&/[A-Za-z]/.test(t)){const r=trS(t);if(r!==t)raw=raw.replace(t,r)}if(/[٠-٩۰-۹٪]/.test(raw)&&!p.closest('.mushaf,.qreader,.qr-inner,.ayah,.q-text,.qtext'))raw=latD(raw);if(/\d%/.test(raw)&&!raw.includes('\u2066')&&/[\u0600-\u06FF]/.test(raw))raw=raw.replace(/(\d+(?:\.\d+)?%)/g,'\u2066$1\u2069');if(raw.includes('·')&&(!/[A-Za-z]{3}/.test(raw.replace(/pts|AM|PM/g,''))||/[\u0600-\u06FF]/.test(raw))&&!p.closest('.mushaf,.qreader,.qr-inner'))raw=raw.trim()==='·'?raw.replace('·','،'):raw.replace(/ ?· ?/g,'، ');if(raw!==o)root.nodeValue=raw;return}
@@ -4381,7 +4414,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=127;
+const APP_VERSION=128;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4735,7 +4768,7 @@ function renderChat(scroll){const C=CHATS[curChat];if(!C)return;const box=docume
   const counts={};Object.values(m.re||{}).forEach(e=>counts[e]=(counts[e]||0)+1);
   const ticks=me?(g?ic('check',12,'',2.4):(otherRead>=ms?`<span style="color:#A5F3FC;display:flex">${ic('check',12,'',2.4)}${ic('check',12,'',2.4)}</span>`:ic('check',12,'',2.4))):'';
   h+=`<div class="mrow ${me?'me':'them'} ${cont?'cont':''}">${!me&&g?(cont?'<span style="width:30px;flex:none"></span>':av(mem,'sm')):''}<div class="bub selok ${big?'big':''}" onclick="if(!(getSelection()+''))openRbar(event,'${m.id}')">${!me&&g&&!cont?`<div class="who" style="color:${mem.color}">${esc(nameOf(m.from))}</div>`:''}${esc(m.t)}<span class="tm">${new Date(ms).toLocaleTimeString(LOC(),{hour12:true,hour:'numeric',minute:'2-digit'})}${ticks}</span>${Object.keys(counts).length?`<div class="reacts">${Object.entries(counts).map(([e,n])=>`<span>${e}${n>1?' '+n:''}</span>`).join('')}</div>`:''}</div></div>`;prev=m});
- box.innerHTML=h||(emptyHtml('family',dzL('مفيش رسايل','No messages yet'),dzL('قول صباح الخير للعيلة. كل الرسايل مشفّرة.','Say good morning to the family. Every message is encrypted.'),dzL('اكتب','Write'),"document.getElementById('cinput').focus()"));
+ box.innerHTML=h||(emptyHtml('chat',dzL('مفيش رسايل','No messages yet'),dzL('قول صباح الخير للعيلة. كل الرسايل مشفّرة.','Say good morning to the family. Every message is encrypted.'),dzL('اكتب','Write'),"document.getElementById('cinput').focus()"));
  if(scroll||atBottom)box.scrollTop=box.scrollHeight}
 async function sendMsg(){const inp=document.getElementById('cinput'),t=inp.value.trim();if(!t||!curChat)return;const cid=curChat,key=await keyFor(cid);if(!key){toast('Private chat not ready yet: '+nameOf(otherOf(cid))+' must open the app once','lock');return}
  inp.value='';inp.style.height='auto';inp.focus();
@@ -4806,7 +4839,7 @@ function renderFamily(){
   <div class="tabs2"><button class="${famView==='tasks'?'on':''}" onclick="famView='tasks';renderFamily()">${'Tasks'}${FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length?' ('+FAM.tasks.filter(t=>forMe(t)&&t.status==='open').length+')':''}</button><button class="${famView==='chats'?'on':''}" onclick="famView='chats';renderFamily()">Chats${Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)?' ('+Object.keys(CHATS).reduce((a,c)=>a+unreadOf(c),0)+')':''}</button></div>
   ${famView==='chats'?chatListHtml():`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${Object.entries(FTYPES).map(([k,[n,i,c]])=>`<button class="card" style="margin:0;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700" onclick="openSend(null,'${k}')"><span class="ico c-${c}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center">${ic(i,18)}</span>${n}</button>`).join('')}</div>
   <div class="tabs2"><button class="${!isSent?'on':''}" onclick="famTab='mine';renderFamily()">For me${openMine.length?' ('+openMine.length+')':''}</button><button class="${famTab==='sent'?'on':''}" onclick="famTab='sent';renderFamily()">Sent by me</button>${famIsAdmin()?`<button class="${isAll?'on':''}" onclick="famTab='all';renderFamily()">${dzL('الكل','All')}</button>`:''}</div>
-  ${list.length?list.map(row).join(''):(isSent?`<div class="empty">${T('Tasks you send will show here with their status.')}</div>`:emptyHtml('family',dzL('لسه مفيش مهام','No tasks yet'),dzL('لما عيلتك تبعتلك حاجة، هتظهر هنا على طول.','When your family sends you something, it appears here instantly.')))}`}
+  ${list.length?list.map(row).join(''):(isSent?`<div class="empty">${T('Tasks you send will show here with their status.')}</div>`:emptyHtml('inbox',dzL('لسه مفيش مهام','No tasks yet'),dzL('لما عيلتك تبعتلك حاجة، هتظهر هنا على طول.','When your family sends you something, it appears here instantly.')))}`}
   <div class="card" style="margin-top:18px"><h3><span class="ico c-blue">${ic('user',18)}</span><span class="sp">My profile</span></h3><label>Name</label><input id="pfName" value="${esc(S.name||'')}" placeholder="${S.lang==='ar'?'مثال: أحمد':'e.g. Ahmed'}" oninput="this.classList.remove('need')"><div class="sub nm-hint">${S.lang==='ar'?'ده نفس اسمك في الإعدادات والتحية، لو غيّرته هنا هيتغيّر هناك':'Same name as in Settings and the greeting; change it here and it changes there'}</div><label>Color</label>${colorPicker()}
    <button class="btn" style="width:100%;margin-top:20px" onclick="updateProfile()">Save</button><button class="fam-leave" onclick="famLeaveAsk()">${dzL('مغادرة العائلة','Leave family')}</button></div>`;
 }
