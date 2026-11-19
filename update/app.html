@@ -16,7 +16,7 @@
 @font-face{font-family:Amiri;font-weight:700;font-display:swap;src:url(fonts/amiri-arabic-700-normal.woff2) format('woff2')}
 :root{
  --bg:#0A0D17;--s1:rgba(255,255,255,.045);--s2:rgba(255,255,255,.075);--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.14);
- --tx:#F1F4FB;--mu:#8A93A8;--a1:#7C5CFF;--a2:#22D3EE;--ok:#34D399;--gold:#FBBF24;--pink:#F472B6;--red:#FB7185;
+ --tx:#F1F4FB;--mu:#A3ABBE;--a1:#8D72FF;--a2:#22D3EE;--ok:#34D399;--gold:#FBBF24;--pink:#F472B6;--red:#FB7185;
  --grad:linear-gradient(135deg,#6D4AE8,#0E7490);--r:22px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -915,8 +915,8 @@ html.light .dp-n.up{--nc:#e3e6ef;--ns:#c6cbd8;color:#7a8299}
 .g-badge{position:relative;flex:none;width:68px;height:68px;border-radius:22px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#f5b628,#f97316);box-shadow:0 6px 0 #b45309,0 10px 20px rgba(0,0,0,.3)}
 .g-badge svg{position:absolute;top:-14px;color:#fde68a;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}.g-badge b{font-size:26px;font-weight:900}
 .g-lt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.g-lt small{font-size:12px;color:var(--mu)}.g-lt b{font-size:17px;font-weight:900}.g-lt b span{color:#fbbf24}
-html.light .g-badge{background:linear-gradient(135deg,#B45309,#9A3412);box-shadow:0 6px 0 #7C2D12,0 10px 20px rgba(0,0,0,.18)}html.light .g-lt b span{color:var(--gold)}
-html.light .td-pri button{color:var(--tx)}html.light .td-pri button svg{color:var(--pc)}html.light .td-pri button.on{background:var(--s2)}
+.g-badge{background:linear-gradient(135deg,#B45309,#9A3412)!important;box-shadow:0 6px 0 #7C2D12,0 10px 20px rgba(0,0,0,.18)!important}html.light .g-lt b span{color:var(--gold)}
+.td-pri button{color:var(--tx)!important}.td-pri button svg{color:var(--pc)}html.light .td-pri button.on{background:var(--s2)}
 html.light .dz-big small{color:var(--mu)!important;-webkit-text-fill-color:var(--mu)!important;background:none!important}
 .g-xp,.gq-bar{height:9px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}.g-xp i,.gq-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#22d3ee,#7c5cff)}
 html[dir=rtl] .g-xp i,html[dir=rtl] .gq-bar i{margin-left:auto;background:linear-gradient(270deg,#22d3ee,#7c5cff)}
@@ -1086,7 +1086,7 @@ body.guiding .nav,body.guiding .fab,body.guiding #pcPill{display:none!important}
 body.lifeon #pcPill{display:none!important}
 .life-sec{margin-bottom:12px}.life-sec .dz-ph .link{font-size:14px}
 .life-chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.life-chips button{display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:12px;border:1px solid var(--bd2);font-size:14px;color:var(--tx);min-height:40px}
-.life-chips button.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.life-chips button.on{background:#047857;border-color:#047857;color:white}
 .life-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:15px;flex-wrap:wrap}
 .life-step{display:flex;align-items:center;gap:10px}.life-step button{width:40px;height:40px;border-radius:12px;border:1px solid var(--bd2);font-size:20px;color:var(--tx)}.life-step b{min-width:70px;text-align:center}
 .life-mini small{color:var(--mu);font-size:12px}.life-7{grid-template-columns:repeat(7,1fr)!important}
@@ -3047,7 +3047,6 @@ function mushafHtml(){if(!QD){quranData().then(()=>{if(fTab==='mushaf')renderFai
 function quranIndexHtml(){const P=qPos(),q=qSearch.trim();const list=SURAH_AR.map((n,i)=>[i+1,n]).filter(([i,n])=>!q||n.includes(q)||String(i)===q);
  return `<button class="card q-cont" onclick="openPage(${P.lp||pageOf(P.s,P.a)})"><span class="ico c-green">${ic('book',20)}</span><span style="flex:1;text-align:start"><b>${T('Continue reading')}</b><i>${T('Page')} ${P.lp||pageOf(P.s,P.a)} · ${SURAH_AR[(qPages()[P.lp||pageOf(P.s,P.a)][0][0])-1]}</i></span>${ic('chevron',16)}</button>
  ${qWirdHtml()}${qBmHtml()}
- <div class="q-juz">${Array.from({length:30},(_,k)=>`<button onclick="openJuz(${k+1})">${k+1}</button>`).join('')}</div>
  <input class="q-srch" placeholder="${T('Search surah name or number')}" value="${esc(qSearch)}" oninput="qSearch=this.value;const b=document.getElementById('qList');if(b)b.innerHTML=qListHtml()">
  <div id="qList">${qListHtml()}</div><div class="sub" style="text-align:center;margin-top:10px;font-size:11px">${T('Text: Madinah Mushaf (Hafs), King Fahd Glorious Quran Printing Complex')}</div>`}
 // v124 Mushaf extras: surah list grouped by juz, today's wird from the khatma plan, saved places list
@@ -4421,7 +4420,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=130;
+const APP_VERSION=131;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
