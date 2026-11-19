@@ -17,7 +17,7 @@
 :root{
  --bg:#0A0D17;--s1:rgba(255,255,255,.045);--s2:rgba(255,255,255,.075);--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.14);
  --tx:#F1F4FB;--mu:#8A93A8;--a1:#7C5CFF;--a2:#22D3EE;--ok:#34D399;--gold:#FBBF24;--pink:#F472B6;--red:#FB7185;
- --grad:linear-gradient(135deg,#7C5CFF,#22D3EE);--r:22px;
+ --grad:linear-gradient(135deg,#6D4AE8,#0E7490);--r:22px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)!important}body{background:transparent!important}
@@ -294,7 +294,7 @@ select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--bd);color:va
 .mrow{display:flex;margin:2px 0;gap:8px;align-items:flex-end}.mrow.me{justify-content:flex-end}
 .bub{max-width:78%;padding:8px 12px 6px;border-radius:18px;font-size:15px;line-height:1.4;position:relative;word-wrap:break-word;white-space:pre-wrap;cursor:pointer;animation:pop .25s}
 .mrow.them .bub{background:#1C2236;border-bottom-left-radius:6px}
-.mrow.me .bub{background:linear-gradient(135deg,#6D4EF5,#2BB8E0);border-bottom-right-radius:6px;color:#fff}
+.mrow.me .bub{background:var(--grad);border-bottom-right-radius:6px;color:#fff}
 .mrow.cont.them .bub{border-top-left-radius:6px}.mrow.cont.me .bub{border-top-right-radius:6px}
 .bub .who{font-size:12px;font-weight:800;margin-bottom:2px}
 .bub .tm{font-size:10.5px;opacity:.65;float:right;margin:6px 0 -2px 10px;display:flex;gap:3px;align-items:center}
@@ -532,7 +532,7 @@ html[dir=ltr] .kh-fill{right:auto;left:0}html[dir=ltr] .kh-track i,html[dir=ltr]
 .kh-today{height:10px;border-radius:99px;background:var(--s2);margin:12px 0 4px;overflow:hidden}.kh-today i{display:block;height:100%;background:linear-gradient(270deg,#34D399,#22D3EE);border-radius:99px;margin-inline-start:0}
 html[dir=rtl] .kh-today i{margin-right:0;margin-left:auto}
 .kh-plans{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.kh-plans button{display:flex;flex-direction:column;align-items:center;padding:10px 2px;border-radius:14px;background:var(--s1);border:1px solid var(--bd)}.kh-plans b{font-size:18px;font-weight:800}.kh-plans i{font-style:normal;font-size:10.5px;color:var(--mu)}.kh-plans small{font-size:10px;color:var(--a2);font-weight:700;margin-top:2px}.kh-plans button.on{background:linear-gradient(135deg,rgba(124,92,255,.3),rgba(34,211,238,.12));border-color:var(--a1)}
-html.light .kh-juz button.c{color:var(--a1)}
+html.light .kh-juz button.c{color:var(--tx);border-color:var(--a1)}
 /* Ayah-style page */
 .qreader{position:fixed;background:#FFFBF3;padding:calc(env(safe-area-inset-top) + 6px) 8px calc(max(env(safe-area-inset-bottom),10px) + 4px)}
 .qreader .qr-top{padding:0 6px}.qreader .qr-t b{color:#A9875A;font-family:inherit;font-weight:800;font-size:15px}.qreader .qr-t i{color:#A9875A;font-weight:700}
@@ -594,6 +594,11 @@ body.reading .toast,html.light body.reading .toast,html.glass body.reading .toas
 body.reading .toast.on{box-shadow:0 12px 30px rgba(60,40,10,.45)!important}
 body.reading .toast .ico{background:#A9875A!important;color:#fff!important}
 body.reading .toast *{color:inherit}
+/* v126 UX: toasts appear at the bottom above the nav so page titles stay visible; they stay on top while a sheet, reader or guide is open */
+body:not(.sheet-open):not(.reading):not(.adkreading):not(.guiding):not(:has(#chatScreen.on)) .toast{top:auto;bottom:calc(env(safe-area-inset-bottom) + 100px)}
+body:not(.sheet-open):not(.reading):not(.adkreading):not(.guiding):not(:has(#chatScreen.on)) .toast:not(.on){transform:translate(-50%,calc(100% + env(safe-area-inset-bottom) + 120px))}
+html.glass.light .toast{background:rgba(255,255,255,.94)}html.glass:not(.light) .toast{background:rgba(24,28,46,.94)}
+.fab{background:var(--grad)!important;box-shadow:0 10px 26px rgba(0,0,0,.28)!important}
 
 /* v40 six-item nav */
 .nav button{white-space:nowrap;min-width:0;font-size:10px;padding:7px 2px}.nav button span{display:flex}
@@ -3446,7 +3451,7 @@ function openIdeas(){ideaBack=(document.querySelector('.view.on')||{}).id?.slice
 const mmss=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 function renderIdeas(){const el=document.getElementById('ideasBody');if(!el)return;const open=S.ideas.filter(i=>!i.done).sort((a,b)=>b.at-a.at),done=S.ideas.filter(i=>i.done).sort((a,b)=>b.at-a.at);
  const row=i=>`<div class="idea ${i.done?'done':''}" onclick="openIdea('${i.id}')"><span class="ico ${i.aud&&i.aud.length?'c-pink':'c-amber'}" style="width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none">${ic(i.aud&&i.aud.length?'mic':'lightbulb',17)}</span><div style="flex:1;min-width:0"><div class="t">${i.text?esc(i.text.length>140?i.text.slice(0,140)+'…':i.text):'<span style="color:var(--mu)">Voice note · tap to add text</span>'}</div><div class="m">${ago(i.at)}${i.dur?' · '+ic('mic',11)+mmss(i.dur):''}${i.to?' · → '+esc(i.to):''}</div></div>${ic('chevron',16)}</div>`;
- el.innerHTML=`<button class="btn wide" onclick="startRec()" style="margin-bottom:16px;background:linear-gradient(135deg,#E11D48,#DB2777)">${ic('mic',18)}Record an idea</button>
+ el.innerHTML=`<button class="btn wide" onclick="startRec()" style="margin-bottom:16px">${ic('mic',18)}Record an idea</button>
  <div class="sec"><h3>${ic('lightbulb',18)}To sort · ${open.length}</h3></div>${open.map(row).join('')||'<div class="empty">Nothing here. Tap the mic and say whatever is on your mind.</div>'}
  ${done.length?`<div class="sec" style="margin-top:16px"><h3>${ic('check',18)}Sorted · ${done.length}</h3></div>${done.slice(0,30).map(row).join('')}`:''}`}
 function addIdeaText(){const i=document.getElementById('ideaTxt'),v=i.value.trim();if(!v)return;S.ideas.push({id:uid(),at:Date.now(),text:v,aud:[]});i.value='';addPts(2,'Idea captured','lightbulb');renderIdeas()}
@@ -4238,9 +4243,9 @@ async function renderReview(){const el=document.getElementById('revBody');if(!el
  const fh=sumF(focus)/60,avg=act?Math.round(sum/act):0;
  let jl=[];try{if(!(jLocked()&&!JKEY))jl=(jCache||await loadEntries()).filter(e=>e.date>=keyOf(a)&&e.date<=keyOf(b))}catch(e){}
  const moods=jl.map(e=>e.mood??3);
- const col=p=>p<=0?'rgba(255,255,255,.05)':`rgba(52,211,153,${.18+p/100*.75})`;
+ const col=p=>p<=0?'var(--bd)':`rgba(52,211,153,${.18+p/100*.75})`;
  let heat='';
- if(revMode==='week'){heat=`<div class="heat" style="grid-template-columns:repeat(7,1fr)">${days.map(k=>{const p=pctOf(k);return`<i style="background:${col(p)};aspect-ratio:.8;border-radius:10px;flex-direction:column;gap:2px;display:flex;align-items:center;justify-content:center"><span>${new Date(k+'T12:00').toLocaleDateString(LOC(),{weekday:'narrow'})}</span><b style="color:#fff;font-size:11px">${k>tk?'':p+'%'}</b></i>`}).join('')}</div>`}
+ if(revMode==='week'){heat=`<div class="heat" style="grid-template-columns:repeat(7,1fr)">${days.map(k=>{const p=pctOf(k);return`<i style="background:${col(p)};aspect-ratio:.8;border-radius:10px;flex-direction:column;gap:2px;display:flex;align-items:center;justify-content:center"><span>${new Date(k+'T12:00').toLocaleDateString(LOC(),{weekday:'narrow'})}</span><b style="color:${p>=55?'#fff':'var(--tx)'};font-size:11px">${k>tk?'':p+'%'}</b></i>`}).join('')}</div>`}
  else if(revMode==='month'){const pad=(new Date(days[0]+'T12:00').getDay()+1)%7;heat=`<div class="heat" style="grid-template-columns:repeat(7,1fr)">${['S','S','M','T','W','T','F'].map(x=>`<i style="background:none;aspect-ratio:auto">${x}</i>`).join('')}${'<i style="background:none"></i>'.repeat(pad)}${days.map(k=>`<i style="background:${k>tk?'rgba(255,255,255,.02)':col(pctOf(k))};${k===tk?'outline:2px solid var(--a1)':''}">${+k.slice(8)}</i>`).join('')}</div>`}
  else{const yd=revMode==='year'?days:days.slice(-371);const pad=(new Date(yd[0]+'T12:00').getDay()+1)%7;heat=`<div class="heat year" style="grid-template-columns:repeat(${Math.ceil((yd.length+pad)/7)},1fr)">${'<i style="background:none"></i>'.repeat(pad)}${yd.map(k=>`<i style="background:${k>tk?'rgba(255,255,255,.02)':col(pctOf(k))}" title="${k}"></i>`).join('')}</div><div class="meta" style="justify-content:flex-end;margin-top:6px">Less <i style="width:10px;height:10px;border-radius:2px;background:${col(0)};display:inline-block"></i><i style="width:10px;height:10px;border-radius:2px;background:${col(50)};display:inline-block"></i><i style="width:10px;height:10px;border-radius:2px;background:${col(100)};display:inline-block"></i> More</div>`}
  // focus chart buckets
