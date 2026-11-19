@@ -4439,7 +4439,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=134;
+const APP_VERSION=135;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4701,7 +4701,7 @@ function saveAlias(id){S.aliases=S.aliases||{};const v=document.getElementById('
 function openExt(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
 // v130 (Ahmed: «Why does invite share to WhatsApp only?»): use the phone's share sheet (any app), fall back to copying
 async function shareInvite(){const ar=S.lang==='ar',link=JOIN_URL+'#'+S.famCode.replace(/-/g,'');
- const txt=ar?`انضم لعيلتنا على يومي 🤍\nاضغط على اللينك وهتدخل العيلة على طول:\n${link}`:`Join our family on Yawmi 🤍\nTap the link to join right away:\n${link}`;
+ const txt=ar?`انضم لعيلتنا على يومي 🤍\nاضغط على اللينك وهتدخل العيلة على طول:\n${link}\n\nلو اللينك مافتحش، الكود: ${S.famCode}`:`Join our family on Yawmi 🤍\nTap the link to join right away:\n${link}\n\nIf the link doesn't open, the code is: ${S.famCode}`;
  try{if(IS_NATIVE&&SHP){await SHP.share({title:ar?'دعوة لعيلة يومي':'Yawmi family invite',text:txt,dialogTitle:ar?'ابعت الدعوة':'Send the invite'});return}}catch(e){if(/cancel/i.test(String(e&&e.message||e)))return}
  try{if(navigator.share){await navigator.share({text:txt});return}}catch(e){if(e&&e.name==='AbortError')return}
  copyTxt(txt)}
