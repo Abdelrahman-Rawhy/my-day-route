@@ -123,7 +123,7 @@ html[dir=rtl] .quote .en{display:none}html[dir=rtl] .hero h2,html[dir=rtl] .hero
 .rect{text-align:center;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}.wave{display:flex;gap:3px;align-items:center;justify-content:center;height:40px;margin:6px 0}.wave i{width:4px;border-radius:2px;background:var(--red);height:6px;transition:height .1s}
 .idea{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}.idea .t{flex:1;font-size:14px;line-height:1.45}.idea .m{font-size:11px;color:var(--mu);margin-top:4px;display:flex;gap:8px;align-items:center}.idea.done{opacity:.6}
 .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.acts button{padding:12px 8px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:inherit;font-weight:700;font-size:13px;display:flex;gap:8px;align-items:center;justify-content:center}
-.pick{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:40vh;overflow:auto}
+.pick{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .fbar{display:flex;gap:8px;margin:0 0 12px}.fbar button{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--tx,#fff)}.fbar button .ico{width:32px;height:32px;border-radius:11px;display:grid;place-items:center}
 .occ{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(52,211,153,.14),rgba(34,211,238,.08));border:1px solid rgba(52,211,153,.3);border-radius:18px;padding:12px 14px;margin-bottom:10px}.occ .ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none}.occ b{display:block;font-size:14px}.occ p{margin:2px 0 0;font-size:12px;color:var(--mu)}.occ .btn{padding:8px 12px;font-size:12px;white-space:nowrap}
 .ram{background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(251,191,36,.12));border:1px solid rgba(251,191,36,.35);border-radius:22px;padding:16px;margin-bottom:12px}.ram .big{font-size:30px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}.ram .tg{display:flex;gap:8px;margin-top:12px}.ram .tg button{flex:1;padding:10px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);color:inherit;font-weight:700;font-size:12px;display:flex;gap:6px;align-items:center;justify-content:center}.ram .tg button.on{background:var(--ok);border-color:var(--ok);color:#06281c}
@@ -4465,7 +4465,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=137;
+const APP_VERSION=138;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -5035,9 +5035,11 @@ document.addEventListener('animationend',e=>{if(e.animationName==='sheetUp'&&e.t
 (()=>{let P=null,y0=0,dy=0,t0=0,ok=false;
  document.addEventListener('touchstart',e=>{const p=e.target.closest&&e.target.closest('.sheet.on .panel');if(!p||e.touches.length>1){P=null;return}
   if(e.target.closest('input,textarea,select,.tp-g,.cal-g,.st-grip,#stepList .t'))  {P=null;return}
-  P=p;y0=e.touches[0].clientY;dy=0;t0=Date.now();ok=p.scrollTop<=0},{passive:true});
+  // v138: a scrollable list inside the sheet scrolls first; the sheet only drags down once that list is at its top
+  let sc=null;for(let n=e.target;n&&n!==p;n=n.parentElement){if(n.scrollHeight>n.clientHeight+2){const o=getComputedStyle(n).overflowY;if(o==='auto'||o==='scroll'){sc=n;break}}}
+  P=p;P._sc=sc;y0=e.touches[0].clientY;dy=0;t0=Date.now();ok=p.scrollTop<=0&&(!sc||sc.scrollTop<=0)},{passive:true});
  document.addEventListener('touchmove',e=>{if(!P)return;const y=e.touches[0].clientY;dy=y-y0;
-  if(!ok){if(P.scrollTop<=0&&dy>0){ok=true;y0=y;dy=0}else return}
+  if(!ok)return;if(dy<0){P=null;return}// started scrolled → this whole gesture just scrolls; pulling up → it's a scroll, not a drag
   if(dy<=8){P.style.transform='';P.classList.remove('drag');return}
   e.preventDefault();P.classList.add('drag','opened');P.style.transform=`translateY(${dy-8}px)`},{passive:false});
  document.addEventListener('touchend',()=>{if(!P)return;const p=P;P=null;p.classList.remove('drag');const v=dy/Math.max(1,Date.now()-t0);
