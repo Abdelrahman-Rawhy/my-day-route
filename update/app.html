@@ -1920,8 +1920,8 @@ function lPts(n,msg,icon){addPts(n,msg,icon);if(document.body.classList.contains
 const lsec=(t,ico,body,act)=>`<div class="card life-sec"><div class="dz-ph"><span class="ico c-${ico[1]}">${ic(ico[0],17)}</span><b>${t}</b>${act||''}</div>${body}</div>`;
 const lnum=n=>Math.round(n*100)/100;
 // ---------- WORSHIP
-const LSUN=()=>[['fajr',lL('سنة الفجر (2)','Fajr sunnah (2)')],['dhuhr',lL('سنة الظهر (4 + 2)','Dhuhr sunnah (4 + 2)')],['maghrib',lL('سنة المغرب (2)','Maghrib sunnah (2)')],['isha',lL('سنة العشاء (2)','Isha sunnah (2)')],['duha',lL('الضحى','Duha')],['witr',lL('الوتر','Witr')]];
-function lSunOf(k){const r=S.history[k]||{};const o=Object.assign({},r.sun||{});if(r.witr)o.witr=true;return o}
+const LSUN=()=>[['fajr',lL('سنة الفجر (2)','Fajr sunnah (2)')],['dhuhrB',lL('سنة قبل الظهر','Sunnah before Dhuhr')],['dhuhrA',lL('سنة بعد الظهر','Sunnah after Dhuhr')],['maghrib',lL('سنة المغرب (2)','Maghrib sunnah (2)')],['isha',lL('سنة العشاء (2)','Isha sunnah (2)')],['duha',lL('الضحى','Duha')],['witr',lL('الوتر','Witr')]];
+function lSunOf(k){const r=S.history[k]||{};const o=Object.assign({},r.sun||{});if(o.dhuhr){o.dhuhrB=o.dhuhrA=true;delete o.dhuhr}if(r.witr)o.witr=true;return o}
 function ibFastHint(){const d=new Date(),h=hijri(d),wd=d.getDay();const out=[];if(wd===1||wd===4)out.push(lL('النهارده '+(wd===1?'الاتنين':'الخميس')+'، يوم صيام سنة','Today is a Sunnah fasting day ('+(wd===1?'Monday':'Thursday')+')'));
  if(h&&[13,14,15].includes(h.d))out.push(lL('من الأيام البيض ('+h.d+' '+'في الشهر الهجري)','One of the White Days ('+h.d+')'));if(h&&h.m===12&&h.d===9)out.push(lL('يوم عرفة','Day of Arafah'));if(h&&h.m===1&&(h.d===9||h.d===10))out.push(lL('تاسوعاء / عاشوراء','Tasu‘a / Ashura'));return out}
 function ibHtml(){const L=LF().ib,k=today(),S0=lSunOf(k),f=L.fast[k]||'',q=L.qiyam[k]||0;
@@ -2799,10 +2799,13 @@ setInterval(()=>{const e=document.getElementById('ramCd');if(!e||document.hidden
 // ---- prayer quality ----
 function autoPQ(t){const now=new Date(),at=atTime(now,t.time);if(t.prayer==='fajr'&&PT.sunrise)return now<atTime(now,PT.sunrise)?'ontime':'late';return now-at<=60*6e4?'ontime':'late'}
 const SUNNAH={fajr:'2 before',dhuhr:'4 + 2',maghrib:'2 after',isha:'2 after'};
+// v139: Dhuhr has two sunnahs, logged separately as dhuhrB (before) and dhuhrA (after); an old single 'dhuhr' tick counts as both
+const SUN_PARTS={dhuhr:[['dhuhrB','قبل الظهر','Before Dhuhr'],['dhuhrA','بعد الظهر','After Dhuhr']]};
+function sunOn(r,k){const o=(r&&r.sun)||{};return !!(o[k]||(k==='dhuhrB'||k==='dhuhrA')&&o.dhuhr)}
 function pqRow(t,rec){const k=t.prayer,q=(rec.pq||{})[k]||'ontime',sn=(rec.sun||{})[k];
- return `<div class="pq" onclick="event.stopPropagation()"><button class="${q==='jamaah'?'on':''}" onclick="setPQ('${k}','jamaah')">🕌 Jama'ah</button><button class="${q==='ontime'?'on':''}" onclick="setPQ('${k}','ontime')">⏰ On time</button><button class="${q==='late'?'on lt':''}" onclick="setPQ('${k}','late')">🐢 Late</button>${SUNNAH[k]?`<button class="${sn?'on':''}" onclick="togSun('${k}')">+ ${T('Sunnah '+SUNNAH[k])}</button>`:''}${k==='isha'?`<button class="${rec.witr?'on':''}" onclick="togSun('witr')">+ ${T('Witr')}</button>`:''}</div>`}
+ return `<div class="pq" onclick="event.stopPropagation()"><button class="${q==='jamaah'?'on':''}" onclick="setPQ('${k}','jamaah')">🕌 Jama'ah</button><button class="${q==='ontime'?'on':''}" onclick="setPQ('${k}','ontime')">⏰ On time</button><button class="${q==='late'?'on lt':''}" onclick="setPQ('${k}','late')">🐢 Late</button>${SUN_PARTS[k]?SUN_PARTS[k].map(([sk,a,e])=>`<button class="${sunOn(rec,sk)?'on':''}" onclick="togSun('${sk}')">+ ${dzL('سنة '+a,'Sunnah '+e.toLowerCase())}</button>`).join(''):SUNNAH[k]?`<button class="${sn?'on':''}" onclick="togSun('${k}')">+ ${T('Sunnah '+SUNNAH[k])}</button>`:''}${k==='isha'?`<button class="${rec.witr?'on':''}" onclick="togSun('witr')">+ ${T('Witr')}</button>`:''}</div>`}
 function setPQ(k,v){const r=dayRec();r.pq=r.pq||{};const was=r.pq[k];r.pq[k]=v;if(v==='jamaah'&&was!=='jamaah')addPts(5,"Jama'ah: 27 times the reward",'users');else if(was==='jamaah'&&v!=='jamaah')subPts(5);else{save();render()}}
-function togSun(k){const r=dayRec();if(k==='witr'){r.witr=!r.witr;if(r.witr)return addPts(3,'Witr prayed','moon');return subPts(3)}r.sun=r.sun||{};r.sun[k]=!r.sun[k];if(r.sun[k])addPts(3,'Sunnah prayed. A house in Jannah','mosque');else subPts(3)}
+function togSun(k){const r=dayRec();if(k==='witr'){r.witr=!r.witr;if(r.witr)return addPts(3,'Witr prayed','moon');return subPts(3)}r.sun=r.sun||{};if((k==='dhuhrB'||k==='dhuhrA')&&r.sun.dhuhr){delete r.sun.dhuhr;r.sun.dhuhrB=r.sun.dhuhrA=true}r.sun[k]=!r.sun[k];if(r.sun[k])addPts(3,'Sunnah prayed. A house in Jannah','mosque');else subPts(3)}
 // ---- Faith view ----
 let fTab='adhkar';
 // ================= ADHKAR (Hisn al-Muslim selections) =================
@@ -3929,7 +3932,7 @@ function focusOptions(){const c=S.timer.cat,o=(v,n)=>`<option value="${esc(v)}" 
 function openPrayerOpts(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const k=t.prayer,rec=dayRec(),d=rec.done.includes(id),q=d?((rec.pq||{})[k]||'ontime'):null,sn=(rec.sun||{})[k],k2=taskIcon(t);
  const B=(ic_,c,label,fn,cls='')=>`<button class="${cls}" onclick="${fn}"><span class="ico c-${c}">${ic(ic_,18)}</span>${label}</button>`;
  const o=[B('users','green',"Jama'ah",`prayAs('${id}','jamaah')`,q==='jamaah'?'on':''),B('clock','teal','On time',`prayAs('${id}','ontime')`,q==='ontime'?'on':''),B('rotate','amber','Late / qada',`prayAs('${id}','late')`,q==='late'?'on lt':'')];
- if(SUNNAH[k])o.push(B('mosque','violet','Sunnah '+SUNNAH[k],`togSun('${k}');openPrayerOpts('${id}')`,sn?'on':''));
+ if(SUN_PARTS[k])SUN_PARTS[k].forEach(([sk,a,e])=>o.push(B('mosque','violet',dzL('سنة '+a,'Sunnah '+e.toLowerCase()),`togSun('${sk}');openPrayerOpts('${id}')`,sunOn(rec,sk)?'on':'')));else if(SUNNAH[k])o.push(B('mosque','violet','Sunnah '+SUNNAH[k],`togSun('${k}');openPrayerOpts('${id}')`,sn?'on':''));
  if(k==='isha')o.push(B('moon','indigo','Witr',`togSun('witr');openPrayerOpts('${id}')`,rec.witr?'on':''));
  o.push(B('beads','violet','Adhkar after salah',`closeSheets();openAdhkar('salah')`));
  if(k==='fajr')o.push(B('sunrise','orange','Morning adhkar',`closeSheets();openAdhkarStep('morning')`));
@@ -4465,7 +4468,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=138;
+const APP_VERSION=139;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
