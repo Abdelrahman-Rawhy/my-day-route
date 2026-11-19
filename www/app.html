@@ -2629,7 +2629,17 @@ function photoPaint(){const a=document.getElementById('meAv'),p=document.getElem
  const html=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${avCol(S.color)}">${esc(initials(S.name||'?'))}</span>`;if(a)a.innerHTML=html;if(p)p.innerHTML=html;
  if(b)b.textContent=ph?dzL('غيّر','Change'):dzL('اختار','Choose');if(t)t.textContent=ph?dzL('بتظهر في الرئيسية ولعيلتك','Shown on Today and to your family'):dzL('لسه ماحطّيتش صورة','No photo yet')}
 function photoMenu(){if(!S.photo){photoPick();return}openMenu(dzL('صورتك','Your photo'),[{k:'pick',label:dzL('اختار صورة تانية','Choose another photo'),icon:'image',c:'violet'},{k:'rm',label:dzL('شيل الصورة','Remove the photo'),icon:'trash',c:'red'}],k=>{if(k==='pick')photoPick();else askConfirm(dzL('تشيل صورتك؟ هيرجع يظهر أول حرف من اسمك.','Remove your photo? Your initials will show instead.'),dzL('شيل','Remove'),()=>{S.photo='';save();photoDone()},1)})}
-function photoPick(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{try{const n=Math.min(im.naturalWidth,im.naturalHeight),c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,(im.naturalWidth-n)/2,(im.naturalHeight-n)/2,n,n,0,0,160,160);S.photo=c.toDataURL('image/jpeg',.82);save();photoDone();toast(dzL('صورتك اتحطت','Photo updated'),'user')}catch(e){toast(dzL('ماقدرناش نقرا الصورة','Couldn’t read that image'),'alert')}URL.revokeObjectURL(u)};im.onerror=()=>{URL.revokeObjectURL(u);toast(dzL('ماقدرناش نقرا الصورة','Couldn’t read that image'),'alert')};im.src=u};i.click()}
+// v133 (Ahmed: «why does it often say we couldn't read the photo?»): the old path (blob URL → <img>) fails on very large camera photos, HEIC files and some gallery apps. Now: createImageBitmap (decodes big files efficiently) → FileReader data URL → blob URL, and a clear message per cause
+function photoPick(){const i=document.createElement('input');i.type='file';i.accept='image/jpeg,image/png,image/webp,image/*';i.onchange=async()=>{const f=i.files&&i.files[0];if(!f)return;
+ const heic=/hei[cf]/i.test(f.type||'')||/\.hei[cf]$/i.test(f.name||'');let src=null,W=0,H=0;
+ const tries=[async()=>{if(!window.createImageBitmap)throw 0;const b=await createImageBitmap(f);return [b,b.width,b.height]},
+  async()=>{const u=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});const im=new Image();await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u});return [im,im.naturalWidth,im.naturalHeight]},
+  async()=>{const u=URL.createObjectURL(f),im=new Image();try{await new Promise((res,rej)=>{im.onload=res;im.onerror=rej;im.src=u});return [im,im.naturalWidth,im.naturalHeight]}finally{setTimeout(()=>URL.revokeObjectURL(u),2000)}}];
+ toast(dzL('بنجهّز الصورة…','Preparing the photo…'),'image');
+ for(const t of tries){try{[src,W,H]=await t();if(W&&H)break}catch(e){src=null}}
+ if(!src||!W){toast(heic?dzL('الصورة بصيغة HEIC ومش مدعومة. اختار صورة JPG، أو خد لقطة شاشة للصورة واختارها.','HEIC photos aren’t supported. Pick a JPG, or take a screenshot of the photo and pick that.'):(f.size===0?dzL('الصورة لسه على السحابة. افتحها في المعرض الأول عشان تتحمّل، وبعدين اختارها.','The photo is still in the cloud. Open it in your gallery first so it downloads, then pick it.'):dzL('الصورة دي مش راضية تتفتح. جرّب صورة تانية أو لقطة شاشة.','That photo won’t open. Try another photo or a screenshot.')),'alert');return}
+ try{const n=Math.min(W,H),c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(src,(W-n)/2,(H-n)/2,n,n,0,0,160,160);try{src.close&&src.close()}catch(e){}
+  S.photo=c.toDataURL('image/jpeg',.82);save();photoDone();toast(dzL('صورتك اتحطت','Photo updated'),'user')}catch(e){toast(dzL('الصورة دي مش راضية تتفتح. جرّب صورة تانية أو لقطة شاشة.','That photo won’t open. Try another photo or a screenshot.'),'alert')}};i.click()}
 // v128 (Ahmed: «When I click B make a pop-up with details and an option to upload a pic, not upload direct»)
 function profileOpen(){const P=document.getElementById('askPanel'),ph=S.photo,lv=level(),tt=titleOf(lv),fam=S.famId&&FAM.family&&FAM.family.name;
  const av=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${avCol(S.color)}">${esc(initials(S.name||'?'))}</span>`;
@@ -4429,7 +4439,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=132;
+const APP_VERSION=133;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
