@@ -594,6 +594,9 @@ body.reading .toast,html.light body.reading .toast,html.glass body.reading .toas
 body.reading .toast.on{box-shadow:0 12px 30px rgba(60,40,10,.45)!important}
 body.reading .toast .ico{background:#A9875A!important;color:#fff!important}
 body.reading .toast *{color:inherit}
+.tcard .tc-h{cursor:pointer}.tc-chev{margin-inline-start:auto;display:grid;transform:rotate(90deg);transition:transform .25s;color:var(--mu)}html[dir=rtl] .tc-chev{transform:rotate(90deg)}.tcard:not(.tmin) .tc-chev{transform:rotate(-90deg)}
+.tc-mini{display:none}.tcard.tmin .tc-mini{display:flex;align-items:center;gap:12px;margin-top:4px}.tcard.tmin>*:not(.tc-h):not(.tc-mini){display:none!important}
+.tc-dur{flex:1;display:flex;flex-direction:column;gap:2px;cursor:pointer;min-width:0}.tc-dur b{font-size:18px;color:var(--tx)}.tc-dur small{font-size:12.5px;color:var(--mu)}.tc-go{flex:none;min-width:120px}
 /* v130 TODAY: clear order (now → plan → route → tasks → shortcuts → extras), one shortcuts section */
 #tShort .life-hd{display:none}#tShort .life-tiles{margin-top:0}.tsh-h h3{display:flex;align-items:center;gap:8px}
 body.th-faith.th-life #tShortH{display:none}
@@ -1266,11 +1269,9 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
 <section class="view" id="v-goals">
   <div class="top"><div class="greet"><p>Projects · Habits · Targets · Life</p><h1>Goals</h1></div><div class="hdr-btns"><div class="pill ptsPill2"></div><button class="iconbtn" style="background:var(--grad);color:#fff" onclick="openNewGoal()" data-i="plus" data-s="18"></button></div></div>
   <div class="seg2"><button onclick="go('tasks')"><span data-i="check" data-s="16"></span>Tasks</button><button class="on" onclick="go('goals')"><span data-i="target" data-s="16"></span>Goals</button></div>
-  <div id="gHabits"></div>
-  <div class="rtabs" id="gFilter" style="margin-bottom:14px"></div>
-  <div id="gList"></div>
-  <div class="card">
-    <h3><span class="ico c-teal" data-i="clock"></span><span class="sp">Focus timer</span></h3>
+  <div class="card tcard tmin" id="tCard">
+    <h3 class="tc-h" onclick="tCardToggle()"><span class="ico c-teal" data-i="clock"></span><span class="sp">Focus timer</span><span class="tc-chev" data-i="chevron" data-s="16"></span></h3>
+    <div class="tc-mini" id="tMini"></div>
     <div id="tAdjust"></div>
     <label style="margin-top:0">Focus on</label><select id="catSel" onchange="setCat(this.value)" style="margin-bottom:6px"></select>
     <div class="tring" id="tRing" role="button">
@@ -1281,6 +1282,9 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
     <div class="sub" style="margin:12px 0 0;text-align:center" id="tToday"></div>
     <div id="dzFocus"></div>
   </div>
+  <div id="gHabits"></div>
+  <div class="rtabs" id="gFilter" style="margin-bottom:14px"></div>
+  <div id="gList"></div>
 </section>
 
 <!-- FAMILY -->
@@ -1824,6 +1828,7 @@ function dzSaveFields(G){const v=id=>{const e=document.getElementById(id);return
 
 // ===== v105 APP GUIDE (minimalist abstract line-art: straight lines + dots, black on white, no figures) =====
 const GD_SVG={
+ journal:'<rect x="50" y="12" width="100" height="96" rx="10"/><line x1="66" y1="12" x2="66" y2="108"/><line x1="80" y1="36" x2="134" y2="36"/><line x1="80" y1="52" x2="134" y2="52"/><line x1="80" y1="68" x2="118" y2="68"/><circle cx="150" cy="96" r="14" class="f"/><line x1="144" y1="102" x2="156" y2="90" class="w"/>',
  chat:'<rect x="26" y="18" width="96" height="46" rx="14"/><polyline points="44,64 40,80 60,64"/><line x1="44" y1="36" x2="100" y2="36"/><line x1="44" y1="48" x2="84" y2="48"/><rect x="82" y="56" width="92" height="44" rx="14" class="f"/><polyline points="156,100 160,112 142,100" class="f"/><line x1="100" y1="73" x2="156" y2="73" class="w"/><line x1="100" y1="85" x2="138" y2="85" class="w"/>',
  goal:'<circle cx="92" cy="64" r="44"/><circle cx="92" cy="64" r="28" class="a"/><circle cx="92" cy="64" r="11" class="f"/><line x1="92" y1="64" x2="160" y2="18"/><polyline points="146,16 162,16 162,32"/><line x1="40" y1="112" x2="144" y2="112" stroke-dasharray="2 8"/>',
  inbox:'<rect x="34" y="40" width="132" height="66" rx="12"/><polyline points="34,76 72,76 82,90 118,90 128,76 166,76"/><line x1="100" y1="10" x2="100" y2="52" class="a"/><polyline points="84,38 100,54 116,38" class="a"/><circle cx="100" cy="10" r="5" class="f"/>',
@@ -2437,7 +2442,11 @@ function timerMenu(){if(S.timer.running){toast(L('وقّف المؤقت الأو
  openMenu(L('مدة التركيز','Focus length'),it,k=>{if(k!=='c'){const [x,y]=k.split('/').map(Number);presetTimer(x,y);return}
   setTimeout(()=>askNumber(L('دقايق التركيز (٥–١٢٠)','Focus minutes (5–120)'),f,v=>{setTimeout(()=>askNumber(L('دقايق الراحة (١–٣٠)','Break minutes (1–30)'),b,w=>presetTimer(Math.round(v),Math.round(w)),1,30,1),320)},5,120,5),320)})}
 function timeLeft(){const T=S.timer;return T.running?Math.max(0,Math.round((T.endAt-Date.now())/1000)):T.left}
-function drawTimer(){const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS_S():BREAK_S();{const dd=document.getElementById('tDist');if(dd){dd.style.display=T.running&&T.mode==='focus'?'':'none';dd.innerHTML=ic('zap',14)+dzL('اتشتّت؟ اضغط هنا وارجع','Distracted? Tap and refocus')+((dayRec().dist||0)?' · '+(dayRec().dist):'')}}
+// v132 GOALS: focus timer sits at the top; compact (duration + Start) when idle, full dial while running or when opened
+function tCardSync(){const c=document.getElementById('tCard');if(!c)return;const T=S.timer,moved=T.left!==(T.mode==='focus'?FOCUS_S():BREAK_S());const full=T.running||moved||window._tExp;c.classList.toggle('tmin',!full);
+ const m=document.getElementById('tMini');if(m&&!full)m.innerHTML=`<div class="tc-dur" onclick="tCardToggle()"><b>${S.focusMin||25} ${dzL('د تركيز','min focus')}</b><small>${dzL('اضغط تغيّر المدة','Tap to change the length')}</small></div><button class="btn tc-go" onclick="event.stopPropagation();window._tExp=1;startPause();tCardSync()">${ic('play',16)}${dzL('ابدأ','Start')}</button>`}
+function tCardToggle(){window._tExp=!window._tExp;tCardSync()}
+function drawTimer(){try{tCardSync()}catch(e){}const l=timeLeft(),T=S.timer,tot=T.mode==='focus'?FOCUS_S():BREAK_S();{const dd=document.getElementById('tDist');if(dd){dd.style.display=T.running&&T.mode==='focus'?'':'none';dd.innerHTML=ic('zap',14)+dzL('اتشتّت؟ اضغط هنا وارجع','Distracted? Tap and refocus')+((dayRec().dist||0)?' · '+(dayRec().dist):'')}}
  document.getElementById('tClock').textContent=String(Math.floor(l/60)).padStart(2,'0')+':'+String(l%60).padStart(2,'0');
  const dial=!T.running&&l===tot&&T.mode==='focus',fr=dial?(S.focusMin||25)/120:l/tot;document.getElementById('tArc').style.strokeDashoffset=552.9*(1-fr);const K=document.getElementById('tKnob');if(K){const a=fr*2*Math.PI;K.setAttribute('transform',`translate(${100+88*Math.cos(a)} ${100+88*Math.sin(a)})`);K.style.display=dial?'':'none'}
  const fgN=(S.goals.find(x=>x.id===T.cat)||{}).title,full=!T.running&&l===tot;document.getElementById('tMode').textContent=T.mode==='focus'?(T.running?(fgN?fgN.slice(0,22):L('بتركّز…','Focusing')):full?L('لفّ الدايرة أو اضغط عشان تبدأ','Turn the dial or tap to start'):L('متوقف مؤقتًا','Paused')):(T.running?L('وقت الراحة','Break time'):L('الراحة جاهزة','Break ready'));
@@ -4108,7 +4117,7 @@ async function renderJournal(){const el=document.getElementById('jBody');if(!el)
  el.innerHTML=html;renderJournalList()}
 async function renderJournalList(){const box=document.getElementById('jList');if(!box)return;const list=jCache||[];const q=jSearch.trim().toLowerCase();
  const shown=q?list.filter(e=>((e.title||'')+' '+(e.text||'')).toLowerCase().includes(q)):list;
- if(!shown.length){box.innerHTML=`<div class="empty">${q?'No entries match your search.':`${ic('book',26)}<br>Your journal is empty.<br>Write your first entry: it stays private on this phone.`}</div><div class="meta" style="justify-content:center;flex-wrap:nowrap">${ic('lock',12)}<span>${jLocked()?'Encrypted with your PIN':'Tip: set a PIN in Settings to encrypt your journal'}</span></div>`;return}
+ if(!shown.length){box.innerHTML=`${q?`<div class="empty">${T('No entries match your search.')}</div>`:emptyHtml('journal',dzL('يومياتك فاضية','Your journal is empty'),dzL('اكتب أول تدوينة. بتفضل خاصة على الموبايل ده.','Write your first entry. It stays private on this phone.'),dzL('اكتب عن اليوم','Write about today'),'openJEditor()')}<div class="meta" style="justify-content:center;flex-wrap:nowrap">${ic('lock',12)}<span>${jLocked()?'Encrypted with your PIN':'Tip: set a PIN in Settings to encrypt your journal'}</span></div>`;return}
  let h='',lastM='';for(const e of shown){const m=e.date.slice(0,7);if(m!==lastM){h+=`<div class="sec" style="margin-top:14px"><h3 style="font-size:14px;color:var(--mu)">${new Date(e.date+'T12:00').toLocaleDateString(LOC(),{month:'long',year:'numeric'})}</h3></div>`;lastM=m}
   h+=`<div class="jcard" onclick="openJView('${e.id}')"><div class="jd"><span class="mood">${MOODS[e.mood??3]}</span><div style="flex:1;min-width:0"><b style="font-size:15px">${esc(e.title||new Date(e.date+'T12:00').toLocaleDateString(LOC(),{weekday:'long'}))}</b><div class="meta">${new Date(e.date+'T12:00').toLocaleDateString(LOC(),{weekday:'short',month:'short',day:'numeric'})}${(e.media||[]).length?' · '+e.media.length+' '+(e.media.length>1?'files':'file'):''}</div></div></div>${e.text?`<div class="jt">${esc(e.text)}</div>`:''}<div class="thumbs" data-media="${(e.media||[]).slice(0,5).join(',')}" data-more="${Math.max(0,(e.media||[]).length-5)}"></div></div>`}
  box.innerHTML=h;
@@ -4420,7 +4429,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=131;
+const APP_VERSION=132;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
