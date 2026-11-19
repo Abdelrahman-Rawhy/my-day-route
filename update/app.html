@@ -247,6 +247,7 @@ label{font-size:12px;color:var(--mu);display:block;margin:12px 0 6px;font-weight
 .edit-row .info b{font-size:14px}
 .lock{font-size:11px;color:var(--gold);display:flex;gap:4px;align-items:center;font-weight:600}
 /* feedback */
+.t-undo{margin-inline-start:6px;padding:7px 14px;border-radius:12px;border:1px solid var(--bd2);background:var(--a1);color:#fff;font-weight:800;font-size:14px;font-family:inherit}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translate(-50%,-160%);background:rgba(28,33,52,.92);backdrop-filter:blur(16px);border:1px solid var(--bd2);padding:11px 16px 11px 12px;border-radius:18px;font-weight:600;font-size:14px;z-index:60;transition:.45s cubic-bezier(.2,1.4,.4,1);max-width:90vw;display:flex;gap:10px;align-items:center;box-shadow:0 14px 34px rgba(0,0,0,.45)}
 .toast.on{transform:translate(-50%,0)}
 .toast .ico{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none}
@@ -476,6 +477,9 @@ html.glass.light .sheet .panel{background:linear-gradient(180deg,rgba(255,255,25
 .q-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}.q-bar b{flex:1;font-size:17px;font-family:Amiri,serif}.q-bar .iconbtn{font-weight:800;font-size:13px}html[dir=ltr] .q-bar .iconbtn:first-child svg{transform:scaleX(-1)}
 .q-cont{display:flex;align-items:center;gap:12px;width:100%}.q-cont .ico{width:42px;height:42px;border-radius:14px;display:grid;place-items:center}.q-cont b{display:block;font-size:15px}.q-cont i{font-style:normal;font-size:12px;color:var(--mu)}
 .q-juz{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}.q-juz button{flex:none;min-width:38px;height:38px;border-radius:12px;background:var(--s1);border:1px solid var(--bd);font-weight:800;font-size:13px}
+.q-jh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;padding:14px 6px 6px;background:none;border:0;text-align:start;font-family:inherit;color:var(--tx)}.q-jh b{font-size:15px;color:var(--a1)}.q-jh i{font-style:normal;font-size:12px;color:var(--mu)}
+.q-wird{margin-bottom:10px}.q-wbar{display:block;height:6px;border-radius:6px;background:var(--s2);margin-top:8px;overflow:hidden}.q-wbar span{display:block;height:100%;background:var(--grad);border-radius:6px}
+.q-bms{margin-bottom:10px}.q-bmh{display:flex;align-items:center;gap:8px;margin-bottom:8px}.q-bmh .ico{width:30px;height:30px;border-radius:10px;display:grid;place-items:center}.q-bm{display:flex;align-items:center;gap:8px;border-top:1px solid var(--bd);padding:6px 0}.q-bmo{flex:1;display:flex;flex-direction:column;align-items:flex-start;background:none;border:0;padding:6px 2px;text-align:start;font-family:inherit;color:var(--tx);min-width:0}.q-bmo b{font-size:14px}.q-bmo i{font-style:normal;font-size:12px;color:var(--mu);line-height:1.7}
 .q-srch{margin-bottom:10px}.q-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:16px;background:var(--s1);border:1px solid var(--bd);margin-bottom:6px;text-align:start}
 .q-no{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(251,191,36,.12);color:var(--gold);font-weight:800;font-size:13px;flex:none}.q-nm{flex:1;display:flex;flex-direction:column}.q-nm b{font-family:Amiri,serif;font-size:18px}.q-nm i{font-style:normal;font-size:11px;color:var(--mu)}
 html.glass .q-row,html.glass .q-juz button{background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.03));border-color:rgba(255,255,255,.13)}html.light .q-row{background:#fff}html.light .mushaf{background:#FFFBF0}
@@ -896,6 +900,9 @@ html.light .dp-n.up{--nc:#e3e6ef;--ns:#c6cbd8;color:#7a8299}
 .g-badge{position:relative;flex:none;width:68px;height:68px;border-radius:22px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#f5b628,#f97316);box-shadow:0 6px 0 #b45309,0 10px 20px rgba(0,0,0,.3)}
 .g-badge svg{position:absolute;top:-14px;color:#fde68a;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}.g-badge b{font-size:26px;font-weight:900}
 .g-lt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.g-lt small{font-size:12px;color:var(--mu)}.g-lt b{font-size:17px;font-weight:900}.g-lt b span{color:#fbbf24}
+html.light .g-badge{background:linear-gradient(135deg,#B45309,#9A3412);box-shadow:0 6px 0 #7C2D12,0 10px 20px rgba(0,0,0,.18)}html.light .g-lt b span{color:var(--gold)}
+html.light .td-pri button{color:var(--tx)}html.light .td-pri button svg{color:var(--pc)}html.light .td-pri button.on{background:var(--s2)}
+html.light .dz-big small{color:var(--mu)!important;-webkit-text-fill-color:var(--mu)!important;background:none!important}
 .g-xp,.gq-bar{height:9px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}.g-xp i,.gq-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#22d3ee,#7c5cff)}
 html[dir=rtl] .g-xp i,html[dir=rtl] .gq-bar i{margin-left:auto;background:linear-gradient(270deg,#22d3ee,#7c5cff)}
 .g-sh{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:22px;padding:8px 10px;border-radius:16px;background:rgba(0,0,0,.18)}.g-sh b{font-size:14px}
@@ -1982,6 +1989,24 @@ function fastNotifs(c,now){const out=[];if(S.fastRem===false)return out;for(let 
 function toggleFastRem(){S.fastRem=S.fastRem===false;save();fastRemPaint();doSchedule&&doSchedule();toast(S.fastRem?dzL('تذكير الصيام اشتغل','Fasting reminders on'):dzL('تذكير الصيام اتقفل','Fasting reminders off'),'moon')}
 function fastRemPaint(){const b=document.getElementById('fastBtn');if(b){b.classList.toggle('on',S.fastRem!==false);b.classList.add('swb')}}
 
+// v124 TASKS INTO TODAY'S ROUTE: a task can become a one-day route step (S.tasks item with date + todo id); ticking either side ticks both
+function tdRouteStep(id){return S.tasks.find(t=>t.todo===id&&t.date===today())}
+function tdFreeSlot(){const used=new Set(S.tasks.filter(t=>onDay(t)).map(t=>t.time)),d=new Date();d.setSeconds(0,0);d.setMinutes(Math.ceil((d.getMinutes()+1)/30)*30);
+ for(let i=0;i<48;i++){const v=d.toTimeString().slice(0,5);if(!used.has(v)||d.getHours()===23&&d.getMinutes()===30)return v;d.setMinutes(d.getMinutes()+30)}return '23:30'}
+function tdToRoute(id){const x=TD().items.find(y=>y.id===id);if(!x)return;const st=tdRouteStep(id);
+ if(st){askConfirm(dzL('تشيلها من مسار النهارده؟\nالمهمة نفسها هتفضل في المهام.','Remove it from today’s route?\nThe task itself stays in Tasks.'),dzL('شيلها من المسار','Remove from route'),()=>{const r=dayRec(),i=r.done.indexOf(st.id);if(i>=0){r.done.splice(i,1);subPts(st.pts)}S.tasks=S.tasks.filter(t=>t!==st);save();render();tdOpen(id);toast(dzL('اتشالت من المسار','Removed from the route'),'x')});return}
+ if(!(x.t||'').trim()){toast(dzL('اكتب اسم المهمة الأول','Name the task first'),'alert');return}
+ const time=x.time&&(!x.due||x.due===today())?x.time:tdFreeSlot();
+ S.tasks.push({id:uid(),name:x.t.trim(),time,pts:10,icon:'check',prayer:null,date:today(),todo:x.id});
+ if(x.status==='done')dayRec().done.push(S.tasks[S.tasks.length-1].id);
+ save();render();tdOpen(id);toast(dzL('اتضافت لمسار النهارده الساعة ','Added to today’s route at ')+fmt(time),'check')}
+function tdRouteBtn(x){const st=tdRouteStep(x.id);return `<button class="fsel td-rt" onclick="tdToRoute('${x.id}')"><span class="ico ${st?'c-green':'c-amber'}">${ic(st?'check':'map',18)}</span><span class="fs-t"><small>${st?dzL('في مسار النهارده، اضغط للشيل','On today’s route. Tap to remove'):dzL('مسار النهارده','Today’s route')}</small><b>${st?dzL('الساعة ','At ')+fmt(st.time):dzL('أضفها لمسار النهارده','Add to today’s route')}</b></span></button>`}
+(()=>{const _tg=toggle,_tt=tdToggle;
+ toggle=function(id){const t=S.tasks.find(x=>x.id===id),was=dayRec().done.includes(id);_tg(id);if(!t||!t.todo||window._tdLnk)return;const now=dayRec().done.includes(id),x=TD().items.find(y=>y.id===t.todo);if(!x||now===was)return;
+  window._tdLnk=1;try{if(now&&x.status!=='done')_tt(x.id);else if(!now&&x.status==='done'&&!x.rep){x.status='todo';x.doneAt=null;save();renderTasks()}}finally{window._tdLnk=0}};
+ tdToggle=function(id){const x=TD().items.find(y=>y.id===id),was=x&&x.status==='done';_tt(id);if(!x||window._tdLnk)return;const st=tdRouteStep(id);if(!st)return;const on=dayRec().done.includes(st.id),nowDone=!was;
+  window._tdLnk=1;try{if(nowDone&&!on)_tg(st.id);else if(!nowDone&&on)_tg(st.id)}finally{window._tdLnk=0}}})();
+
 // ===== v109 ONBOARDING: wizard · checklist · coach marks · empty states · help · first 7 days =====
 function OB(){S.ob=S.ob||{};const o=S.ob;o.ck=o.ck||{};o.m=o.m||{};if(!o.start)o.start=today();if(!o.day)o.day=1;S.tips=S.tips||{};return o}
 function obDays(a,b){return Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5)}
@@ -2450,7 +2475,7 @@ function toggle(id){if(window._lpFired){window._lpFired=false;return}
  save();render();chime();stepTransition(id);
  const p=pctOf(today());
  if(p>=100&&before<100){burst(160);S.points+=50;S.earned+=50;rec.pts=(rec.pts||0)+50;save();render();setTimeout(()=>celebrate('trophy','Perfect day!','You completed every step of your route. +50 bonus points'),300)}
- else{burst(40);toast(CHEERS[Math.floor(Math.random()*CHEERS.length)]+'  +'+t.pts,taskIcon(t))}
+ else{burst(40);toast(T(CHEERS[Math.floor(Math.random()*CHEERS.length)])+'  +'+t.pts,taskIcon(t))}
  
  checkBadges();
 }
@@ -2970,10 +2995,22 @@ function mushafHtml(){if(!QD){quranData().then(()=>{if(fTab==='mushaf')renderFai
  return qView.s?surahHtml(qView.s):quranIndexHtml()}
 function quranIndexHtml(){const P=qPos(),q=qSearch.trim();const list=SURAH_AR.map((n,i)=>[i+1,n]).filter(([i,n])=>!q||n.includes(q)||String(i)===q);
  return `<button class="card q-cont" onclick="openPage(${P.lp||pageOf(P.s,P.a)})"><span class="ico c-green">${ic('book',20)}</span><span style="flex:1;text-align:start"><b>${T('Continue reading')}</b><i>${T('Page')} ${P.lp||pageOf(P.s,P.a)} · ${SURAH_AR[(qPages()[P.lp||pageOf(P.s,P.a)][0][0])-1]}</i></span>${ic('chevron',16)}</button>
+ ${qWirdHtml()}${qBmHtml()}
  <div class="q-juz">${Array.from({length:30},(_,k)=>`<button onclick="openJuz(${k+1})">${k+1}</button>`).join('')}</div>
  <input class="q-srch" placeholder="${T('Search surah name or number')}" value="${esc(qSearch)}" oninput="qSearch=this.value;const b=document.getElementById('qList');if(b)b.innerHTML=qListHtml()">
  <div id="qList">${qListHtml()}</div><div class="sub" style="text-align:center;margin-top:10px;font-size:11px">${T('Text: Madinah Mushaf (Hafs), King Fahd Glorious Quran Printing Complex')}</div>`}
-function qListHtml(){const q=qSearch.trim();return SURAH_AR.map((n,i)=>[i+1,n]).filter(([i,n])=>!q||n.includes(q)||String(i)===q).map(([i,n])=>{const c=QD.c[i-1];return `<button class="q-row" onclick="openSurah(${i},1)"><span class="q-no">${i}</span><span class="q-nm"><b>${n}</b><i>${c[1]===1?T('Meccan'):T('Medinan')} · ${c[2].length} ${T('ayahs')} · ${T('Page')} ${c[3][0]}</i></span></button>`}).join('')}
+// v124 Mushaf extras: surah list grouped by juz, today's wird from the khatma plan, saved places list
+function qRowHtml(i,n){const c=QD.c[i-1];return `<button class="q-row" onclick="openSurah(${i},1)"><span class="q-no">${i}</span><span class="q-nm"><b>${n}</b><i>${c[1]===1?T('Meccan'):T('Medinan')} · ${c[2].length} ${T('ayahs')} · ${T('Page')} ${c[3][0]}</i></span></button>`}
+function qListHtml(){const q=qSearch.trim();if(!q){let h='';for(let j=1;j<=30;j++){let p0=0,cont='';for(let i=0;i<114&&!p0;i++){const k=QD.c[i][4].indexOf(j);if(k>=0){p0=QD.c[i][3][k];if(k>0)cont=SURAH_AR[i]}}
+  h+=`<button class="q-jh" onclick="openJuz(${j})"><b>${dzL('الجزء '+j,'Juz '+j)}</b><i>${dzL('صفحة '+p0,'Page '+p0)}${cont?' · '+dzL('يكمل سورة '+cont,'continues '+cont):''}</i></button>`;
+  SURAH_AR.forEach((n,i)=>{if(QD.c[i][4][0]===j)h+=qRowHtml(i+1,n)})}return h}
+ return SURAH_AR.map((n,i)=>[i+1,n]).filter(([i,n])=>n.includes(q)||String(i)===q).map(([i,n])=>qRowHtml(i,n)).join('')}
+function qWirdHtml(){const K=kh();if(K.page>=604)return '';const qp=dayRec().qp||0,tg=khTarget(),a=Math.max(1,K.page-qp+1),b=Math.min(604,K.page-qp+tg),done=qp>=tg,nx=Math.min(604,K.page+1);
+ return `<button class="card q-cont q-wird" onclick="openPage(${nx})"><span class="ico c-amber">${ic('target',20)}</span><span style="flex:1;text-align:start;min-width:0"><b>${done?dzL('خلّصت ورد النهارده','Today’s wird is done'):dzL('ورد النهارده','Today’s wird')}</b><i>${dzL('من صفحة '+a+' لصفحة '+b,'Pages '+a+' to '+b)} · ${dzL('قرأت '+Math.min(qp,tg)+' من '+tg,'read '+Math.min(qp,tg)+' of '+tg)}</i><span class="q-wbar"><span style="width:${Math.min(100,qp/tg*100)}%"></span></span></span>${ic('chevron',16)}</button>`}
+function qBM(){const P=qPos();P.bm=P.bm||[];return P.bm}
+function qBmHtml(){const L=qBM();if(!L.length)return '';return `<div class="card q-bms"><div class="q-bmh"><span class="ico c-pink">${ic('heart',16)}</span><b>${dzL('أماكن محفوظة','Saved places')}</b></div>${L.slice().reverse().map(x=>`<div class="q-bm"><button class="q-bmo" onclick="openPage(${x.pg})"><b>${dzL('صفحة '+x.pg,'Page '+x.pg)}</b><i>${SURAH_AR[x.s-1]}، ${dzL('آية '+x.a,'ayah '+x.a)}</i></button><button class="iconbtn sm" onclick="qBmDel(${x.pg})" aria-label="remove">${ic('x',15)}</button></div>`).join('')}</div>`}
+function qBmAdd(s,a,pg){const L=qBM(),i=L.findIndex(x=>x.pg===pg);if(i>=0)L.splice(i,1);L.push({s,a,pg,at:today()});if(L.length>30)L.shift()}
+function qBmDel(pg){askConfirm(dzL('تشيل صفحة '+pg+' من الأماكن المحفوظة؟','Remove page '+pg+' from saved places?'),dzL('شيلها','Remove'),()=>{const L=qBM(),i=L.findIndex(x=>x.pg===pg);if(i>=0)L.splice(i,1);save();renderFaith()},1)}
 function surahHtml(n){const c=QD.c[n-1],P=qPos(),fs=P.fs||26;let txt='';c[2].forEach((a,k)=>{const no=k+1,mark=P.s===n&&P.a===no?' qmark':'';txt+=`<span class="ayah${mark}" id="ay${no}" onclick="ayahMenu(${n},${no})">${esc(a)}<span class="ano">﴿${arNum(no)}﴾</span></span> `});
  return `<div class="q-bar"><button class="iconbtn" onclick="qView.s=null;renderFaith()">${ic('chevron',16)}</button><b>${T('Surah')} ${SURAH_AR[n-1]}</b><button class="iconbtn" onclick="qFont(-2)">A−</button><button class="iconbtn" onclick="qFont(2)">A+</button></div>
  <div class="mushaf" style="font-size:${fs}px">${n!==1&&n!==9?`<div class="basm">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>`:''}<div class="qtext">${txt}</div></div>
@@ -3043,7 +3080,7 @@ function qFont(d){const P=qPos();P.fs=Math.max(18,Math.min(44,(P.fs||26)+d));sav
 function ayahMenu(n,a){const pg=QD.c[n-1][3][a-1],P=document.getElementById('askPanel');
  P.innerHTML=`<h3>${SURAH_AR[n-1]} · ${T('Ayah')} ${a}</h3><div class="sub">${T('Page')} ${pg} · ${T('Juz')} ${QD.c[n-1][4][a-1]}</div>
  <div class="opts" style="margin-top:10px"><button onclick="qSave(${n},${a})"><span class="ico c-green">${ic('book',18)}</span>${T('Save my place here')}</button><button onclick="qCopy(${n},${a})"><span class="ico c-blue">${ic('clipboard',18)}</span>${T('Copy ayah')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
-function qSave(n,a){const P=qPos();P.s=n;P.a=a;P.saved=1;const pg=QD.c[n-1][3][a-1],K=kh();if(pg>K.page)khAdd(pg-K.page);save();closeAsk();document.querySelectorAll('.ayah.qmark').forEach(x=>x.classList.remove('qmark'));const e=document.getElementById('ay'+a);if(e)e.classList.add('qmark');document.querySelectorAll('.qa.qmark').forEach(x=>x.classList.remove('qmark'));const e2=document.querySelector(`.qa[data-s="${n}"][data-a="${a}"]`);if(e2)e2.classList.add('qmark');toast(T('Place saved')+' – '+T('Page')+' '+arNum(pg),'book')}
+function qSave(n,a){const P=qPos();P.s=n;P.a=a;P.saved=1;const pg=QD.c[n-1][3][a-1],K=kh();qBmAdd(n,a,pg);if(pg>K.page)khAdd(pg-K.page);save();closeAsk();document.querySelectorAll('.ayah.qmark').forEach(x=>x.classList.remove('qmark'));const e=document.getElementById('ay'+a);if(e)e.classList.add('qmark');document.querySelectorAll('.qa.qmark').forEach(x=>x.classList.remove('qmark'));const e2=document.querySelector(`.qa[data-s="${n}"][data-a="${a}"]`);if(e2)e2.classList.add('qmark');toast(T('Place saved')+' – '+T('Page')+' '+arNum(pg),'book')}
 function qCopy(n,a){const t=QD.c[n-1][2][a-1]+' ﴿'+arNum(a)+'﴾ ['+SURAH_AR[n-1]+']';closeAsk();try{navigator.clipboard.writeText(t).then(()=>toast(T('Copied'),'check'))}catch(e){toast(T('Copied'),'check')}}
 const FTABS=[['adhkar','Adhkar','sunrise','blue'],['mushaf','Mushaf','book','green'],['quran','Khatma','target','amber'],['tasbih','Tasbih','beads','violet'],['prayers','Prayers','mosque','teal'],['qibla','Qibla','pin','orange']];
 function openMenu(title,items,cb){window._mItems=items;window._mCb=cb;const P=document.getElementById('pickPanel');
@@ -3170,7 +3207,7 @@ function tdOpen(id){const x=TD().items.find(y=>y.id===id);if(!x)return;tdEditId=
  <label>${L('الوسوم','Tags')}</label><input value="${esc((x.tags||[]).join(' '))}" placeholder="${L('مثال: شغل بيت','e.g. work home')}" onchange="tdF('tags',this.value.split(/[\\s,،#]+/).filter(Boolean))">
  <label>${L('الحالة','Status')}</label><div class="td-pri st">${[['todo',L('لسه','To do')],['doing',L('شغال فيها','Doing')],['done',L('خلصت','Done')]].map(([k,n])=>`<button class="${(x.status||'todo')===k?'on':''}" onclick="tdSet('${x.id}','${k}');tdOpen('${x.id}')">${n}</button>`).join('')}</div>
  <label>${L('خطوات فرعية','Subtasks')}</label><div class="td-subs">${(x.subs||[]).map(s=>`<div class="td-sub ${s.d?'dn':''}"><button class="td-cb sm" onclick="tdSub('${s.id}')">${s.d?ic('check',12,'',3):''}</button><span>${esc(s.t)}</span><button class="iconbtn" onclick="tdSubDel('${s.id}')">${ic('x',14)}</button></div>`).join('')}<div class="td-add sm"><input id="tdSubIn" placeholder="${L('أضف خطوة…','Add a step…')}" onkeydown="if(event.key==='Enter')tdSubAdd()"><button class="btn ghost" onclick="tdSubAdd()">${ic('plus',16)}</button></div></div>
- <div class="row"><button class="btn ghost" style="color:var(--red)" onclick="tdDel()">${ic('trash',16)}${L('حذف','Delete')}</button><button class="btn" onclick="tdClose()">${L('تم','Done')}</button></div>`;
+ ${tdRouteBtn(x)}<div class="row"><button class="btn ghost" style="color:var(--red)" onclick="tdDel()">${ic('trash',16)}${L('حذف','Delete')}</button><button class="btn" onclick="tdClose()">${L('تم','Done')}</button></div>`;
  hydrateIcons&&hydrateIcons(P);document.getElementById('tdSheet').classList.add('on');if(!x.t)setTimeout(()=>document.getElementById('tdT').focus(),200)}
 const tdCur=()=>TD().items.find(y=>y.id===tdEditId)||{};
 function tdF(k,v){const x=tdCur();if(!x.id)return;x[k]=v;if(k==='time'&&!v)x.rem=null;save()}
@@ -3337,11 +3374,11 @@ function khatmaHtml(){const K=kh(),r=dayRec(),qp=r.qp||0,tg=khTarget(),pc=K.page
  return `<div class="hero"><div class="ring"><svg width="92" height="92"><circle cx="46" cy="46" r="38" stroke="rgba(255,255,255,.1)" stroke-width="9" fill="none"/><circle cx="46" cy="46" r="38" stroke="url(#rg)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="${238.8*(1-pc)}" transform="rotate(-90 46 46)"/></svg><div class="pct" style="font-size:${String(pTxt).length>3?18:22}px">${pTxt}%</div></div>
  <div style="min-width:0"><h2>Page ${K.page} of 604</h2><p>${T('Juz')} ${jz}${sur?' · '+T('Surah')+' '+sur:''} · ${T('Khatma')} #${(K.done||0)+1}</p><div class="kh-st ${diff>=0?'ok':'late'}">${diff>=0?(diff>0?T('Ahead of plan by')+' '+khPg(diff):T('Right on plan')):T('Behind plan by')+' '+khPg(-diff)}</div></div></div>
  <div class="card"><h3><span class="ico c-amber">${ic('target',18)}</span><span class="sp">${dzL('مكانك في الختمة','Your place in the khatma')}</span></h3>
-  <div class="kh-now"><div class="kh-nowt"><small>${dzL('إنت دلوقتي','You are now at')}</small><b id="khLive" dir="auto">${khWhere(K.page)}</b></div><span class="kh-pm"><button class="iconbtn sm" onclick="khSlideSet(${K.page}-1)" aria-label="-1">−</button><button class="iconbtn sm" onclick="khSlideSet(${K.page}+1)" aria-label="+1">+</button></span></div>
+  <div class="kh-now"><div class="kh-nowt"><small>${dzL('إنت دلوقتي','You are now at')}</small><b id="khLive" dir="auto" onclick="khAskPage()" style="cursor:pointer">${khWhere(K.page)}</b></div><span class="kh-pm"><button class="iconbtn sm" onclick="khSlideSet(${K.page}-1)" aria-label="-1">−</button><button class="iconbtn sm" onclick="khSlideSet(${K.page}+1)" aria-label="+1">+</button></span></div>
   <div class="kh-track"><div class="kh-fill" style="width:${pc*100}%"></div><div class="kh-exp" style="right:${expected/604*100}%" title="plan"></div>${juzStart.map(p=>`<i style="right:${(p-1)/604*100}%"></i>`).join('')}</div>
   <input type="range" class="kh-range" min="0" max="604" step="1" value="${K.page}" oninput="khSlide(this.value)" onchange="khSlideSet(this.value)">
   <div class="kh-scale" dir="rtl"><span>1</span><span>${T('Juz')} 10</span><span>${T('Juz')} 20</span><span>604</span></div>
-  <div class="sub kh-hint">${dzL('اسحب الدايرة لحد صفحتك، أو استخدم − و+ لصفحة واحدة، أو اضغط رقم آخر جزء خلّصته.','Drag the circle to your page, use − / + for one page, or tap the last juz you finished.')}</div><div class="kh-juz">${Array.from({length:30},(_,k)=>{const a=juzStart[k],b=(juzStart[k+1]||605)-1,st=K.page>=b?'d':K.page>=a?'c':'';return `<button class="${st}" onclick="khSlideSet(${b})" title="${k+1}">${k+1}</button>`}).join('')}</div>
+  <div class="sub kh-hint">${dzL('اضغط على «إنت دلوقتي» واكتب رقم صفحتك، أو استخدم − و+ لصفحة واحدة، أو اسحب الدايرة. أي نقلة كبيرة هتسألك الأول.','Tap «You are now at» and type your page, use − / + for one page, or drag the circle. Big jumps ask first.')}</div><div class="kh-juz">${Array.from({length:30},(_,k)=>{const a=juzStart[k],b=(juzStart[k+1]||605)-1,st=K.page>=b?'d':K.page>=a?'c':'';return `<button class="${st}" onclick="khSlideSet(${b})" title="${k+1}">${k+1}</button>`}).join('')}</div>
   <button class="btn wide" style="margin-top:12px" onclick="openPage(Math.min(604,${K.page}+1))">${ic('book',16)}${T('Continue in the Mushaf')} · ${T('Page')} ${Math.min(604,K.page+1)}</button></div>
  <div class="card"><h3><span class="ico c-green">${ic('book',18)}</span><span class="sp">Today: ${qp} / ${tg} pages</span>${qp>=tg?'<span style="color:var(--ok)">✓</span>':''}</h3>
   <div class="kh-today"><i style="width:${Math.min(100,qp/tg*100)}%"></i></div>
@@ -3353,7 +3390,12 @@ function khatmaHtml(){const K=kh(),r=dayRec(),qp=r.qp||0,tg=khTarget(),pc=K.page
 function khPg(n){return S.lang==='ar'?(n===1?'صفحة':n===2?'صفحتين':n+' '+(n>=3&&n<=10?'صفحات':'صفحة')):n+' page'+(n===1?'':'s')}
 function khWhere(v){let sur='';try{if(QD&&v>0)sur=(S.lang==='ar'?'، ':' · ')+(S.lang==='ar'?'سورة ':'Surah ')+SURAH_AR[qPages()[v][0][0]-1]}catch(x){}return v<1?dzL('لسه مابدأتش','Not started yet'):(S.lang==='ar'?'صفحة '+v+'، جزء '+juzOf(v):'Page '+v+' · Juz '+juzOf(v))+sur}
 function khSlide(v){v=+v;const e=document.getElementById('khLive');if(e)e.textContent=khWhere(v);const f=document.querySelector('.kh-fill');if(f)f.style.width=(v/604*100)+'%';try{const H=HAP();if(H&&v%20===0)H.impact({style:'LIGHT'})}catch(x){}}
-function khSlideSet(v){v=Math.max(0,Math.min(604,+v));const K=kh();if(v===K.page){renderFaith();return}K.page=v;save();renderFaith();renderFaithBar();toast(T('Page')+' '+v,'book')}
+// v124 (Ahmed moved the khatma by mistake): jumps of more than 10 pages ask first; every change shows «تراجع»
+function khSlideSet(v,ok){v=Math.max(0,Math.min(604,Math.round(+v)||0));const K=kh(),old=K.page;if(v===old){renderFaith();return}
+ if(!ok&&Math.abs(v-old)>10){renderFaith();askConfirm(dzL('متأكد؟\nهتنقل الختمة من صفحة '+old+' لصفحة '+v,'Are you sure?\nMove the khatma from page '+old+' to page '+v),dzL('أيوه، انقلها','Yes, move it'),()=>khSlideSet(v,1));return}
+ K.page=v;save();renderFaith();renderFaithBar();toastUndo(dzL('صفحة '+v,'Page '+v),'book',()=>{kh().page=old;save();renderFaith();renderFaithBar();toast(dzL('رجعت لصفحة '+old,'Back to page '+old),'rotate')})}
+function khAskPage(){askNumber(dzL('إنت في صفحة كام؟ (0–604)','Which page are you on? (0–604)'),kh().page,v=>khSlideSet(v,1),0,604,1)}
+function toastUndo(m,icon,cb){toast(m,icon);const t=document.getElementById('toast');window._tuCb=cb;const b=document.createElement('button');b.className='t-undo';b.textContent=dzL('تراجع','Undo');b.onclick=e=>{e.stopPropagation();const c=window._tuCb;window._tuCb=null;t.classList.remove('on');c&&c()};t.appendChild(b);clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('on');window._tuCb=null},6000)}
 function khSetPlan(d){const K=kh();K.days=d;K.start=today();save();renderFaith();toast(T('Plan')+': '+d+' '+T('days'),'clock')}
 function khAdd(n){const K=kh(),r=dayRec();const before=K.page;K.page=Math.max(0,Math.min(604,K.page+n));const d=K.page-before;r.qp=Math.max(0,(r.qp||0)+d);
  if(d>0){S.points+=d;S.earned+=d;r.pts=(r.pts||0)+d}
@@ -3712,7 +3754,7 @@ function trS(x){if(AR[x])return AR[x];{const y=x.replace(/←/g,'→');if(y!==x&
 const AR_SKIP='.bub,.idea .t,textarea,#recTxt,.code,.ar,.ar2,#jBody .jtext,script,style';
 function arSep(x){return typeof x==='string'?latD(S.lang==='ar'?x.replace(/ ?· ?/g,'، ').replace(/، $/,''):x):x}
 function arSepN(o){if(S.lang==='ar'&&o&&o.notifications)o.notifications.forEach(n=>{n.title=arSep(n.title);n.body=arSep(n.body)});return o}
-function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(p&&/[٠-٩۰-۹٪]/.test(root.nodeValue)&&!p.closest('.mushaf,.qreader,.qr-inner,.qtext,.adk-t,.adkr-t,.bub,textarea,script,style'))root.nodeValue=latD(root.nodeValue);if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue,o=raw;if(raw.includes('→'))raw=raw.replace(/→/g,'←');const t=raw.trim();if(t&&/[A-Za-z]/.test(t)){const r=trS(t);if(r!==t)raw=raw.replace(t,r)}if(/[٠-٩۰-۹٪]/.test(raw)&&!p.closest('.mushaf,.qreader,.qr-inner,.ayah,.q-text,.qtext'))raw=latD(raw);if(/\d%/.test(raw)&&!raw.includes('\u2066')&&/[\u0600-\u06FF]/.test(raw))raw=raw.replace(/(\d+(?:\.\d+)?%)/g,'\u2066$1\u2069');if(raw.includes('·')&&!/[A-Za-z]{3}/.test(raw.replace(/pts|AM|PM/g,''))&&!p.closest('.mushaf,.qreader,.qr-inner'))raw=raw.trim()==='·'?raw.replace('·','،'):raw.replace(/ ?· ?/g,'، ');if(raw!==o)root.nodeValue=raw;return}
+function trNode(root){if(S.lang!=='ar'||!root)return;if(root.nodeType===3){const p=root.parentElement;if(p&&/[٠-٩۰-۹٪]/.test(root.nodeValue)&&!p.closest('.mushaf,.qreader,.qr-inner,.qtext,.adk-t,.adkr-t,.bub,textarea,script,style'))root.nodeValue=latD(root.nodeValue);if(!p||p.closest(AR_SKIP))return;let raw=root.nodeValue,o=raw;if(raw.includes('→'))raw=raw.replace(/→/g,'←');const t=raw.trim();if(t&&/[A-Za-z]/.test(t)){const r=trS(t);if(r!==t)raw=raw.replace(t,r)}if(/[٠-٩۰-۹٪]/.test(raw)&&!p.closest('.mushaf,.qreader,.qr-inner,.ayah,.q-text,.qtext'))raw=latD(raw);if(/\d%/.test(raw)&&!raw.includes('\u2066')&&/[\u0600-\u06FF]/.test(raw))raw=raw.replace(/(\d+(?:\.\d+)?%)/g,'\u2066$1\u2069');if(raw.includes('·')&&(!/[A-Za-z]{3}/.test(raw.replace(/pts|AM|PM/g,''))||/[\u0600-\u06FF]/.test(raw))&&!p.closest('.mushaf,.qreader,.qr-inner'))raw=raw.trim()==='·'?raw.replace('·','،'):raw.replace(/ ?· ?/g,'، ');if(raw!==o)root.nodeValue=raw;return}
  if(root.nodeType===1&&root.querySelectorAll){const ph=[...(root.matches&&root.matches('[placeholder]')?[root]:[]),...root.querySelectorAll('[placeholder]')];ph.forEach(e=>{const v=e.getAttribute('placeholder');if(v&&/[A-Za-z]/.test(v)&&!e.dataset.phAr){const r=trS(v);if(r!==v){e.setAttribute('placeholder',r);e.dataset.phAr=1}}})}if(root.nodeType!==1||root.closest&&root.closest(AR_SKIP))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const L=[];let n;while(n=w.nextNode())L.push(n);L.forEach(trNode);
  (root.querySelectorAll?[root,...root.querySelectorAll('[placeholder],[title]')]:[]).forEach(e=>{if(e.placeholder&&/[A-Za-z]/.test(e.placeholder)){const r=trS(e.placeholder);if(r!==e.placeholder)e.placeholder=r}})}
 let arObs=null;
@@ -3905,13 +3947,13 @@ function pcLog(tid,q){const t=S.tasks.find(x=>x.id===tid);if(!t)return;const r=d
 function pcHide(){const el=document.getElementById('pcPill');if(el){el.classList.remove('on');setTimeout(()=>el.remove(),300)}}
 // v111 (Ahmed: «Ask only during time until the next salah»): ask from prayer time + delay (capped at half the gap) until the next prayer's time; Isha until midnight
 const PC_ORD=['fajr','dhuhr','asr','maghrib','isha'];
-function pcWin(P,k){const toM=x=>{const[a,b]=String(x).split(':').map(Number);return a*60+b},i=PC_ORD.indexOf(k);if(i<0||!P||!P[k])return null;const a=toM(P[k]),n=i<4&&P[PC_ORD[i+1]]?toM(P[PC_ORD[i+1]]):1440;return [Math.round(a+Math.min(S.pcheckMin||60,(n-a)/2)),n,i<4?PC_ORD[i+1]:null]}
+function pcWin(P,k){const toM=x=>{const[a,b]=String(x).split(':').map(Number);return a*60+b},i=PC_ORD.indexOf(k);if(i<0||!P||!P[k])return null;const a=toM(P[k]),fs=k==='fajr'&&P.sunrise,n=fs?toM(P.sunrise):i<4&&P[PC_ORD[i+1]]?toM(P[PC_ORD[i+1]]):1440;return [Math.round(a+Math.min(S.pcheckMin||60,(n-a)/2)),n,fs?'sunrise':i<4?PC_ORD[i+1]:null]}// v124: Fajr asks until sunrise
 function pcDue(){if(S.pcheck===false)return null;const r=dayRec(),now=new Date(),nm=now.getHours()*60+now.getMinutes();let best=null;
  S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]&&onDay(t,now)).forEach(t=>{const w=pcWin(PT,t.prayer);if(!w)return;
   if(nm>=w[0]&&nm<w[1]&&!r.done.includes(t.id)&&!((r.pmiss||{})[t.prayer])&&!((r.pcx||{})[t.prayer]))best={t,w}});return best}
 function pcShow(force){const d=force||pcDue(),cur=document.getElementById('pcPill');if(cur&&(!d||cur.dataset.k!==d.t.prayer)){cur.remove()}if(!d||document.getElementById('pcPill'))return;const slot=document.getElementById('pcSlot');if(!slot)return;const t=d.t,nx=d.w&&d.w[2];
  const B=(q,c,icn,lb)=>`<button class="pcb ${c}" onclick="pcLog('${t.id}','${q}')" aria-label="${lb}"><span>${ic(icn,22)}</span><i>${lb}</i></button>`,ar=S.lang==='ar';
- const el=document.createElement('div');el.id='pcPill';el.className='pcpill pcin';el.dataset.k=t.prayer;el.innerHTML=`<div class="pc-h"><span class="pc-ic">${ic('mosque',18)}</span><span class="pc-tt"><b>${pcTitle(t.prayer)}</b>${nx&&PT[nx]?`<small>${ar?'السؤال لحد أذان '+pcName(nx)+' '+fmt(PT[nx]):'Until '+pcName(nx)+' at '+fmt(PT[nx])}</small>`:''}</span><button class="pc-x" onclick="pcLater('${t.prayer}')" aria-label="close">${ic('x',16)}</button></div>
+ const el=document.createElement('div');el.id='pcPill';el.className='pcpill pcin';el.dataset.k=t.prayer;el.innerHTML=`<div class="pc-h"><span class="pc-ic">${ic('mosque',18)}</span><span class="pc-tt"><b>${pcTitle(t.prayer)}</b>${nx&&PT[nx]?`<small>${nx==='sunrise'?(ar?'السؤال لحد الشروق '+fmt(PT[nx]):'Until sunrise at '+fmt(PT[nx])):ar?'السؤال لحد أذان '+pcName(nx)+' '+fmt(PT[nx]):'Until '+pcName(nx)+' at '+fmt(PT[nx])}</small>`:''}</span><button class="pc-x" onclick="pcLater('${t.prayer}')" aria-label="close">${ic('x',16)}</button></div>
  <div class="pc-row">${B('missed','gray','x',ar?'فاتتني':'Missed')}${B('late','amber','rotate',ar?'متأخرة':'Late')}${B('ontime','violet','check',ar?'في وقتها':'On time')}${B('jamaah','green','users',ar?'جماعة':"Jama'ah")}</div>`;
  slot.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'))}
 function pcLater(k){const r=dayRec();r.pcx=r.pcx||{};r.pcx[k]=1;save();pcHide()}
@@ -4323,7 +4365,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=123;
+const APP_VERSION=124;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4674,7 +4716,7 @@ function renderChat(scroll){const C=CHATS[curChat];if(!C)return;const box=docume
   const big=/^(\p{Extended_Pictographic}|\p{Emoji_Component}|‍|️|\s){1,12}$/u.test(m.t)&&[...m.t.replace(/\s/g,'')].length<=8&&/\p{Extended_Pictographic}/u.test(m.t);
   const counts={};Object.values(m.re||{}).forEach(e=>counts[e]=(counts[e]||0)+1);
   const ticks=me?(g?ic('check',12,'',2.4):(otherRead>=ms?`<span style="color:#A5F3FC;display:flex">${ic('check',12,'',2.4)}${ic('check',12,'',2.4)}</span>`:ic('check',12,'',2.4))):'';
-  h+=`<div class="mrow ${me?'me':'them'} ${cont?'cont':''}">${!me&&g?(cont?'<span style="width:30px;flex:none"></span>':av(mem,'sm')):''}<div class="bub ${big?'big':''}" onclick="openRbar(event,'${m.id}')">${!me&&g&&!cont?`<div class="who" style="color:${mem.color}">${esc(nameOf(m.from))}</div>`:''}${esc(m.t)}<span class="tm">${new Date(ms).toLocaleTimeString(LOC(),{hour12:true,hour:'numeric',minute:'2-digit'})}${ticks}</span>${Object.keys(counts).length?`<div class="reacts">${Object.entries(counts).map(([e,n])=>`<span>${e}${n>1?' '+n:''}</span>`).join('')}</div>`:''}</div></div>`;prev=m});
+  h+=`<div class="mrow ${me?'me':'them'} ${cont?'cont':''}">${!me&&g?(cont?'<span style="width:30px;flex:none"></span>':av(mem,'sm')):''}<div class="bub selok ${big?'big':''}" onclick="if(!(getSelection()+''))openRbar(event,'${m.id}')">${!me&&g&&!cont?`<div class="who" style="color:${mem.color}">${esc(nameOf(m.from))}</div>`:''}${esc(m.t)}<span class="tm">${new Date(ms).toLocaleTimeString(LOC(),{hour12:true,hour:'numeric',minute:'2-digit'})}${ticks}</span>${Object.keys(counts).length?`<div class="reacts">${Object.entries(counts).map(([e,n])=>`<span>${e}${n>1?' '+n:''}</span>`).join('')}</div>`:''}</div></div>`;prev=m});
  box.innerHTML=h||(emptyHtml('family',dzL('مفيش رسايل','No messages yet'),dzL('قول صباح الخير للعيلة. كل الرسايل مشفّرة.','Say good morning to the family. Every message is encrypted.'),dzL('اكتب','Write'),"document.getElementById('cinput').focus()"));
  if(scroll||atBottom)box.scrollTop=box.scrollHeight}
 async function sendMsg(){const inp=document.getElementById('cinput'),t=inp.value.trim();if(!t||!curChat)return;const cid=curChat,key=await keyFor(cid);if(!key){toast('Private chat not ready yet: '+nameOf(otherOf(cid))+' must open the app once','lock');return}
@@ -4690,7 +4732,10 @@ function closeRbar(){const r=document.getElementById('rbar');r.className='';r.in
 async function react(mid,e){closeRbar();const cid=curChat,C=CHATS[cid],m=C.msgs.find(x=>x.id===mid),key=await keyFor(cid);if(!m||!key)return;
  const ref=famRef().collection('chats').doc(cid).collection('messages').doc(mid);
  try{await ref.update({['r.'+FB.uid]:(m.re||{})[FB.uid]===e?firebase.firestore.FieldValue.delete():await sealK(key,{e})})}catch(err){}}
-function copyMsg(mid){const m=CHATS[curChat].msgs.find(x=>x.id===mid);closeRbar();try{navigator.clipboard.writeText(m.t).then(()=>toast('Copied','clipboard'))}catch(e){}}
+function copyMsg(mid){const m=CHATS[curChat].msgs.find(x=>x.id===mid);closeRbar();if(m)copyTxt(m.t)}
+// v124: copy with a fallback for WebViews where navigator.clipboard is blocked
+function copyTxt(t){const ok=()=>toast(dzL('اتنسخ','Copied'),'clipboard'),old=()=>{try{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(a);a.select();const r=document.execCommand('copy');a.remove();r?ok():toast(dzL('مقدرتش أنسخ، اضغط مطوّل على الرسالة وحدد النص','Could not copy. Long-press the message to select text'),'alert')}catch(e){}};
+ try{navigator.clipboard.writeText(t).then(ok,old)}catch(e){old()}}
 function delMsgAsk(mid,mine){closeRbar();askConfirm(mine?dzL('تمسح الرسالة دي؟','Delete this message?'):dzL('تمسح رسالة العضو ده من محادثة العيلة؟','Delete this member’s message from the family chat?'),dzL('امسح','Delete'),()=>delMsg(mid),1)}
 async function delMsg(mid){closeRbar();try{await famRef().collection('chats').doc(curChat).collection('messages').doc(mid).delete()}catch(e){}}
 addEventListener('popstate',()=>{if(curChat)closeChat(true)});
@@ -4917,7 +4962,7 @@ document.querySelectorAll('.view:not(#v-settings) .top').forEach(top=>{if(top.qu
 // ---- show time/date boxes as 12-hour / Arabic text instead of Android's own format ----
 function dtLabel(inp){const v=inp.value;if(!v)return `<span class="ph">${T(inp.type==='time'?'Pick a time':'Pick a date')}</span>`;if(inp.type==='time')return esc(trS(fmt(v)));
  const d=new Date(v+'T12:00');return esc(d.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'long',year:'numeric'}))}
-function dtEnhance(root){(root.querySelectorAll?root:document).querySelectorAll('input[type=time]:not([data-dt]),input[type=date]:not([data-dt])').forEach(inp=>{inp.dataset.dt=1;
+function dtEnhance(root){if(!root)return;(root.querySelectorAll?root:document).querySelectorAll('input[type=time]:not([data-dt]),input[type=date]:not([data-dt])').forEach(inp=>{inp.dataset.dt=1;
  const b=document.createElement('button');b.type='button';b.className='dtbox';b.innerHTML=`${ic(inp.type==='time'?'clock':'clock',16)}<span>${dtLabel(inp)}</span>`;b.onclick=e=>{e.preventDefault();openDT(inp)};
  inp.classList.add('dthide');inp.insertAdjacentElement('afterend',b);const upd=()=>{b.querySelector('span').innerHTML=dtLabel(inp)};inp.addEventListener('change',upd);inp.addEventListener('input',upd);inp._dtUpd=upd})}
 {const D=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');Object.defineProperty(HTMLInputElement.prototype,'value',{get(){return D.get.call(this)},set(v){D.set.call(this,v);if(this._dtUpd)try{this._dtUpd()}catch(e){}},configurable:true})}
