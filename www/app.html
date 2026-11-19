@@ -259,7 +259,7 @@ label{font-size:12px;color:var(--mu);display:block;margin:12px 0 6px;font-weight
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:80}
 .empty{color:var(--mu);text-align:center;padding:18px;font-size:13px}
 
-.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;flex:none;position:relative}
+.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:15px;color:white!important;text-shadow:0 1px 2px rgba(0,0,0,.25);flex:none;position:relative}
 .av.sm{width:30px;height:30px;border-radius:10px;font-size:12px}
 .av .dot{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--bg)}
 .members{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 2px}
@@ -1193,14 +1193,14 @@ body.reading #sbScrim,body.adkreading #sbScrim{display:none}
 button.btn.swb{min-width:54px!important;max-width:54px!important;flex:none!important}
 .swb.on::after,input.sw:checked::after{inset-inline-start:calc(100% - 27px)!important}
 .pf{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:4px 0 14px}
-.pf-av{position:relative;width:104px;height:104px;border-radius:50%;padding:0;border:3px solid var(--bd2);background:none;overflow:visible;margin-bottom:6px}.pf-av>span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;color:#fff;font-weight:800;font-size:38px}
+.pf-av{position:relative;width:104px;height:104px;border-radius:50%;padding:0;border:3px solid var(--bd2);background:none;overflow:visible;margin-bottom:6px}.pf-av>span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;color:white!important;text-shadow:0 1px 3px rgba(0,0,0,.3);font-weight:800;font-size:38px}
 .pf-cam{position:absolute;bottom:2px;inset-inline-end:2px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--a1);color:#fff;border:3px solid var(--bg);font-style:normal}
 .pf-n{font-size:22px;font-weight:900;color:var(--tx);line-height:1.5}.pf-s{font-size:14px;color:var(--mu)}
 .pf-st{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:10px}.pf-st span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:16px;background:var(--s1);border:1px solid var(--bd);color:var(--a1)}.pf-st b{font-size:18px;color:var(--tx)}.pf-st small{font-size:12px;color:var(--mu)}
 .pf-f{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mu);margin-top:4px}
 .pf-rows{display:flex;flex-direction:column;gap:8px}.pf-row{width:100%}
 .meav{width:44px;height:44px;border-radius:50%;padding:0;border:2px solid var(--bd2);background:none;overflow:hidden;flex:none}
-.meav span,.phprev span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;color:#fff;font-weight:800;font-size:15px}
+.meav span,.phprev span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;color:white!important;text-shadow:0 1px 2px rgba(0,0,0,.25);font-weight:800;font-size:15px}
 .phprev{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none;border:2px solid var(--bd2);cursor:pointer}
 .av.ph{border-radius:50%}
 body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #faithBar,body.th-life #lifeTiles,body.th-quote #quote,body.th-idea #obDay{display:none!important}
@@ -2610,13 +2610,13 @@ function setName(){document.getElementById('nameIn').value=S.name;document.getEl
 function saveName(){const v=document.getElementById('nameIn').value.trim();if(!v){toast('Write your name first','user');document.getElementById('nameIn').focus();return}const ch=v!==S.name;S.name=v;save();render();closeSheets();if(typeof renderSettings==='function'&&document.getElementById('nameSub'))nameRow();if(ch){toast(T('Saved'),'user');if(S.famId&&typeof publishMe==='function')publishMe().catch(()=>{});if(typeof renderFamily==='function'&&(document.querySelector('.view.on')||{}).id==='v-family')renderFamily()}}
 
 function photoPaint(){const a=document.getElementById('meAv'),p=document.getElementById('phPrev'),b=document.getElementById('phBtn'),t=document.getElementById('phSub'),ph=S.photo;
- const html=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${S.color||'#8A5A2B'}">${esc(initials(S.name||'?'))}</span>`;if(a)a.innerHTML=html;if(p)p.innerHTML=html;
+ const html=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${avCol(S.color)}">${esc(initials(S.name||'?'))}</span>`;if(a)a.innerHTML=html;if(p)p.innerHTML=html;
  if(b)b.textContent=ph?dzL('غيّر','Change'):dzL('اختار','Choose');if(t)t.textContent=ph?dzL('بتظهر في الرئيسية ولعيلتك','Shown on Today and to your family'):dzL('لسه ماحطّيتش صورة','No photo yet')}
 function photoMenu(){if(!S.photo){photoPick();return}openMenu(dzL('صورتك','Your photo'),[{k:'pick',label:dzL('اختار صورة تانية','Choose another photo'),icon:'image',c:'violet'},{k:'rm',label:dzL('شيل الصورة','Remove the photo'),icon:'trash',c:'red'}],k=>{if(k==='pick')photoPick();else askConfirm(dzL('تشيل صورتك؟ هيرجع يظهر أول حرف من اسمك.','Remove your photo? Your initials will show instead.'),dzL('شيل','Remove'),()=>{S.photo='';save();photoDone()},1)})}
 function photoPick(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{try{const n=Math.min(im.naturalWidth,im.naturalHeight),c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,(im.naturalWidth-n)/2,(im.naturalHeight-n)/2,n,n,0,0,160,160);S.photo=c.toDataURL('image/jpeg',.82);save();photoDone();toast(dzL('صورتك اتحطت','Photo updated'),'user')}catch(e){toast(dzL('ماقدرناش نقرا الصورة','Couldn’t read that image'),'alert')}URL.revokeObjectURL(u)};im.onerror=()=>{URL.revokeObjectURL(u);toast(dzL('ماقدرناش نقرا الصورة','Couldn’t read that image'),'alert')};im.src=u};i.click()}
 // v128 (Ahmed: «When I click B make a pop-up with details and an option to upload a pic, not upload direct»)
 function profileOpen(){const P=document.getElementById('askPanel'),ph=S.photo,lv=level(),tt=titleOf(lv),fam=S.famId&&FAM.family&&FAM.family.name;
- const av=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${S.color||'#8A5A2B'}">${esc(initials(S.name||'?'))}</span>`;
+ const av=ph?`<span style="background:#222 url('${ph}') center/cover"></span>`:`<span style="background:${avCol(S.color)}">${esc(initials(S.name||'?'))}</span>`;
  const row=(fn,icon,c,t,sub,red)=>`<button class="fsel pf-row" onclick="${fn}"><span class="ico c-${c}">${ic(icon,18)}</span><span class="fs-t"><b${red?' style="color:var(--red)"':''}>${t}</b>${sub?`<small>${sub}</small>`:''}</span></button>`;
  P.innerHTML=`<div class="pf"><button class="pf-av" onclick="closeAsk();setTimeout(photoPick,250)" aria-label="photo">${av}<i class="pf-cam">${ic('image',15)}</i></button>
  <b class="pf-n notr">${esc(S.name||dzL('من غير اسم','No name yet'))}</b><div class="pf-s">${dzL('مستوى '+lv+'، '+tt.adv,'Level '+lv+', '+tt.adv)}</div>
@@ -4414,7 +4414,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=128;
+const APP_VERSION=129;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4523,6 +4523,8 @@ function toggleAutoUpd(){S.autoUpd=S.autoUpd===false;save();if(APKU&&APKU.setAut
 const FB_CONFIG={apiKey:"AIzaSyCel1UJ_sEo3s1VOhLTEaB8iYbcRhuRmiQ",authDomain:"my-day-route.firebaseapp.com",projectId:"my-day-route",storageBucket:"my-day-route.firebasestorage.app",messagingSenderId:"393986152441",appId:"1:393986152441:web:a98deaf0e8c304b62fcf28"}; // ← filled in with your Firebase project settings
 const FB={ok:false,uid:null,db:null,unsubs:[],err:''};
 const FAM={family:null,members:[],tasks:[]};
+// v129: the first colour (#8A5A2B, the default since v88) now means «theme colour»: it shows as the current theme's accent on every screen
+const avCol=(c,txt)=>!c||c==='#8A5A2B'?(txt?'var(--a1)':'var(--grad)'):c;
 const AVCOLORS=['#8A5A2B','#7C5CFF','#22D3EE','#34D399','#FBBF24','#F472B6','#FB7185','#60A5FA','#A78BFA','#2DD4BF','#FB923C'];
 let famTab='mine',pickColor=null,sendType='task';
 const FTYPES={task:['General','clipboard','violet'],home:['Home','sparkles','teal'],shopping:['Shopping','cart','orange'],project:['Project','briefcase','blue']};
@@ -4531,7 +4533,7 @@ const nameOf=(uid,fb)=>{if(uid==='*')return 'Everyone';if(uid&&uid===FB.uid)retu
 const initials=n=>(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 // v122 profile photo: S.photo (160px JPEG data URL), shared encrypted with the family as member.photo
 const avPhoto=m=>{if(m.photo)return m.photo;if(m.id&&FB&&m.id===FB.uid&&S.photo)return S.photo;const f=m.id&&(FAM.members||[]).find(x=>x.id===m.id);return f&&f.photo||''};
-const av=(m,cls='')=>{const ph=avPhoto(m);return ph&&/^data:image\/(jpeg|png|webp);base64,/.test(ph)?`<span class="av ph ${cls}" style="background:#222 url('${ph}') center/cover">${m.online?'<i class="dot"></i>':''}</span>`:`<span class="av ${cls}" style="background:${m.color||'#8A5A2B'}">${esc(initials(m.name))}${m.online?'<i class="dot"></i>':''}</span>`};
+const av=(m,cls='')=>{const ph=avPhoto(m);return ph&&/^data:image\/(jpeg|png|webp);base64,/.test(ph)?`<span class="av ph ${cls}" style="background:#222 url('${ph}') center/cover">${m.online?'<i class="dot"></i>':''}</span>`:`<span class="av ${cls}" style="background:${avCol(m.color)}">${esc(initials(m.name))}${m.online?'<i class="dot"></i>':''}</span>`};
 const ago=ts=>{if(!ts)return'';const d=(Date.now()-(ts.toMillis?ts.toMillis():ts))/6e4,ar=S.lang==='ar';return d<1?(ar?'دلوقتي':'just now'):d<60?(ar?'من '+Math.round(d)+' د':Math.round(d)+' min ago'):d<1440?(ar?'من '+Math.round(d/60)+' س':Math.round(d/60)+' h ago'):(ar?'من '+Math.round(d/1440)+' يوم':Math.round(d/1440)+' d ago')};
 const SV=()=>firebase.firestore.FieldValue.serverTimestamp();
 
@@ -4767,7 +4769,7 @@ function renderChat(scroll){const C=CHATS[curChat];if(!C)return;const box=docume
   const big=/^(\p{Extended_Pictographic}|\p{Emoji_Component}|‍|️|\s){1,12}$/u.test(m.t)&&[...m.t.replace(/\s/g,'')].length<=8&&/\p{Extended_Pictographic}/u.test(m.t);
   const counts={};Object.values(m.re||{}).forEach(e=>counts[e]=(counts[e]||0)+1);
   const ticks=me?(g?ic('check',12,'',2.4):(otherRead>=ms?`<span style="color:#A5F3FC;display:flex">${ic('check',12,'',2.4)}${ic('check',12,'',2.4)}</span>`:ic('check',12,'',2.4))):'';
-  h+=`<div class="mrow ${me?'me':'them'} ${cont?'cont':''}">${!me&&g?(cont?'<span style="width:30px;flex:none"></span>':av(mem,'sm')):''}<div class="bub selok ${big?'big':''}" onclick="if(!(getSelection()+''))openRbar(event,'${m.id}')">${!me&&g&&!cont?`<div class="who" style="color:${mem.color}">${esc(nameOf(m.from))}</div>`:''}${esc(m.t)}<span class="tm">${new Date(ms).toLocaleTimeString(LOC(),{hour12:true,hour:'numeric',minute:'2-digit'})}${ticks}</span>${Object.keys(counts).length?`<div class="reacts">${Object.entries(counts).map(([e,n])=>`<span>${e}${n>1?' '+n:''}</span>`).join('')}</div>`:''}</div></div>`;prev=m});
+  h+=`<div class="mrow ${me?'me':'them'} ${cont?'cont':''}">${!me&&g?(cont?'<span style="width:30px;flex:none"></span>':av(mem,'sm')):''}<div class="bub selok ${big?'big':''}" onclick="if(!(getSelection()+''))openRbar(event,'${m.id}')">${!me&&g&&!cont?`<div class="who" style="color:${avCol(mem.color,1)}">${esc(nameOf(m.from))}</div>`:''}${esc(m.t)}<span class="tm">${new Date(ms).toLocaleTimeString(LOC(),{hour12:true,hour:'numeric',minute:'2-digit'})}${ticks}</span>${Object.keys(counts).length?`<div class="reacts">${Object.entries(counts).map(([e,n])=>`<span>${e}${n>1?' '+n:''}</span>`).join('')}</div>`:''}</div></div>`;prev=m});
  box.innerHTML=h||(emptyHtml('chat',dzL('مفيش رسايل','No messages yet'),dzL('قول صباح الخير للعيلة. كل الرسايل مشفّرة.','Say good morning to the family. Every message is encrypted.'),dzL('اكتب','Write'),"document.getElementById('cinput').focus()"));
  if(scroll||atBottom)box.scrollTop=box.scrollHeight}
 async function sendMsg(){const inp=document.getElementById('cinput'),t=inp.value.trim();if(!t||!curChat)return;const cid=curChat,key=await keyFor(cid);if(!key){toast('Private chat not ready yet: '+nameOf(otherOf(cid))+' must open the app once','lock');return}
@@ -4792,7 +4794,7 @@ async function delMsg(mid){closeRbar();try{await famRef().collection('chats').do
 addEventListener('popstate',()=>{if(curChat)closeChat(true)});
 document.getElementById('cinput')&&document.getElementById('cinput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!IS_NATIVE){e.preventDefault();sendMsg()}});
 
-function colorPicker(){pickColor=pickColor||S.color||AVCOLORS[0];return `<div class="colors">${AVCOLORS.map(c=>`<button style="background:${c}" class="${c===pickColor?'sel':''}" onclick="pickColor='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));this.classList.add('sel')"></button>`).join('')}</div>`}
+function colorPicker(){pickColor=pickColor||S.color||AVCOLORS[0];return `<div class="colors">${AVCOLORS.map(c=>`<button style="background:${avCol(c)}" class="${c===pickColor?'sel':''}" onclick="pickColor='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));this.classList.add('sel')"></button>`).join('')}</div><div class="sub" style="margin-top:8px">${dzL('أول لون بيمشي مع لون الثيم اللي إنت مختاره.','The first colour follows your theme.')}</div>`}
 
 // ---- multiple family groups: remember every family, one is active at a time
 let famAddMode=false;
