@@ -594,6 +594,9 @@ body.reading .toast,html.light body.reading .toast,html.glass body.reading .toas
 body.reading .toast.on{box-shadow:0 12px 30px rgba(60,40,10,.45)!important}
 body.reading .toast .ico{background:#A9875A!important;color:#fff!important}
 body.reading .toast *{color:inherit}
+.btn:disabled,.btn[disabled]{background:var(--s2)!important;color:var(--mu)!important;box-shadow:none!important;border-color:var(--bd)!important}
+.pg-card .sub{margin:6px 0 12px}.pg-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pg-tiers button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px;border-radius:16px;border:1px solid var(--bd);background:var(--s1);font-family:inherit;color:var(--tx)}.pg-tiers b{font-size:15px}.pg-tiers small{font-size:13px;color:var(--a1);font-weight:800}.pg-tiers i{font-style:normal;font-size:11.5px;color:var(--mu)}
+.pg-tip{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;color:var(--mu)}.pg-row{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-top:1px solid var(--bd)}.pg-row b{font-size:14px}.pg-row span{font-size:13.5px;color:var(--mu);line-height:1.7}.pg-li{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13.5px;line-height:1.7}.pg-li svg{flex:none;margin-top:5px;color:var(--ok)}
 /* v136 SPEED: the background blobs no longer move (they made the frosted menu re-blur every frame, even when idle); badge shine runs twice, not forever */
 .aurora i{animation:none!important;will-change:auto!important}.badge.got::after{animation-iteration-count:2!important}
 .tcard .tc-h{cursor:pointer}.tc-chev{margin-inline-start:auto;display:grid;transform:rotate(90deg);transition:transform .25s;color:var(--mu)}html[dir=rtl] .tc-chev{transform:rotate(90deg)}.tcard:not(.tmin) .tc-chev{transform:rotate(-90deg)}
@@ -1340,6 +1343,7 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
 <section class="view" id="v-prizes">
   <div class="top"><div class="greet"><p>Spend points on rewards you choose</p><h1>Prizes</h1></div><div class="pill ptsPill2"></div></div>
   <div class="shield-buy"><span class="em">🛡️</span><div><b id="shTitle">Streak shield</b><small id="shSub">Protects your streak if you miss a day · 150 points</small></div><button class="btn" onclick="buyShield()" id="shBtn">Buy</button></div>
+  <div id="ptsGuide"></div>
   <div class="sec"><h3>Reward shop</h3><button class="link" onclick="openReward()" id="addPrize"></button></div>
   <div id="rewards"></div>
   <div class="sec" style="margin-top:18px"><h3>Claimed</h3></div>
@@ -1428,7 +1432,7 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
   <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" onclick="saveQuick()">Add to route</button></div></div></div>
 <div class="sheet" id="rewardSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>New prize</h3>
   <label>Prize</label><input id="rName" placeholder="e.g. Favorite dessert">
-  <label>Cost in points</label><input id="rCost" type="number" min="1" value="100">
+  <label>Cost in points</label><input id="rCost" type="number" min="1" value="100" oninput="rCostHint()"><div class="sub" id="rCostH" style="margin-top:6px"></div>
   <label>Icon</label><div class="icons" id="rIconPick"></div>
   <div class="row"><button class="btn ghost" onclick="closeSheets()">Cancel</button><button class="btn" onclick="saveReward()">Save</button></div></div></div>
 <div class="sheet" id="nameSheet" onclick="if(event.target===this)closeSheets()"><div class="panel"><h3>Your name</h3><input id="nameIn" placeholder="Your name" onkeydown="if(event.key==='Enter')saveName()"><div class="sub nm-hint">Shown in the greeting and to your family</div><div class="row"><button class="btn" onclick="saveName()">Save</button></div></div></div>
@@ -1908,6 +1912,10 @@ const LIFE_TABS=()=>[['ib',lL('العبادات','Worship'),'mosque','green'],['
 function lifeSwitch(){openMenu(lL('حياتي','My life'),LIFE_TABS().map(([k,n,i,c])=>({k,label:n,icon:i,c,on:k===lifeTab})),k=>lifeOpen(k))}
 function lifeDraw(){const t=LIFE_TABS().find(x=>x[0]===lifeTab);document.getElementById('lifeTitle').textContent=t?t[1]:'';const b=document.getElementById('lifeBody');const y=b.scrollTop;
  b.innerHTML=lifeTab==='ib'?ibHtml():lifeTab==='he'?heHtml():lifeTab==='mo'?moHtml():leHtml();b.scrollTop=y}
+// v137 POINTS INTEGRITY: one-time / capped awards so nothing can be farmed by tick-untick, delete-recreate or set-reset
+function awOnce(k){const r=dayRec();r.aw=r.aw||{};if(r.aw[k])return false;r.aw[k]=1;return true}
+function awCap(k,max){const r=dayRec();r.aw=r.aw||{};const n=r.aw[k]||0;if(n>=max)return false;r.aw[k]=n+1;return true}
+function awUndo(k){const r=dayRec();if(r.aw&&r.aw[k]){if(r.aw[k]===1)delete r.aw[k];else r.aw[k]--}}
 function lPts(n,msg,icon){addPts(n,msg,icon);if(document.body.classList.contains('lifeon'))lifeDraw()}
 const lsec=(t,ico,body,act)=>`<div class="card life-sec"><div class="dz-ph"><span class="ico c-${ico[1]}">${ic(ico[0],17)}</span><b>${t}</b>${act||''}</div>${body}</div>`;
 const lnum=n=>Math.round(n*100)/100;
@@ -1931,10 +1939,10 @@ function ibHtml(){const L=LF().ib,k=today(),S0=lSunOf(k),f=L.fast[k]||'',q=L.qiy
  +lsec(lL('حفظ القرآن','Quran memorization'),['book','green'],`<div class="life-row"><span>${lL('سور حافظها','Surahs memorized')}</span><b>${hz} / 114</b></div><div class="pbar" style="height:7px"><i style="width:${hz/114*100}%"></i></div>${hr?`<div class="sub" style="margin-top:6px">${lL('محتاج مراجعة: ','Need review: ')}${hr}</div>`:''}<button class="btn ghost wide" style="margin-top:10px" onclick="ibHifz()">${ic('list',16)}${lL('حدّث السور','Update surahs')}</button>`)
  +lsec(lL('حاسبة الزكاة','Zakat calculator'),['gem','amber'],`<div class="sub">${lL('الزكاة 2.5% من المال اللي عدّى عليه سنة هجرية وبلغ النصاب (قيمة 85 جرام دهب عيار 24). راجع عالم أو دار الإفتاء في الحالات الخاصة.','Zakat is 2.5% of wealth held for a lunar year above the nisab (value of 85 g of 24k gold). Ask a scholar for special cases.')}</div><button class="btn ghost wide" style="margin-top:10px" onclick="ibZakat()">${ic('gem',16)}${lL('احسب زكاتي','Calculate my zakat')}</button>`)}
 function ibSun(id){if(id==='duha'){const r=dayRec();r.sun=r.sun||{};r.sun.duha=!r.sun.duha;save();if(r.sun.duha)lPts(3,lL('صلاة الضحى','Duha prayer'),'sun');else{subPts(3);lifeDraw()}return}togSun(id);setTimeout(lifeDraw,50)}
-function ibQiyam(d){const L=LF().ib,k=today(),o=L.qiyam[k]||0,n=Math.max(0,Math.min(20,o+d));L.qiyam[k]=n;save();if(n>o&&o===0)lPts(5,lL('قيام الليل','Night prayer'),'moon');else lifeDraw()}
-function ibFast(v){const L=LF().ib,k=today(),o=L.fast[k]||'';L.fast[k]=v;if(o!=='q'&&v==='q'&&L.qada>0)L.qada--;if(o==='q'&&v!=='q')L.qada++;save();if(v&&!o)lPts(10,lL('تقبّل الله صيامك','May Allah accept your fast'),'moon');else lifeDraw()}
+function ibQiyam(d){const L=LF().ib,k=today(),o=L.qiyam[k]||0,n=Math.max(0,Math.min(20,o+d));L.qiyam[k]=n;save();if(n>o&&o===0&&awOnce('qiyam'))lPts(5,lL('قيام الليل','Night prayer'),'moon');else lifeDraw()}
+function ibFast(v){const L=LF().ib,k=today(),o=L.fast[k]||'';L.fast[k]=v;if(o!=='q'&&v==='q'&&L.qada>0)L.qada--;if(o==='q'&&v!=='q')L.qada++;save();if(v&&!o&&awOnce('fast'))lPts(10,lL('تقبّل الله صيامك','May Allah accept your fast'),'moon');else lifeDraw()}
 function ibQada(d){const L=LF().ib;L.qada=Math.max(0,L.qada+d);save();lifeDraw()}
-function ibSadAdd(){askNumber(lL('مبلغ الصدقة','Charity amount'),0,v=>{if(!(v>0))return;askText(lL('ملاحظة (اختياري)','Note (optional)'),'',n=>{LF().ib.sad.push({d:today(),amt:+v,note:(n||'').trim()});save();setTimeout(()=>lPts(5,lL('تقبّل الله','May Allah accept it'),'hands'),300)})},0,1e9,1)}
+function ibSadAdd(){askNumber(lL('مبلغ الصدقة','Charity amount'),0,v=>{if(!(v>0))return;askText(lL('ملاحظة (اختياري)','Note (optional)'),'',n=>{LF().ib.sad.push({d:today(),amt:+v,note:(n||'').trim()});save();setTimeout(()=>{if(awCap('sad',3))lPts(5,lL('تقبّل الله','May Allah accept it'),'hands');else lifeDraw()},300)})},0,1e9,1)}
 function ibHifz(){const H=LF().ib.hifz,st=v=>v==='m'?'✓ '+lL('حافظها','Memorized'):v==='r'?'↻ '+lL('محتاج مراجعة','Needs review'):lL('لسه','Not yet');
  openMenu(lL('اضغط على السورة لتغيير حالتها','Tap a surah to change its status'),SURAH_AR.map((n,i)=>({k:String(i+1),label:(i+1)+'. '+n,sub:st(H[i+1]),icon:'book',c:H[i+1]==='m'?'green':H[i+1]==='r'?'amber':'gray',on:H[i+1]==='m'})),k=>{const c=H[k];H[k]=!c?'m':c==='m'?'r':undefined;if(!H[k])delete H[k];save();lifeDraw();setTimeout(ibHifz,280)})}
 function ibZakat(){askNumber(lL('سعر جرام الدهب عيار 24 النهارده','Today’s price of 1 g 24k gold'),0,gp=>{if(!(gp>0))return;askNumber(lL('كل الفلوس والمدخرات والدهب (بالقيمة) اللي عدّى عليها سنة','All savings, cash and gold value held a full year'),0,w=>{const nis=gp*85,cur=LF().mo.cur;const msg=w>=nis?lL('الزكاة: '+lnum(w*0.025)+' '+cur+' (النصاب '+lnum(nis)+')','Zakat due: '+lnum(w*0.025)+' '+cur+' (nisab '+lnum(nis)+')'):lL('أقل من النصاب ('+lnum(nis)+' '+cur+')، مفيش زكاة','Below nisab ('+lnum(nis)+' '+cur+'), no zakat due');askConfirm(msg,lL('تمام','OK'),()=>{})},0,1e12,1)},0,1e7,1)}
@@ -1950,10 +1958,10 @@ function heHtml(){const H=LF().he,k=today(),w=H.water[k]||0,sl=H.sleep[k],wk=H.w
  +lsec(lL('الرياضة','Exercise'),['activity','teal'],`<div class="life-row"><span>${lL('الأسبوع ده','This week')}: <b>${wm} ${lL('من 150 دقيقة','of 150 min')}</b></span></div><div class="pbar" style="height:7px"><i style="width:${Math.min(100,wm/150*100)}%"></i></div>${wk.map(x=>`<div class="life-li"><span>${esc(x.t)}</span><b>${x.min} ${lL('د','min')}</b></div>`).join('')}`,`<button class="link" onclick="heWork()">${ic('plus',14)}${lL('سجّل','Log')}</button>`)
  +lsec(lL('الوزن','Weight'),['scale','amber'],`${W.length?`<div class="life-spark">${W.map(x=>`<i style="height:${wmx===wmn?50:((x.v-wmn)/(wmx-wmn)*80+15)}%" title="${x.v}"></i>`).join('')}</div><div class="life-row"><span>${lL('آخر وزن','Latest')}: <b>${W[W.length-1].v} ${lL('كجم','kg')}</b></span>${W.length>1?`<span>${(W[W.length-1].v-W[0].v>0?'+':'')+lnum(W[W.length-1].v-W[0].v)} ${lL('كجم','kg')}</span>`:''}</div>`:`<div class="sub">${lL('سجّل وزنك مرة في الأسبوع عشان تشوف الاتجاه.','Log weekly to see the trend.')}</div>`}`,`<button class="link" onclick="heWeight()">${ic('plus',14)}${lL('سجّل','Log')}</button>`)
  +lsec(lL('الأدوية','Medicines'),['pill','red'],`${H.meds.length?H.meds.map(m=>`<div class="life-med"><b>${esc(m.name)}</b><div class="life-chips">${m.times.map(t=>{const on=((H.mlog[k]||{})[m.id+'@'+t]);return `<button class="${on?'on':''}" onclick="heMedTake('${m.id}','${t}')">${on?ic('check',13,'',3):''}${fmt(t)}</button>`}).join('')}<button onclick="heMedDel('${m.id}',this)">${ic('trash',13)}</button></div></div>`).join(''):`<div class="sub">${lL('ضيف دواك ومواعيده، وهيوصلك تذكير في الميعاد.','Add a medicine and its times; you’ll get a reminder.')}</div>`}`,`<button class="link" onclick="heMedAdd()">${ic('plus',14)}${lL('ضيف','Add')}</button>`)}
-function heWater(d){const H=LF().he,k=today(),o=H.water[k]||0,n=Math.max(0,o+d);H.water[k]=n;save();HAP();if(n===H.wg&&d>0)lPts(5,lL('شربت هدفك من المية','Water goal reached'),'droplet');else lifeDraw()}
+function heWater(d){const H=LF().he,k=today(),o=H.water[k]||0,n=Math.max(0,o+d);H.water[k]=n;save();HAP();if(n===H.wg&&d>0&&awOnce('water'))lPts(5,lL('شربت هدفك من المية','Water goal reached'),'droplet');else lifeDraw()}
 function heWaterGoal(){askNumber(lL('كام كوباية في اليوم؟','Glasses per day?'),LF().he.wg,v=>{LF().he.wg=Math.max(1,Math.min(20,+v||8));save();lifeDraw()},1,20,1)}
 function heSleep(key){const H=LF().he,k=today();H.sleep[k]=H.sleep[k]||{};askTime(key==='bed'?lL('نمت الساعة كام امبارح؟','When did you go to bed?'):lL('صحيت الساعة كام؟','When did you wake up?'),H.sleep[k][key]||(key==='bed'?'23:00':'06:00'),v=>{H.sleep[k][key]=v;save();lifeDraw()})}
-function heWork(){const T=[lL('مشي','Walking'),lL('جري','Running'),lL('جيم','Gym'),lL('كورة','Football'),lL('سباحة','Swimming'),lL('عجلة','Cycling'),lL('تمارين في البيت','Home workout')];openMenu(lL('نوع الرياضة','Activity'),T.map((t,i)=>({k:String(i),label:t,icon:'activity',c:'teal'})),i=>{askNumber(lL('كام دقيقة؟','How many minutes?'),30,m=>{if(!(m>0))return;const H=LF().he,k=today();(H.work[k]=H.work[k]||[]).push({t:T[+i],min:+m});save();setTimeout(()=>lPts(5,lL('عاش! ','Nice! ')+T[+i],'activity'),300)},1,600,5)})}
+function heWork(){const T=[lL('مشي','Walking'),lL('جري','Running'),lL('جيم','Gym'),lL('كورة','Football'),lL('سباحة','Swimming'),lL('عجلة','Cycling'),lL('تمارين في البيت','Home workout')];openMenu(lL('نوع الرياضة','Activity'),T.map((t,i)=>({k:String(i),label:t,icon:'activity',c:'teal'})),i=>{askNumber(lL('كام دقيقة؟','How many minutes?'),30,m=>{if(!(m>0))return;const H=LF().he,k=today();(H.work[k]=H.work[k]||[]).push({t:T[+i],min:+m});save();setTimeout(()=>{if(awCap('work',2))lPts(5,lL('عاش! ','Nice! ')+T[+i],'activity');else lifeDraw()},300)},1,600,5)})}
 function heWeight(){const W=LF().he.weight;askNumber(lL('وزنك النهارده (كجم)','Today’s weight (kg)'),W.length?W[W.length-1].v:70,v=>{if(!(v>0))return;W.push({d:today(),v:+v});if(W.length>100)W.shift();save();lifeDraw()},20,300,0.1)}
 function heMedAdd(){askText(lL('اسم الدوا','Medicine name'),'',n=>{n=(n||'').trim();if(!n)return;askTime(lL('أول ميعاد','First time'),'09:00',t1=>{const m={id:uid(),name:n,times:[t1]};LF().he.meds.push(m);save();lifeDraw();scheduleNative();setTimeout(()=>askConfirm(lL('تضيف ميعاد تاني؟','Add another time?'),lL('ضيف','Add'),()=>askTime(lL('الميعاد التاني','Second time'),'21:00',t2=>{m.times.push(t2);m.times.sort();save();lifeDraw();scheduleNative()})),350)})})}
 function heMedTake(id,t){const H=LF().he,k=today();H.mlog[k]=H.mlog[k]||{};const key=id+'@'+t;H.mlog[k][key]=!H.mlog[k][key];save();HAP();lifeDraw()}
@@ -1976,7 +1984,7 @@ function moAdd(type){askNumber(type==='in'?lL('مبلغ الدخل','Income amou
 function moDel(id,b){if(!b.dataset.sure){askConfirm(lL('تمسح العملية دي؟','Delete this entry?'),lL('امسح','Delete'),()=>{b.dataset.sure=1;moDel(id,b)},1);return}const M=LF().mo;M.tx=M.tx.filter(x=>x.id!==id);save();lifeDraw()}
 function moBudget(){askNumber(lL('ميزانية الشهر','Monthly budget'),LF().mo.budget||0,v=>{LF().mo.budget=Math.max(0,+v||0);save();lifeDraw()},0,1e9,100)}
 function moSaveGoal(){askNumber(lL('هدف الادخار','Savings target'),LF().mo.save.goal||0,v=>{LF().mo.save.goal=Math.max(0,+v||0);save();lifeDraw()},0,1e12,100)}
-function moSaveAdd(){askNumber(lL('ضفت كام؟','How much did you add?'),0,v=>{const s=LF().mo.save;s.have=Math.max(0,s.have+(+v||0));save();if(s.goal&&s.have>=s.goal)lPts(20,lL('وصلت لهدف الادخار!','Savings goal reached!'),'sprout');else lifeDraw()},-1e9,1e9,1)}
+function moSaveAdd(){askNumber(lL('ضفت كام؟','How much did you add?'),0,v=>{const s=LF().mo.save;s.have=Math.max(0,s.have+(+v||0));save();if(s.goal&&s.have>=s.goal&&s.rw!==s.goal&&(s.rw=s.goal))lPts(20,lL('وصلت لهدف الادخار!','Savings goal reached!'),'sprout');else lifeDraw()},-1e9,1e9,1)}
 function moBillAdd(){askText(lL('اسم الفاتورة','Bill name'),'',n=>{n=(n||'').trim();if(!n)return;askNumber(lL('المبلغ','Amount'),0,a=>{askNumber(lL('يوم كام في الشهر؟','Day of month?'),1,d=>{LF().mo.bills.push({id:uid(),name:n,amt:+a||0,day:Math.max(1,Math.min(28,+d||1))});save();lifeDraw();scheduleNative()},1,28,1)},0,1e9,1)})}
 function moBillDel(id,b){if(!b.dataset.sure){askConfirm(lL('تمسح الفاتورة دي وتذكيرها؟','Delete this bill and its reminder?'),lL('امسح','Delete'),()=>{b.dataset.sure=1;moBillDel(id,b)},1);return}const M=LF().mo;M.bills=M.bills.filter(x=>x.id!==id);save();lifeDraw();scheduleNative()}
 function moCur(){openMenu(lL('العملة','Currency'),[['ج','جنيه مصري'],['EGP','EGP'],['ر.س','ريال سعودي'],['د.إ','درهم إماراتي'],['د.ت','دينار تونسي'],['ر.ق','ريال قطري'],['$','Dollar'],['€','Euro']].map(([k,n])=>({k,label:n,sub:k,icon:'gem',on:LF().mo.cur===k})),k=>{LF().mo.cur=k;save();lifeDraw()})}
@@ -1986,7 +1994,7 @@ function leHtml(){const E=LF().le,k=today(),due=E.cards.filter(c=>(c.due||'')<=k
  +lsec(lL('الكورسات','Courses'),['graduation','blue'],E.courses.map(c=>`<div class="life-li"><span>${esc(c.t)}<small>${c.done} ${lL('من','of')} ${c.n} ${lL('درس','lessons')}</small></span><button class="btn dz-mini" onclick="leCourse('${c.id}')" dir="ltr" ${c.done>=c.n?'disabled':''}>+1</button></div>`).join('')||`<div class="sub">${lL('ضيف كورس وعدد دروسه، وعلّم كل درس بتخلّصه.','Add a course and tick each lesson.')}</div>`,`<button class="link" onclick="leCourseAdd()">${ic('plus',14)}${lL('ضيف','Add')}</button>`)
  +lsec(lL('بطاقات المراجعة','Review cards'),['clipboard','amber'],`<div class="life-row"><span>${lL('عندك ','Due today: ')}<b>${due}</b> ${lL('بطاقة للمراجعة النهارده','to review')}</span><span>${E.cards.length} ${lL('بطاقة','cards')}</span></div><div class="sub">${lL('اكتب سؤال وإجابته. التطبيق بيرجّعهولك على فترات بتطول كل ما تفتكره، عشان المعلومة تثبت.','Write a question and its answer. It comes back at growing intervals so you remember.')}</div><div class="row" style="margin-top:10px"><button class="btn ghost" onclick="leCardAdd()">${ic('plus',15)}${lL('بطاقة','Card')}</button><button class="btn" onclick="leReview()" ${due?'':'disabled'}>${ic('rotate',15)}${lL('راجع','Review')}</button></div>`)}
 function leBookAdd(){askText(lL('اسم الكتاب','Book title'),'',t=>{t=(t||'').trim();if(!t)return;askNumber(lL('عدد صفحاته','Total pages'),200,p=>{LF().le.books.push({id:uid(),t,pages:Math.max(1,+p||1),at:0,done:false});save();lifeDraw()},1,5000,1)})}
-function leBookPage(id){const b=LF().le.books.find(x=>x.id===id);if(!b)return;askNumber(lL('وصلت لصفحة كام؟','Which page are you on?'),b.at,v=>{v=Math.max(0,Math.min(b.pages,+v||0));const d=v-b.at;b.at=v;const E=LF().le,k=today();if(d>0)E.read[k]=(E.read[k]||0)+d;if(v>=b.pages){b.done=true;save();lPts(30,lL('خلّصت كتاب: ','Finished: ')+b.t,'book')}else{save();if(d>=5)lPts(Math.min(15,Math.floor(d/5)),lL('قريت '+d+' صفحة','Read '+d+' pages'),'book');else lifeDraw()}},0,b.pages,1)}
+function leBookPage(id){const b=LF().le.books.find(x=>x.id===id);if(!b)return;askNumber(lL('وصلت لصفحة كام؟','Which page are you on?'),b.at,v=>{v=Math.max(0,Math.min(b.pages,+v||0));const d=v-b.at;b.at=v;const E=LF().le,k=today();if(d>0)E.read[k]=(E.read[k]||0)+d;const nd=Math.max(0,v-(b.mx||0));if(v>(b.mx||0))b.mx=v;if(v>=b.pages){b.done=true;save();if(!b.rw){b.rw=1;lPts(30,lL('خلّصت كتاب: ','Finished: ')+b.t,'book')}else lifeDraw()}else{save();if(nd>=5)lPts(Math.min(15,Math.floor(nd/5)),lL('قريت '+d+' صفحة','Read '+d+' pages'),'book');else lifeDraw()}},0,b.pages,1)}
 function leCourseAdd(){askText(lL('اسم الكورس','Course name'),'',t=>{t=(t||'').trim();if(!t)return;askNumber(lL('عدد الدروس','Number of lessons'),10,n=>{LF().le.courses.push({id:uid(),t,n:Math.max(1,+n||1),done:0});save();lifeDraw()},1,1000,1)})}
 function leCourse(id){const c=LF().le.courses.find(x=>x.id===id);if(!c||c.done>=c.n)return;c.done++;save();if(c.done>=c.n)lPts(30,lL('خلّصت كورس: ','Course done: ')+c.t,'graduation');else lPts(3,c.t+' · '+c.done+'/'+c.n,'graduation')}
 function leCardAdd(){askText(lL('السؤال','Question'),'',q=>{q=(q||'').trim();if(!q)return;setTimeout(()=>askText(lL('الإجابة','Answer'),'',a=>{a=(a||'').trim();if(!a)return;LF().le.cards.push({id:uid(),q,a,due:today(),iv:0,ef:2.5});save();lifeDraw();toast(lL('البطاقة اتضافت','Card added'),'check')}),280)})}
@@ -2255,7 +2263,20 @@ function renderAwards(){
  document.getElementById('badgeCount').textContent=S.badges.length+' / '+BADGES.length;try{renderGame()}catch(e){console.log(e)}
  document.getElementById('repBtn').innerHTML=ic('chart',18)+'Review: weeks, months, years';document.getElementById('shopBtn').innerHTML=ic('gift',18)+'Prize shop · '+S.points+' points';
 }
-function renderPrizes(){
+// v137 POINTS GUIDE: price rewards from your real average day, keep a shield reserve, explain how points work
+function ptsAvg(){const v=[];for(let d=1;d<=14;d++){const r=S.history[dzK(-d)];if(r&&r.pts>0)v.push(r.pts)}const a=v.length?Math.round(v.reduce((x,y)=>x+y,0)/v.length):0;return Math.max(150,Math.round(a/10)*10)}
+function ptsGuideHtml(){const a=ptsAvg(),tiers=[[dzL('صغيرة','Small'),dzL('يوم حلو','one good day'),a,'coffee'],[dzL('متوسطة','Medium'),dzL('أسبوع حلو','a good week'),a*5,'gift'],[dzL('كبيرة','Big'),dzL('شهر حلو','a good month'),a*20,'trophy']];
+ return `<div class="card pg-card"><div class="dz-ph"><span class="ico c-amber">${ic('star',17)}</span><b>${dzL('سعّر مكافآتك صح','Price your rewards right')}</b><button class="link" onclick="ptsGuide()">${dzL('إزاي النقاط بتشتغل','How points work')}</button></div>
+ <div class="sub">${dzL('يومك العادي بيجيب حوالي '+a+' نقطة. اختار مكافأة على قد مجهودها:','Your usual day earns about '+a+' points. Pick a reward that matches the effort:')}</div>
+ <div class="pg-tiers">${tiers.map(t=>`<button onclick="openReward(${t[2]})"><span class="ico c-amber">${ic(t[3],18)}</span><b>${t[0]}</b><small>${t[2]} ${dzL('نقطة','pts')}</small><i>≈ ${t[1]}</i></button>`).join('')}</div>
+ <div class="pg-tip">${ic('lock',14)}${dzL('سيب 150 نقطة دايمًا عشان حماية السلسلة.','Always keep 150 points for a streak shield.')}</div></div>`}
+function ptsGuide(){const P=document.getElementById('askPanel'),ar=S.lang==='ar';const rows=ar?[['المسار','كل صلاة 20، والجماعة +5. خطواتك 10 (أو اللي تحدده). خلّصت المسار كله: +50 مرة في اليوم.'],['أهم 3','الخطة 5، كل حاجة 10، الـ3 كلهم +25.'],['المهام والأهداف','المهمة 5 (لحد 20 مهمة في اليوم). خطوة المشروع 20، والهدف كله 100 مرة واحدة. العادة 3، والهدف اليومي 15.'],['التركيز','5 لكل 25 دقيقة.'],['العبادة','قسم الأذكار 10 (مرة في اليوم)، كل 100 تسبيحة 5 (لحد 50)، السنن والوتر 3، الصيام 10، الصدقة 5.'],['حاجات تانية','مراجعة الليل 10، اليوميات 10 (مرة في اليوم)، الفكرة 2 (لحد 10)، مهمة للعيلة لحد 30.']]:[['Route','Each prayer 20, jama\'ah +5. Your steps 10 (or what you set). Whole route done: +50 once a day.'],['Top 3','Plan 5, each item 10, all 3 +25.'],['Tasks & goals','Task 5 (up to 20 a day). Project step 20, finished goal 100 once. Habit 3, daily target 15.'],['Focus','5 per 25 minutes.'],['Worship','Adhkar section 10 (once a day), every 100 dhikr 5 (up to 50), sunnah and witr 3, fasting 10, charity 5.'],['Other','Night review 10, journal 10 (once a day), idea 2 (up to 10), family task up to 30.']];
+ const tips=ar?['الثبات أهم من يوم كبير: 3 أيام بـ150 أحسن من يوم بـ300 ويومين فاضيين.','حط أهم 3 بالليل لبكرة.','صلّي جماعة: نقط أكتر وتاج 👑.','علّم بس على اللي عملته فعلًا. لو شلت العلامة، النقط بترجع.']:['Consistency beats big days: three 150 days are better than one 300 day and two empty ones.','Set your top 3 the evening before.','Pray in jama\'ah: more points and the 👑 crown.','Only tick what you really did. Unticking takes the points back.'];
+ P.innerHTML=`<h3>${ar?'إزاي النقاط بتشتغل':'How points work'}</h3><div class="sub" style="margin-bottom:12px">${ar?'الرقم اللي فوق ⭐ رصيدك وبتصرف منه على المكافآت. كل 250 نقطة كسبتها في حياتك = مستوى جديد، والصرف مش بيقلّل مستواك.':'The ⭐ number is your balance, spent on rewards. Every 250 points you ever earn = a new level; spending never lowers your level.'}</div>
+ ${rows.map(r=>`<div class="pg-row"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}
+ <h3 style="margin-top:16px;font-size:16px">${ar?'عشان تستفيد أكتر':'To get the most out of it'}</h3>${tips.map(t=>`<div class="pg-li">${ic('check',14)}<span>${t}</span></div>`).join('')}
+ <div class="row" style="margin-top:14px"><button class="btn" onclick="closeAsk()">${ar?'تمام':'OK'}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+function renderPrizes(){const pgEl=document.getElementById('ptsGuide');if(pgEl)pgEl.innerHTML=ptsGuideHtml();
  document.getElementById('addPrize').innerHTML=ic('plus',16)+'Add';
  document.getElementById('rewards').innerHTML=S.rewards.map(r=>`<div class="reward"><span class="ico ${col(r.icon)}">${ic(r.icon,22)}</span><div class="info" style="flex:1"><b>${esc(r.name)}</b><div class="meta">${ic('star',12)}${r.cost} pts${S.points<r.cost?' · '+(r.cost-S.points)+' to go':''}</div></div>
   <button class="iconbtn" onclick="delReward('${r.id}')">${ic('trash',16)}</button><button class="btn" ${S.points<r.cost?'disabled':''} onclick="claim('${r.id}')">Claim</button></div>`).join('')||'<div class="empty">Add a prize to work toward.</div>';
@@ -2327,8 +2348,8 @@ function habitAdd(id,d){const g=S.goals.find(x=>x.id===id);if(!g)return;g.log=g.
  if(d>0){if(before<g.target&&after>=g.target){addPts(15,S.lang==='ar'?trS(g.title)+': خلصت '+(g.period==='day'?'النهارده':'الأسبوع ده')+'!':g.title+': done '+(g.period==='day'?'today':'this week')+'!','check');burst(80)}else addPts(3,g.title+' +1',gIcon(g))}else{subPts(before>=g.target&&after<g.target?15:3);save();render()}
  if(document.getElementById('goalSheet').classList.contains('on'))openGoal(id);checkBadges()}
 function stepToggle(gid,sid){const g=S.goals.find(x=>x.id===gid),st=g.steps.find(x=>x.id===sid);st.done=!st.done;st.doneAt=st.done?Date.now():null;
- if(st.done){addPts(20,'Step done: '+st.name,'check');goalDoneCheck(g)}else{g.done=false;subPts(20)}openGoal(gid)}
-function goalDoneCheck(g){if(!g.done&&gProg(g)>=100&&g.type!=='habit'){g.done=true;g.doneAt=Date.now();save();setTimeout(()=>{celebrate(gIcon(g),'Goal achieved!',g.title+'. MashaAllah! +100 points');burst(160)},400);addPts(100,null)}
+ if(st.done){addPts(20,'Step done: '+st.name,'check');goalDoneCheck(g)}else{if(g.done&&g.dpa){g.dpa=0;subPts(100,1)}g.done=false;subPts(20)}openGoal(gid)}
+function goalDoneCheck(g){if(!g.done&&gProg(g)>=100&&g.type!=='habit'){g.done=true;g.doneAt=Date.now();save();const fresh=!g.dpaEver;g.dpaEver=1;setTimeout(()=>{celebrate(gIcon(g),'Goal achieved!',g.title+'. MashaAllah!'+(fresh?' +100 points':''));burst(160)},400);if(fresh){g.dpa=1;addPts(100,null)}}
  if(g.parent){const p=S.goals.find(x=>x.id===g.parent);if(p)goalDoneCheck(p)}}
 function stepAdd(gid){const i=document.getElementById('stepIn'),v=i.value.trim();if(!v)return;const g=S.goals.find(x=>x.id===gid);g.steps.push({id:uid(),name:v,done:false});g.done=false;save();openGoal(gid);setTimeout(()=>document.getElementById('stepIn').focus(),50)}
 function stepEdit(gid,sid){const g=S.goals.find(x=>x.id===gid),st=g&&(g.steps||[]).find(x=>x.id===sid);if(!st)return;HAP();askText(S.lang==='ar'?'تعديل الخطوة':'Edit step',st.name,v=>{v=(v||'').trim();if(v){st.name=v;save()}setTimeout(()=>openGoal(gid),280)})}
@@ -2345,7 +2366,7 @@ function stepEdit(gid,sid){const g=S.goals.find(x=>x.id===gid),st=g&&(g.steps||[
  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end)})();
 function stepDel(gid,sid,ok){const g=S.goals.find(x=>x.id===gid);if(!ok){const st=(g.steps||[]).find(x=>x.id===sid);askConfirm(dzL('تمسح الخطوة «'+(st?st.name:'')+'»؟','Delete the step «'+(st?st.name:'')+'»?'),dzL('امسح','Delete'),()=>stepDel(gid,sid,1),1);return}g.steps=g.steps.filter(x=>x.id!==sid);save();openGoal(gid)}
 function numSet(gid,v){const g=S.goals.find(x=>x.id===gid);v=+v;if(isNaN(v))return;const better=g.target>=g.start?v>g.current:v<g.current;g.history=g.history||[];g.history.push({d:Date.now(),v});g.current=v;
- if(better)addPts(5,g.title+': '+fmtNum(v)+' '+g.unit,gIcon(g));else save();goalDoneCheck(g);openGoal(gid)}
+ const up=g.target>=g.start;const nb=g.best==null||(up?v>g.best:v<g.best);if(better&&nb){g.best=v;if(awCap('num'+g.id,3))addPts(5,g.title+': '+fmtNum(v)+' '+g.unit,gIcon(g));else save()}else save();goalDoneCheck(g);openGoal(gid)}
 // ---- links on goals and route steps (Drive, Docs, any URL) ----
 function normUrl(u){u=(u||'').trim();if(!u)return'';if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;if(/\s/.test(u.trim()))return'';try{const x=new URL(u);if(/^https?:$/.test(x.protocol)&&!/\.[a-z]{2,}$/i.test(x.hostname))return'';return /^(https?|mailto|tel):$/.test(x.protocol)?x.href:''}catch(e){return''}}
 function linkKind(u){let h='';try{h=new URL(u).hostname.replace(/^www\./,'')}catch(e){}const pth=(()=>{try{return new URL(u).pathname}catch(e){return''}})();
@@ -2381,7 +2402,7 @@ function openGoal(id){const g=S.goals.find(x=>x.id===id);if(!g)return;const p=gP
   <div class="row" style="margin-top:18px"><button class="btn ghost" onclick="openNewGoal(null,null,'${g.id}')">${ic('pen',15)}Edit</button><button class="btn ghost" onclick="archiveGoal('${g.id}')">${g.done?'Archive':'Archive'}</button><button class="btn red" onclick="delGoal('${g.id}',this)">${ic('trash',15)}</button></div>`;
  closeSheets();document.getElementById('goalSheet').classList.add('on');renderGoals()}
 function archiveGoal(id){const g=S.goals.find(x=>x.id===id);g.archived=true;S.goals.forEach(k=>{if(k.parent===id)k.parent=null});save();closeSheets();render();toast('Goal archived','check')}
-function delGoal(id,b){if(!b.dataset.sure){const g=S.goals.find(x=>x.id===id);askConfirm(dzL('تمسح الهدف «'+(g?g.title:'')+'»؟\nخطواته وتقدّمه هيتمسحوا.','Delete the goal «'+(g?g.title:'')+'»?\nIts steps and progress will be deleted.'),dzL('امسح الهدف','Delete goal'),()=>{b.dataset.sure=1;delGoal(id,b)},1);return}S.goals=S.goals.filter(x=>x.id!==id);S.goals.forEach(k=>{if(k.parent===id)k.parent=null});save();closeSheets();render();toast('Goal deleted','trash')}
+function delGoal(id,b){if(!b.dataset.sure){const g=S.goals.find(x=>x.id===id);askConfirm(dzL('تمسح الهدف «'+(g?g.title:'')+'»؟\nخطواته وتقدّمه هيتمسحوا.','Delete the goal «'+(g?g.title:'')+'»?\nIts steps and progress will be deleted.'),dzL('امسح الهدف','Delete goal'),()=>{b.dataset.sure=1;delGoal(id,b)},1);return}const gd=S.goals.find(x=>x.id===id);if(gd&&gd.cpa===today()){awUndo('gc');subPts(5,1)}S.goals=S.goals.filter(x=>x.id!==id);S.goals.forEach(k=>{if(k.parent===id)k.parent=null});save();closeSheets();render();toast('Goal deleted','trash')}
 function openNewGoal(type,parent,editId){const e=editId?S.goals.find(x=>x.id===editId):null;gNew=e?{...e,steps:e.steps,editing:true}:{type:type||null,parent:parent||null,area:'personal',icon:null,title:'',deadline:''};drawNewGoal();closeSheets();document.getElementById('goalNewSheet').classList.add('on')}
 function useTpl(i){const [type,title,area,icon,x]=GTPL[i];gNew={...gNew,type,title,area,icon,...x};drawNewGoal()}
 const HUNITS=['times','pages','minutes','rak\'ahs','glasses of water','km','steps','push-ups','videos','lessons'];
@@ -2413,7 +2434,7 @@ function saveGoal(){const G=gNew;G.title=document.getElementById('ngTitle').valu
  if(g.type==='project')g.steps=(typeof G.steps==='string'?G.steps:'').split('\n').map(x=>x.trim()).filter(Boolean).map(n=>({id:uid(),name:n,done:false}));
  if(g.type==='habit')Object.assign(g,{target:G.target||1,unit:G.unit||'times',period:G.period||'day',log:{}});
  if(g.type==='number')Object.assign(g,{start:G.start,target:G.target,current:G.start,unit:G.unit,history:[{d:Date.now(),v:G.start}]});
- S.goals.push(g);if(!S.goals.some(x=>x.id===S.timer.cat)&&g.type!=='habit')S.timer.cat=g.id;save();closeSheets();gFilter=g.parent?'all':(g.type==='habit'?gFilter:'all');addPts(5,'Goal created: '+g.title,g.icon);if(g.parent)openGoal(g.parent)}
+ S.goals.push(g);if(!S.goals.some(x=>x.id===S.timer.cat)&&g.type!=='habit')S.timer.cat=g.id;save();closeSheets();gFilter=g.parent?'all':(g.type==='habit'?gFilter:'all');if(awCap('gc',3)){g.cpa=today();addPts(5,'Goal created: '+g.title,g.icon)}else save();if(g.parent)openGoal(g.parent)}
 
 function togMs(id){const m=S.project.milestones.find(x=>x.id===id);m.done=!m.done;save();if(m.done){addPts(30,'Milestone done!','graduation');if(projPct()===100)setTimeout(()=>{celebrate('graduation','Project complete!','Every milestone finished. MashaAllah!');burst(160)},400)}else subPts(30)}
 function delMs(id){S.project.milestones=S.project.milestones.filter(x=>x.id!==id);save();render()}
@@ -2512,7 +2533,7 @@ function subPts(n,silent){S.points=Math.max(0,S.points-n);S.earned=Math.max(0,S.
 function toggle(id){if(window._lpFired){window._lpFired=false;return}
  const rec=dayRec(),t=S.tasks.find(x=>x.id===id);if(!t)return;
  const i=rec.done.indexOf(id);
- if(i>=0){rec.done.splice(i,1);subPts(t.pts);return}
+ if(i>=0){rec.done.splice(i,1);subPts(t.pts,1);if(rec.perf&&pctOf(today())<100){rec.perf=0;subPts(50,1)}render();return}
  const before=pctOf(today());rec.done.push(id);S.points+=t.pts;S.earned+=t.pts;rec.pts=(rec.pts||0)+t.pts;justDone=id;
  const now=new Date().toTimeString().slice(0,5);if(now<effTime(t))S.early=(S.early||0)+1;
  if(t.prayer==='fajr'){const [h,m]=t.time.split(':').map(Number),lim=new Date();lim.setHours(h+1,m);if(new Date()<=lim)S._fajr=true}
@@ -2520,13 +2541,13 @@ function toggle(id){if(window._lpFired){window._lpFired=false;return}
  const lvBefore=Math.floor((S.earned-t.pts)/250)+1;
  save();render();chime();stepTransition(id);
  const p=pctOf(today());
- if(p>=100&&before<100){burst(160);S.points+=50;S.earned+=50;rec.pts=(rec.pts||0)+50;save();render();setTimeout(()=>celebrate('trophy','Perfect day!','You completed every step of your route. +50 bonus points'),300)}
+ if(p>=100&&before<100&&!rec.perf){rec.perf=1;burst(160);S.points+=50;S.earned+=50;rec.pts=(rec.pts||0)+50;save();render();setTimeout(()=>celebrate('trophy','Perfect day!','You completed every step of your route. +50 bonus points'),300)}
  else{burst(40);toast(T(CHEERS[Math.floor(Math.random()*CHEERS.length)])+'  +'+t.pts,taskIcon(t))}
  
  checkBadges();
 }
 function checkBadges(){BADGES.forEach(b=>{if(!S.badges.includes(b.id)&&b.test()){S.badges.push(b.id);save();setTimeout(()=>{celebrate(b.icon,'New badge: '+b.name,b.desc);burst(100)},1200)}});renderAwards()}
-function claim(id){const r=S.rewards.find(x=>x.id===id);if(!r||S.points<r.cost)return;S.points-=r.cost;S.claimed.push({icon:r.icon,name:r.name,date:new Date().toLocaleDateString()});save();render();burst(120);celebrate(r.icon,'Enjoy your prize!',S.lang==='ar'?r.name+'. تستاهلها.':r.name+'. You earned it.');checkBadges()}
+function claim(id,ok){const r=S.rewards.find(x=>x.id===id);if(!r||S.points<r.cost)return;if(!ok&&!(gm().shields>0)&&S.points-r.cost<150){askConfirm(dzL('بعد المكافأة دي رصيدك هيبقى '+(S.points-r.cost)+' نقطة، أقل من 150 اللي محتاجهم لحماية السلسلة. تكمّل؟','After this your balance will be '+(S.points-r.cost)+', under the 150 a streak shield needs. Continue?'),dzL('أيوه، خدها','Yes, claim it'),()=>claim(id,1));return}S.points-=r.cost;S.claimed.push({icon:r.icon,name:r.name,date:new Date().toLocaleDateString()});save();render();burst(120);celebrate(r.icon,'Enjoy your prize!',S.lang==='ar'?r.name+'. تستاهلها.':r.name+'. You earned it.');checkBadges()}
 function delReward(id,ok){if(!ok){askConfirm(dzL('تمسح المكافأة دي؟','Delete this reward?'),dzL('امسح','Delete'),()=>delReward(id,1),1);return}S.rewards=S.rewards.filter(r=>r.id!==id);save();render()}
 function resetToday(){const rec=dayRec();rec.done.forEach(id=>{const t=S.tasks.find(x=>x.id===id);if(t)subPts(t.pts,true)});rec.done=[];rec.resched={};save();render();toast('Today was reset','rotate')}
 
@@ -2621,7 +2642,8 @@ document.addEventListener('touchend',e=>{if(!pkT)return;const t=e.changedTouches
 function delTask(id,ok){const t0=S.tasks.find(t=>t.id===id);if(!t0||t0.prayer)return;if(!ok){askConfirm(T('Delete this step from your route?')+'\n'+T(t0.name),T('Delete'),()=>delTask(id,1),1);return}S.tasks=S.tasks.filter(t=>t.id!==id);save();render();renderEdit()}
 function drawIcons(el,arr,sel,cb){const c=document.getElementById(el);c.innerHTML=arr.map(i=>`<button data-k="${i}" class="${i===sel?'sel':''}">${ic(i,22)}</button>`).join('');
  c.querySelectorAll('button').forEach(b=>b.onclick=()=>{c.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');b.innerHTML=ic(b.dataset.k,22,'draw');cb(b.dataset.k)})}
-function openReward(){document.getElementById('rName').value='';document.getElementById('rCost').value=100;pickRIcon='gift';drawIcons('rIconPick',REWARD_ICONS,pickRIcon,v=>pickRIcon=v);document.getElementById('rewardSheet').classList.add('on')}
+function openReward(c){document.getElementById('rName').value='';document.getElementById('rCost').value=c||ptsAvg();rCostHint();pickRIcon='gift';drawIcons('rIconPick',REWARD_ICONS,pickRIcon,v=>pickRIcon=v);document.getElementById('rewardSheet').classList.add('on')}
+function rCostHint(){const e=document.getElementById('rCostH'),v=+document.getElementById('rCost').value||0,a=ptsAvg();if(!e)return;const d=Math.max(1,Math.round(v/a*2)/2);e.textContent=dzL('≈ '+d+(d===1?' يوم':' أيام')+' من يومك العادي ('+a+' نقطة)','≈ '+d+' day'+(d===1?'':'s')+' of your usual day ('+a+' points)')}
 function saveReward(){const name=document.getElementById('rName').value.trim(),cost=Math.max(1,+document.getElementById('rCost').value||100);if(!name){toast('Name your prize','gift');return}
  S.rewards.push({id:uid(),icon:pickRIcon,name,cost});save();render();closeSheets()}
 function setName(){document.getElementById('nameIn').value=S.name;document.getElementById('nameSheet').classList.add('on')}
@@ -2943,8 +2965,8 @@ function adkTap(i){const cat=adkCat,L=adhkarList(cat),st=adkState();st[cat]=st[c
  st._t=st._t||{};if(!st._t[cat])st._t[cat]={s:Date.now(),acc:0,run:Date.now(),last:Date.now()};else if(!st._t[cat].e)adkTmTap(st._t[cat]);c[i]=(c[i]||0)+1;ADK_HIST.push({cat,i});if(ADK_HIST.length>200)ADK_HIST.shift();const fin=c[i]>=x.n;try{const H=HAP();if(H)fin?H.notification({type:'SUCCESS'}):H.impact({style:'LIGHT'})}catch(e){}
  save();const all=L.every((y,j)=>(c[j]||0)>=y.n);
  if(all&&!(st._done||{})[cat]){st._done=st._done||{};st._done[cat]=1;if(st._t[cat]&&!st._t[cat].e){const t=st._t[cat];adkClose(t);t.e=Date.now()}save();
-  const re=cat==='morning'?/morning adhkar|أذكار الصباح/i:cat==='evening'?/evening adhkar|أذكار المساء/i:null;const t=re&&sorted().find(z=>re.test(z.name)),rec=dayRec();
-  if(t&&!rec.done.includes(t.id)){toggle(t.id)}else addPts(10,T('Adhkar complete'),'beads');
+  const re=cat==='morning'?/morning adhkar|أذكار الصباح/i:cat==='evening'?/evening adhkar|أذكار المساء/i:null;const t=re&&sorted().find(z=>re.test(z.name)),rec=dayRec(),adkFirst=awOnce('adk'+cat);
+  if(t&&!rec.done.includes(t.id)){toggle(t.id)}else if(adkFirst)addPts(10,T('Adhkar complete'),'beads');
   celebrate('beads',(ADK_CATS.find(z=>z[0]===cat)||[])[1]||'',T('Done. May Allah accept it')+(st._t[cat]&&st._t[cat].e?' · '+durTxt(adkDur(st._t[cat])):''))}
  if(document.body.classList.contains('adkreading')){adkRDraw();return}renderFaith();if(fin&&!all){setTimeout(()=>{const nx=document.querySelectorAll('#faithBody .adk:not(.ok)')[0];if(nx)nx.scrollIntoView({behavior:'smooth',block:'center'})},120)}}
 // undo: take back one count (a finished card opens again). Rewards already given for finishing the list stay, and aren't given twice.
@@ -3203,9 +3225,9 @@ function tdQuickAdd(){const i=document.getElementById('tdIn');const v=(i.value||
  const x={id:uid(),t:P.t,list:P.list,pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
  TD().items.push(x);i.value='';save();renderTasks();SFX('pop');toast(L('اتضافت: ','Added: ')+x.t+(x.due?' · '+tdDueTxt(x):''),'check')}
 function tdToggle(id){const x=TD().items.find(y=>y.id===id);if(!x)return;
- if(x.status==='done'){x.status='todo';x.doneAt=null;save();renderTasks();return}
+ if(x.status==='done'){x.status='todo';if(x.pa){x.pa=0;subPts(5,1)}x.doneAt=null;save();renderTasks();return}
  if(x.rep&&x.due){const nx=tdNext(x);TD().items.push({...x,id:uid(),status:'done',doneAt:Date.now(),rep:null,subs:(x.subs||[]).map(s=>({...s}))});x.due=nx;(x.subs||[]).forEach(s=>s.d=false);save();renderTasks();tickCheck&&tickCheck();toast(L('تمام! المرة الجاية: ','Done! Next: ')+tdDueTxt(x),'rotate');return}
- x.status='done';x.doneAt=Date.now();addPts(5,L('مهمة خلصت','Task done'),'check');save();renderTasks()}
+ x.status='done';x.doneAt=Date.now();if(awCap('td',20)){x.pa=1;addPts(5,L('مهمة خلصت','Task done'),'check')}save();renderTasks()}
 function tdNext(x){let k=x.due;if(x.rep==='daily')return tdAdd(k,1);if(x.rep==='weekly')return tdAdd(k,7);if(x.rep==='monthly'){const d=tdD(k);d.setMonth(d.getMonth()+1);return keyOf(d)}
  if(x.rep==='weekdays'){do{k=tdAdd(k,1)}while([5,6].includes(tdD(k).getDay()));return k}return tdAdd(k,1)}
 function tdRow(x){const pc=PRI_C[x.pri||0],ov=x.due&&x.due<today()&&x.status!=='done',sd=(x.subs||[]).filter(s=>s.d).length,ls=x.list&&TD().lists.find(l=>l.id===x.list);
@@ -3432,7 +3454,7 @@ function tzDown(e){window._tzd={x:e.clientX,y:e.clientY,t:Date.now()}}
 function tzUp(e){const d=window._tzd;window._tzd=null;if(!d)return;if(Math.abs(e.clientX-d.x)>10||Math.abs(e.clientY-d.y)>10||Date.now()-d.t>800)return;tzTap(e)}
 function tzTap(e){const T=tz(),D=DHIKR[T.i]||DHIKR[0],tg=T.target||D[2],r=dayRec();T.c++;r.tasbih=(r.tasbih||0)+1;
  if(T.c>=tg){buzz(true);tone([784,1175],.08);T.c=0;T.r=(T.r||0)+1;toast(D[0]+' × '+tg+' done','beads');if(T.i<2&&!T.target){T.i++;T.r=0;save();renderFaith();return}}else buzz(false);
- if(Math.floor(r.tasbih/100)>(r.tzP||0)){r.tzP=Math.floor(r.tasbih/100);S.points+=5;S.earned+=5;r.pts=(r.pts||0)+5;toast('100 dhikr  +5','beads')}
+ if(Math.floor(r.tasbih/100)>(r.tzP||0)&&(r.tzP||0)<10){r.tzP=Math.floor(r.tasbih/100);S.points+=5;S.earned+=5;r.pts=(r.pts||0)+5;toast('100 dhikr  +5','beads')}
  document.getElementById('tzN').textContent=T.c;document.getElementById('tzDay').textContent=r.tasbih;document.getElementById('tzT').textContent='of '+tg+' · round '+((T.r||0)+1);document.getElementById('tzArc').style.strokeDashoffset=691*(1-T.c/tg);
  clearTimeout(window._tzs);window._tzs=setTimeout(()=>{save();renderFaithBar();document.getElementById('ptsPill').innerHTML=ic('star',16)+'<span>'+S.points+'</span>'},800)}
 // ---- khatma ----
@@ -3471,8 +3493,8 @@ function khAskPage(){askNumber(dzL('إنت في صفحة كام؟ (0–604)','Wh
 function toastUndo(m,icon,cb){toast(m,icon);const t=document.getElementById('toast');window._tuCb=cb;const b=document.createElement('button');b.className='t-undo';b.textContent=dzL('تراجع','Undo');b.onclick=e=>{e.stopPropagation();const c=window._tuCb;window._tuCb=null;t.classList.remove('on');c&&c()};t.appendChild(b);clearTimeout(tt);tt=setTimeout(()=>{t.classList.remove('on');window._tuCb=null},6000)}
 function khSetPlan(d){const K=kh();K.days=d;K.start=today();save();renderFaith();toast(T('Plan')+': '+d+' '+T('days'),'clock')}
 function khAdd(n){const K=kh(),r=dayRec();const before=K.page;K.page=Math.max(0,Math.min(604,K.page+n));const d=K.page-before;r.qp=Math.max(0,(r.qp||0)+d);
- if(d>0){S.points+=d;S.earned+=d;r.pts=(r.pts||0)+d}
- if(K.page>=604){K.done=(K.done||0)+1;K.page=0;K.start=today();save();renderFaith();burst(200);celebrate('book','Khatma complete!','You finished the whole Quran. May Allah accept it. +100 points');addPts(100);return}
+ if(d>0){S.points+=d;S.earned+=d;r.pts=(r.pts||0)+d}else if(d<0){subPts(Math.min(-d,Math.max(0,r.qpP||0)),1)}if(d>0)r.qpP=(r.qpP||0)+d;else r.qpP=Math.max(0,(r.qpP||0)+d);
+ if(K.page>=604){K.done=(K.done||0)+1;K.page=0;K.start=today();save();renderFaith();burst(200);const readSince=Object.entries(S.history||{}).filter(([k])=>!K.start||k>=K.start).reduce((a,[,v])=>a+((v&&v.qp)||0),0)+(r.qp||0);const real=readSince>=300;celebrate('book','Khatma complete!','You finished the whole Quran. May Allah accept it.'+(real?' +100 points':''));if(real)addPts(100);else{save();render()}return}
  const q=sorted().find(t=>/quran|qur'an|قرآن/i.test(t.name));if(q&&!r.done.includes(q.id)&&r.qp>=khTarget()){save();renderFaith();toggle(q.id);return}
  save();renderFaith();renderFaithBar();if(d>0)tone([660],.05)}
 function khSet(){askNumber(T('Which page are you on now? (0–604)'),kh().page,n=>{kh().page=n;save();renderFaith()},0,604,1)}
@@ -3521,7 +3543,7 @@ function renderIdeas(){const el=document.getElementById('ideasBody');if(!el)retu
  el.innerHTML=`<button class="btn wide" onclick="startRec()" style="margin-bottom:16px">${ic('mic',18)}Record an idea</button>
  <div class="sec"><h3>${ic('lightbulb',18)}To sort · ${open.length}</h3></div>${open.map(row).join('')||'<div class="empty">Nothing here. Tap the mic and say whatever is on your mind.</div>'}
  ${done.length?`<div class="sec" style="margin-top:16px"><h3>${ic('check',18)}Sorted · ${done.length}</h3></div>${done.slice(0,30).map(row).join('')}`:''}`}
-function addIdeaText(){const i=document.getElementById('ideaTxt'),v=i.value.trim();if(!v)return;S.ideas.push({id:uid(),at:Date.now(),text:v,aud:[]});i.value='';addPts(2,'Idea captured','lightbulb');renderIdeas()}
+function addIdeaText(){const i=document.getElementById('ideaTxt'),v=i.value.trim();if(!v)return;S.ideas.push({id:uid(),at:Date.now(),text:v,aud:[]});i.value='';if(awCap('idea',10))addPts(2,'Idea captured','lightbulb');else save();renderIdeas()}
 const SB=()=>IS_NATIVE?(CAP.Plugins&&CAP.Plugins.SpeechBridge)||(CAP.registerPlugin&&(window._sbp=window._sbp||CAP.registerPlugin('SpeechBridge'))):null;
 let recText='',sbL=null;
 function recLangBtns(){return `<div class="daychips" style="max-width:260px;margin:10px auto 0"><button class="${(S.vLang||'ar-EG')==='ar-EG'?'on':''}" onclick="setVLang('ar-EG')">عربي</button><button class="${S.vLang==='en-US'?'on':''}" onclick="setVLang('en-US')">English</button><button class="${S.vAudio===false?'':'on'}" onclick="S.vAudio=S.vAudio===false;save();this.classList.toggle('on');toast(S.vAudio===false?'Next notes: text only (best transcription)':'Next notes: keep the audio too','mic')">🔊 Audio</button></div>`}
@@ -3562,7 +3584,7 @@ async function finishRec(){const r=rec_,dur=Math.round((Date.now()-recT0)/1000);
  const blob=new Blob(recChunks||[],{type:(r&&r.mimeType)||'audio/webm'});const id=uid(),aid=uid();recChunks=[];
  if(blob.size){try{await kvSet('aud:'+aid,blob)}catch(e){}}
  if(!blob.size&&!txt.trim()){window._recFocus=0;toast('Nothing was captured','mic');return}
- const it={id,at:Date.now(),text:txt.trim(),aud:blob.size?[aid]:[],dur};S.ideas.push(it);buzz(true);addPts(2,'Idea captured','mic');
+ const it={id,at:Date.now(),text:txt.trim(),aud:blob.size?[aid]:[],dur};S.ideas.push(it);buzz(true);if(awCap('idea',10))addPts(2,'Idea captured','mic');else save();
  if(document.getElementById('v-ideas').classList.contains('on'))renderIdeas();if(window._recFocus){window._recFocus=0;toast(dzL('اتحفظت في تفريغ الأفكار. ارجع ركّز','Saved to Brain dump. Back to focus'),'mic');return}openIdea(id)}
 let ideaId=null,ideaMode=null;
 async function openIdea(id,mode){ideaId=id;ideaMode=mode||null;const it=S.ideas.find(x=>x.id===id);if(!it)return;closeSheets();
@@ -3583,7 +3605,7 @@ function ideaToTask(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);if(
 function ideaToProject(gid){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId),g=S.goals.find(x=>x.id===gid);if(!it||!g)return;if(!it.text){toast('Add the text first','pen');return}
  g.steps=g.steps||[];g.steps.push({id:uid(),name:it.text.split('\n')[0].slice(0,120),done:false,note:it.text.includes('\n')?it.text:undefined});g.done=false;ideaDone('project: '+g.title);closeSheets();toast('Added to '+g.title,'clipboard')}
 function ideaNewProject(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);if(!it||!it.text){toast('Add the text first','pen');return}const lines=it.text.split('\n').map(x=>x.trim()).filter(Boolean);
- const g={id:uid(),type:'project',title:lines[0].slice(0,60),area:'work',icon:'lightbulb',deadline:'',created:Date.now(),steps:lines.slice(1).map(n=>({id:uid(),name:n,done:false}))};S.goals.push(g);ideaDone('project: '+g.title);closeSheets();addPts(5,'New project: '+g.title,'clipboard')}
+ const g={id:uid(),type:'project',title:lines[0].slice(0,60),area:'work',icon:'lightbulb',deadline:'',created:Date.now(),steps:lines.slice(1).map(n=>({id:uid(),name:n,done:false}))};S.goals.push(g);ideaDone('project: '+g.title);closeSheets();if(awCap('gc',3)){g.cpa=today();addPts(5,'New project: '+g.title,'clipboard')}else save()}
 function ideaMerge(tid){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId),t=S.ideas.find(x=>x.id===tid);if(!it||!t)return;
  t.text=[t.text,it.text].filter(Boolean).join('\n');t.aud=[...(t.aud||[]),...(it.aud||[])];t.dur=(t.dur||0)+(it.dur||0);S.ideas=S.ideas.filter(x=>x.id!==it.id);save();toast('Merged into the note','rotate');openIdea(t.id)}
 function ideaToJournal(){saveIdeaText();const it=S.ideas.find(x=>x.id===ideaId);if(!it)return;const iid=ideaId;window._jPend=iid;
@@ -4099,7 +4121,7 @@ async function saveJEntry(){const text=document.getElementById('jText').value.tr
   for(const m of jPendingMedia)if(m.isNew){const {isNew,...rest}=m;await idbPut('media',await packMedia(rest))}
   const e={id:jEdit||'j'+Date.now().toString(36),date:document.getElementById('jDate').value||today(),at:old?old.at:Date.now(),mood:jMood,title,text,media:jPendingMedia.map(m=>m.id)};
   await idbPut('entries',await packEntry(e));const first=!old;closeSheets();if(window._jFromIdea){const k=ideaId;ideaId=window._jFromIdea;ideaDone('journal');ideaId=k;window._jFromIdea=null}await loadEntries();
-  if(first)addPts(10,'Journal saved','book');else toast('Entry updated','book');renderJournal();checkBadges()
+  if(first){if(awOnce('jr'))addPts(10,'Journal saved','book');else toast(T('Journal saved'),'book')}else toast('Entry updated','book');renderJournal();checkBadges()
  }catch(err){toast('Could not save: '+err.message,'alert')}btn.disabled=false;btn.textContent='Save'}
 async function openJView(id){const e=(jCache||[]).find(x=>x.id===id);if(!e)return;
  const thumbs=await Promise.all((e.media||[]).map(async mid=>({mid,t:await thumbOf(mid),v:(await idbGet('media',mid)||{}).type==='video'})));
@@ -4443,7 +4465,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=136;
+const APP_VERSION=137;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4657,7 +4679,7 @@ async function sendTask(){
 async function patchTask(t,plain,meta={}){const cur=await open_(t._e);return famRef().collection('tasks').doc(t.id).update({...meta,e:await seal({...cur,...plain})})}
 async function setFamTask(id,done){const t=FAM.tasks.find(x=>x.id===id);if(!t)return;
  try{await patchTask(t,{doneByName:done?S.name:null},done?{status:'done',doneAt:SV(),doneBy:FB.uid}:{status:'open',doneAt:null,doneBy:null});
-  if(done){S.famDone=(S.famDone||0)+1;dayRec().famDone=(dayRec().famDone||0)+1;addPts(t.pts||15,'Done for '+nameOf(t.from,t.fromName),'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(t.pts||15)}}catch(e){toast('No connection, try again','alert')}}
+  if(done){S.famDone=(S.famDone||0)+1;dayRec().famDone=(dayRec().famDone||0)+1;addPts(Math.min(30,t.pts||15),'Done for '+nameOf(t.from,t.fromName),'hands')}else{S.famDone=Math.max(0,(S.famDone||0)-1);subPts(Math.min(30,t.pts||15))}}catch(e){toast('No connection, try again','alert')}}
 async function tickItem(id,i){const t=FAM.tasks.find(x=>x.id===id);if(!t||!t.items)return;const items=t.items.map((x,j)=>j===i?{...x,done:!x.done,by:!x.done?S.name:null,byUid:!x.done?FB.uid:null}:x);
  try{await patchTask(t,{items});if(items.every(x=>x.done)&&t.status==='open')toast('Everything bought! Tap the check to finish','cart')}catch(e){toast('No connection, try again','alert')}}
 async function delFamTask(id,ok){if(!ok){const t=FAM.tasks.find(x=>x.id===id);askConfirm(dzL('تمسح المهمة «'+(t?t.title:'')+'»؟ هتتمسح عند كل العيلة.','Delete the task «'+(t?t.title:'')+'»? It disappears for the whole family.'),dzL('امسح','Delete'),()=>delFamTask(id,1),1);return}try{await famRef().collection('tasks').doc(id).delete();toast(dzL('المهمة اتمسحت','Task deleted'),'trash')}catch(e){famErr(e)}}
