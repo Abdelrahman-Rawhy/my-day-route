@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- v134: family invite links (like Telegram): yawmi join page → com.rawhy.mydayroute://open/join/CODE -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.rawhy.mydayroute" android:host="open" />
+            </intent-filter>
+
         </activity>
 
         <provider

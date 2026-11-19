@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>انضم لعيلتك على يومي</title>
+<meta property="og:title" content="دعوة لعيلة على يومي 🤍">
+<meta property="og:description" content="اضغط عشان تنضم للعيلة على تطبيق يومي">
+<style>
+:root{--bg:#F6EFE2;--card:#FFFBF2;--tx:#3B2A1A;--mu:#5E4A33;--a1:#7A4E24;--grad:linear-gradient(135deg,#7A4E24,#8F6430);--bd:rgba(59,42,26,.14)}
+@media (prefers-color-scheme:dark){:root{--bg:#0A0D17;--card:#151a2a;--tx:#F1F4FB;--mu:#A3ABBE;--a1:#8D72FF;--grad:linear-gradient(135deg,#6D4AE8,#0E7490);--bd:rgba(255,255,255,.12)}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:grid;place-items:center;padding:24px}
+.c{width:100%;max-width:420px;background:var(--card);border:1px solid var(--bd);border-radius:28px;padding:30px 22px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.12)}
+svg{width:150px;height:96px;fill:none;stroke:var(--tx);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;margin-bottom:14px}svg .f{fill:var(--a1);stroke:var(--a1)}
+h1{font-size:22px;margin-bottom:8px}p{color:var(--mu);font-size:15px;line-height:1.8}
+.b{display:flex;align-items:center;justify-content:center;width:100%;min-height:54px;border-radius:18px;border:0;font:inherit;font-weight:800;font-size:17px;text-decoration:none;margin-top:16px;cursor:pointer}
+.p{background:var(--grad);color:#fff}.g{background:transparent;color:var(--tx);border:1px solid var(--bd);font-size:15px;min-height:48px}
+.s{margin-top:18px;font-size:13px}.code{direction:ltr;font-weight:800;letter-spacing:2px;color:var(--a1)}
+.err h1{color:#BE123C}.hide{display:none}
+</style>
+</head>
+<body>
+<div class="c" id="ok">
+ <svg viewBox="0 0 200 120" aria-hidden="true"><line x1="100" y1="60" x2="44" y2="28"/><line x1="100" y1="60" x2="156" y2="28"/><line x1="100" y1="60" x2="44" y2="96"/><line x1="100" y1="60" x2="156" y2="96"/><circle cx="100" cy="60" r="11" class="f"/><circle cx="44" cy="28" r="8"/><circle cx="156" cy="28" r="8"/><circle cx="44" cy="96" r="8"/><circle cx="156" cy="96" r="8"/></svg>
+ <h1>اتعزمت على عيلة في يومي 🤍</h1>
+ <p>اضغط الزرار وهتدخل العيلة على طول.</p>
+ <a class="b p" id="open" href="#">افتح يومي وانضم</a>
+ <a class="b g" id="dl" href="https://github.com/Abdelrahman-Rawhy/my-day-route/releases/latest/download/MyDayRoute.apk">لسه مانزّلتش يومي؟ نزّله من هنا</a>
+ <p class="s" id="after">بعد ما تنزّله وتثبّته، ارجع للرسالة واضغط اللينك تاني.</p>
+ <p class="s hide" id="man">أو افتح التطبيق ← العيلة ← الانضمام بكود، واكتب: <span class="code" id="code"></span></p>
+</div>
+<div class="c err hide" id="bad"><h1>اللينك ناقص</h1><p>اطلب من صاحب العيلة يبعت الدعوة تاني.</p></div>
+<script>
+(function(){
+ // the family code lives only after the # so it is never sent to any server
+ var raw=(location.hash||'').replace('#','').toUpperCase().replace(/[^A-Z0-9]/g,'');
+ if(raw.length!==12){document.getElementById('ok').classList.add('hide');document.getElementById('bad').classList.remove('hide');return}
+ var code=raw.slice(0,4)+'-'+raw.slice(4,8)+'-'+raw.slice(8);
+ document.getElementById('code').textContent=code;
+ var deep='com.rawhy.mydayroute://open/join/'+raw;
+ var fallback=location.href.split('#')[0]+'?noapp=1#'+raw;
+ var intent='intent://open/join/'+raw+'#Intent;scheme=com.rawhy.mydayroute;package=com.rawhy.mydayroute;S.browser_fallback_url='+encodeURIComponent(fallback)+';end';
+ var android=/android/i.test(navigator.userAgent);
+ var a=document.getElementById('open');a.href=android?intent:deep;
+ if(/noapp=1/.test(location.search)){a.textContent='جرّب تفتح يومي تاني';document.getElementById('man').classList.remove('hide')}
+ else{setTimeout(function(){document.getElementById('man').classList.remove('hide')},2500);
+  if(android){try{location.href=intent}catch(e){}}}
+})();
+</script>
+</body>
+</html>
