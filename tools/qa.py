@@ -16,6 +16,7 @@ STEPS=[
  ("mushaf index","go('faith');fTab='mushaf';qView.s=null;qPos().bm=[{s:2,a:255,pg:42,at:today()}];renderFaith()"),("mushaf search","qSearch='يس';renderFaith()"),("mushaf clear","qSearch='';renderFaith()"),
  ("kh confirm","fTab='quran';renderFaith();khSlideSet(kh().page+50)"),("kh confirm close","closeAsk()"),("kh small","khSlideSet(kh().page+1)"),
  ("task route","go('tasks');TD().items.push({id:'tr1',t:'اشتري عيش',pri:1,due:today(),tags:[],subs:[],status:'todo',created:1});tdOpen('tr1')"),("task route add","tdToRoute('tr1')"),("task route close","tdClose();go('today')"),
+ ("gym home","lifeOpen('gy')"),("gym workout","GY().rt.push({id:'qr1',n:'Push',ex:['bp','sq']});gyStart('qr1');gySetV(0,0,'kg',40);gySetOk(0,0)"),("gym finish","gyRestStop();gyFinish()"),("gym close","document.getElementById('celebrate').classList.remove('on');lifeClose()"),("sleep on","lifeOpen('he');slSleep()"),("sleep off","slWake();lifeClose()"),
  ("guide","guideOpen()"),("guide next","guideGo(1);guideGo(1)"),("guide close","guideClose()"),
  ("plan open","go('today');planOpen()"),("plan saved","dzPick(0);planSave()"),("discipline hub","closeSheets();dzOpen()"),("hub close","closeSheets()"),
  ("adhkar home","go('faith');fTab='adhkar';renderFaith()"),("adhkar reader","adkOpen('travel')"),("adhkar count","adkRCount()"),("adhkar search","adkRClose();adkQ='سفر';renderFaith()"),("adhkar fav","adkQ='';renderFaith();adkFavToggle('food',0);adkOpenFav()"),("adhkar close","adkRClose()"),

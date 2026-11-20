@@ -594,6 +594,14 @@ body.reading .toast,html.light body.reading .toast,html.glass body.reading .toas
 body.reading .toast.on{box-shadow:0 12px 30px rgba(60,40,10,.45)!important}
 body.reading .toast .ico{background:#A9875A!important;color:#fff!important}
 body.reading .toast *{color:inherit}
+.gy-rt{display:flex;align-items:center;gap:8px;border-top:1px solid var(--bd);padding:4px 0}.gy-rtb{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 2px;background:none;border:0;text-align:start;font-family:inherit;color:var(--tx);min-width:0}.gy-rtb small{font-size:12.5px;color:var(--mu);line-height:1.6}
+.gy-h{display:flex;align-items:center;gap:10px;width:100%;padding:11px 2px;background:none;border:0;border-top:1px solid var(--bd);font-family:inherit;color:var(--tx);text-align:start}.gy-h>span{display:flex;flex-direction:column;gap:2px;min-width:0}.gy-h>span:first-child{flex:1}.gy-h small{font-size:12px;color:var(--mu)}.gy-hv{align-items:flex-end;text-align:end}
+.gy-top{position:sticky;top:0;z-index:3}.gy-nm{display:flex;align-items:center;gap:6px;background:none;border:0;font-family:inherit;color:var(--tx);font-size:17px;padding:4px 0}.gy-nm svg{color:var(--mu)}.gy-el{font-size:22px;font-variant-numeric:tabular-nums;color:var(--a1);direction:ltr}
+.gy-ex .sub{margin-bottom:6px}.gy-sets{display:flex;flex-direction:column;gap:6px}.gy-sh,.gy-set{display:grid;grid-template-columns:30px 1fr 1fr 48px;gap:8px;align-items:center}.gy-sh span{font-size:12px;color:var(--mu);text-align:center}.gy-set input{min-height:44px;text-align:center;font-size:17px;padding:6px;direction:ltr}.gy-n{text-align:center;font-weight:800;color:var(--mu)}
+.gy-ok{height:44px;border-radius:12px;border:1px solid var(--bd2);background:var(--s1);color:var(--mu);display:grid;place-items:center}.gy-set.ok .gy-ok{background:var(--ok);border-color:var(--ok);color:#fff}.gy-set.ok input{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.gy-exa{display:flex;justify-content:space-between;margin-top:8px}
+.gy-rest{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 18px);z-index:60;display:flex;align-items:center;gap:8px;padding:8px;border-radius:22px;background:var(--grad);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.35)}.gy-rest b{min-width:110px;text-align:center;font-size:17px;direction:ltr}.gy-rest button{min-width:46px;min-height:40px;border-radius:14px;border:0;background:rgba(255,255,255,.18);color:#fff;font-weight:800;font-family:inherit}
+.sl-go{width:100%;margin-bottom:12px}.sl-mode{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:12px;border-radius:16px;background:color-mix(in srgb,var(--a1) 14%,transparent)}.sl-mode>div{flex:1;display:flex;flex-direction:column;gap:2px}.sl-mode small{font-size:12.5px;color:var(--mu)}
 .hp-rng{margin:4px 0 6px}.hp-pb{padding:8px 0;border-top:1px solid var(--bd)}.hp-pb:first-of-type{border-top:0}
 .hp-bars{display:flex;align-items:flex-end;gap:5px;height:74px;margin-top:4px}.hp-bars.thin{gap:2px;height:56px}.hp-bars span{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;min-width:0}.hp-bars i{display:block;width:100%;border-radius:5px 5px 2px 2px;background:var(--a1);opacity:.55}.hp-bars i.ok{background:var(--ok);opacity:1}.hp-bars span:last-child i{opacity:1}.hp-bars small{font-size:10.5px;color:var(--mu);line-height:1}
 .hp-wl{width:100%;background:none;border-left:0;border-right:0;border-bottom:0;font-family:inherit;color:var(--tx);text-align:start}.hp-wl span{flex:1}.hp-wl svg{color:var(--mu)}
@@ -1248,6 +1256,7 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
     </div>
     <div style="min-width:0;flex:1"><h2 id="heroTitle"></h2><p id="heroSub"></p><div class="hstats" id="stats"></div></div>
   </div>
+  <div id="slSlot"></div>
   <div id="pcSlot"></div>
   <div id="rescue"></div>
   <div id="bkCard"></div>
@@ -1566,6 +1575,7 @@ const P={
  x:'<path d="M18 6 6 18M6 6l12 12"/>',
  lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
  play:'<path d="m7 4 13 8-13 8Z"/>',
+ dumbbell:'<path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/>',
  pause:'<path d="M8 4v16M16 4v16"/>',
  rocket:'<path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1Z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2Z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0"/><path d="M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/>',
  gem:'<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
@@ -1908,6 +1918,7 @@ function LF(){S.life=S.life||{};const L=S.life;L.ib=L.ib||{};L.he=L.he||{};L.mo=
  const ib=L.ib;ib.fast=ib.fast||{};ib.sun=ib.sun||{};ib.qiyam=ib.qiyam||{};ib.sad=ib.sad||[];ib.hifz=ib.hifz||{};if(ib.qada==null)ib.qada=0;
  const he=L.he;he.water=he.water||{};if(he.wg==null)he.wg=8;he.sleep=he.sleep||{};he.work=he.work||{};he.weight=(he.weight||[]).map(x=>({d:x.d,v:+(+x.v).toFixed(1)}));he.meds=he.meds||[];he.mlog=he.mlog||{};if(he.wkg==null)he.wkg=150;he.plan=he.plan||{w:{},m:{}};he.plan.w=he.plan.w||{};he.plan.m=he.plan.m||{};he.plog=he.plog||{};
  const mo=L.mo;mo.tx=mo.tx||[];if(mo.cur==null)mo.cur=S.lang==='ar'?'ج':'EGP';mo.bills=mo.bills||[];mo.save=mo.save||{goal:0,have:0};if(mo.budget==null)mo.budget=0;
+ L.gy=L.gy||{};const gy=L.gy;gy.lib=gy.lib||[];gy.rt=gy.rt||[];gy.ses=gy.ses||[];if(gy.rest==null)gy.rest=90;if(gy.cur===undefined)gy.cur=null;
  const le=L.le;le.books=le.books||[];le.courses=le.courses||[];le.cards=le.cards||[];le.read=le.read||{};return L}
 const lL=(a,e)=>S.lang==='ar'?a:e;
 let lifeTab=null;
@@ -1916,9 +1927,9 @@ function lifeOpen(tab){lifeTab=tab;LF();let R=document.getElementById('lifeR');
  R.classList.add('on');document.body.classList.add('adkreading','lifeon');lifeDraw();try{obOnLife(tab)}catch(e){}}
 function lifeClose(){const R=document.getElementById('lifeR');if(R)R.classList.remove('on');document.body.classList.remove('adkreading','lifeon');render()}
 const LIFE_TABS=()=>[['ib',lL('العبادات','Worship'),'mosque','green'],['he',lL('الصحة','Health'),'activity','teal'],['mo',lL('الفلوس','Money'),'gem','amber'],['le',lL('التعلّم','Learning'),'graduation','violet']];
-function lifeSwitch(){openMenu(lL('حياتي','My life'),LIFE_TABS().map(([k,n,i,c])=>({k,label:n,icon:i,c,on:k===lifeTab})),k=>lifeOpen(k))}
-function lifeDraw(){const t=LIFE_TABS().find(x=>x[0]===lifeTab);document.getElementById('lifeTitle').textContent=t?t[1]:'';const b=document.getElementById('lifeBody');const y=b.scrollTop;
- b.innerHTML=lifeTab==='ib'?ibHtml():lifeTab==='he'?heHtml():lifeTab==='mo'?moHtml():leHtml();b.scrollTop=y}
+function lifeSwitch(){openMenu(lL('حياتي','My life'),LIFE_TABS().concat([['gy',lL('الجيم','Gym'),'dumbbell','green']]).map(([k,n,i,c])=>({k,label:n,icon:i,c,on:k===lifeTab})),k=>lifeOpen(k))}
+function lifeDraw(){const t=LIFE_TABS().find(x=>x[0]===lifeTab);document.getElementById('lifeTitle').textContent=lifeTab==='gy'?lL('الجيم','Gym'):t?t[1]:'';const b=document.getElementById('lifeBody');const y=b.scrollTop;
+ b.innerHTML=lifeTab==='gy'?gyHtml():lifeTab==='ib'?ibHtml():lifeTab==='he'?heHtml():lifeTab==='mo'?moHtml():leHtml();b.scrollTop=y;try{if(lifeTab==='gy'&&GY().cur)gyTick();gyRestPaint()}catch(e){}}
 // v137 POINTS INTEGRITY: one-time / capped awards so nothing can be farmed by tick-untick, delete-recreate or set-reset
 function awOnce(k){const r=dayRec();r.aw=r.aw||{};if(r.aw[k])return false;r.aw[k]=1;return true}
 function awCap(k,max){const r=dayRec();r.aw=r.aw||{};const n=r.aw[k]||0;if(n>=max)return false;r.aw[k]=n+1;return true}
@@ -1960,10 +1971,10 @@ function heHtml(){const H=LF().he,k=today(),w=H.water[k]||0,sl=H.sleep[k],wk=H.w
  let wm=0;for(let i=0;i<7;i++)(H.work[dzK(-i)]||[]).forEach(x=>wm+=+x.min||0);
  const W=H.weight.slice(-8),wmx=W.length?Math.max(...W.map(x=>x.v)):1,wmn=W.length?Math.min(...W.map(x=>x.v)):0;
  return hpProgHtml()+lsec(lL('المية','Water'),['droplet','blue'],`<div class="life-water">${Array.from({length:Math.max(H.wg,w)},(_,i)=>`<button class="${i<w?'on':''}" onclick="heWater(${i<w?-1:1})">${ic('droplet',18)}</button>`).join('')}</div><div class="life-row"><span>${w} ${lL('من','of')} ${H.wg} ${lL('كوبايات','glasses')}</span><button class="link" onclick="heWaterGoal()">${lL('غيّر الهدف','Change goal')}</button></div>`)
- +lsec(lL('النوم','Sleep'),['bed','indigo'],`<div class="life-2"><button class="fsel" onclick="heSleep('bed')"><span class="fs-t"><small>${lL('نمت الساعة','Went to bed')}</small><b>${sl&&sl.bed?fmt(sl.bed):'—'}</b></span></button><button class="fsel" onclick="heSleep('wake')"><span class="fs-t"><small>${lL('صحيت الساعة','Woke up')}</small><b>${sl&&sl.wake?fmt(sl.wake):'—'}</b></span></button></div>
+ +lsec(lL('النوم','Sleep'),['bed','indigo'],`${slModeHtml()}<div class="life-2"><button class="fsel" onclick="heSleep('bed')"><span class="fs-t"><small>${lL('نمت الساعة','Went to bed')}</small><b>${sl&&sl.bed?fmt(sl.bed):'—'}</b></span></button><button class="fsel" onclick="heSleep('wake')"><span class="fs-t"><small>${lL('صحيت الساعة','Woke up')}</small><b>${sl&&sl.wake?fmt(sl.wake):'—'}</b></span></button></div>
    <div class="life-row"><span>${lL('امبارح بالليل','Last night')}: <b>${slDur(sl)?hm(slDur(sl)):'—'}</b></span><span>${lL('متوسط الأسبوع','Week avg')}: <b>${sn?hm(sa/sn):'—'}</b></span></div><div class="sub">${lL('الأفضل 7 لـ 8 ساعات، وننام بدري عشان الفجر.','7–8 hours is best; sleep early for Fajr.')}</div>`)
  +lsec(lL('الرياضة','Exercise'),['activity','teal'],`<div class="life-row"><span>${lL('الأسبوع ده','This week')}: <b>${wm} ${lL('من','of')} ${H.wkg} ${lL('دقيقة','min')}</b></span><button class="link" onclick="heWkGoal()">${lL('غيّر الهدف','Change goal')}</button></div><div class="pbar" style="height:7px"><i style="width:${Math.min(100,wm/H.wkg*100)}%"></i></div>${wk.map((x,i)=>`<button class="life-li hp-wl" onclick="heWorkEdit(${i})"><span>${esc(x.t)}</span><b>${x.min} ${lL('د','min')}</b>${ic('pen',13)}</button>`).join('')}`,`<button class="link" onclick="heWork()">${ic('plus',14)}${lL('سجّل','Log')}</button>`)
- +hpWorkHtml()+hpMealHtml()
+ +gyEntryHtml()+hpWorkHtml()+hpMealHtml()
  +lsec(lL('الوزن','Weight'),['scale','amber'],`${W.length?`<div class="life-spark">${W.map(x=>`<i style="height:${wmx===wmn?50:((x.v-wmn)/(wmx-wmn)*80+15)}%" title="${x.v}"></i>`).join('')}</div><div class="life-row"><span>${lL('آخر وزن','Latest')}: <b>${W[W.length-1].v} ${lL('كجم','kg')}</b></span>${W.length>1?`<span>${(W[W.length-1].v-W[0].v>0?'+':'')+lnum(W[W.length-1].v-W[0].v)} ${lL('كجم','kg')}</span>`:''}</div>`:`<div class="sub">${lL('سجّل وزنك مرة في الأسبوع عشان تشوف الاتجاه.','Log weekly to see the trend.')}</div>`}`,`<button class="link" onclick="heWeight()">${ic('plus',14)}${lL('سجّل','Log')}</button>`)
  +lsec(lL('الأدوية','Medicines'),['pill','red'],`${H.meds.length?H.meds.map(m=>`<div class="life-med"><b>${esc(m.name)}</b><div class="life-chips">${m.times.map(t=>{const on=((H.mlog[k]||{})[m.id+'@'+t]);return `<button class="${on?'on':''}" onclick="heMedTake('${m.id}','${t}')">${on?ic('check',13,'',3):''}${fmt(t)}</button>`}).join('')}<button onclick="heMedDel('${m.id}',this)">${ic('trash',13)}</button></div></div>`).join(''):`<div class="sub">${lL('ضيف دواك ومواعيده، وهيوصلك تذكير في الميعاد.','Add a medicine and its times; you’ll get a reminder.')}</div>`}`,`<button class="link" onclick="heMedAdd()">${ic('plus',14)}${lL('ضيف','Add')}</button>`)}
 function heWater(d){const H=LF().he,k=today(),o=H.water[k]||0,n=Math.max(0,o+d);H.water[k]=n;save();HAP();if(n===H.wg&&d>0&&awOnce('water'))lPts(5,lL('شربت هدفك من المية','Water goal reached'),'droplet');else lifeDraw()}
@@ -2028,6 +2039,103 @@ function hpProgHtml(){const H=LF().he,n=window._hpR||7,days=[];for(let i=n-1;i>=
  ${blk(lL('النوم','Sleep'),sl.some(Boolean)?`${lL('متوسط','avg')} ${hm(avg(sl)*60)}`:lL('سجّل نومك عشان تشوفه هنا','Log your sleep to see it here'),sl.some(Boolean)?bars(sl,7,x=>x.toFixed(1)+'h'):'')}
  ${mT?blk(lL('خطة الأكل','Meal plan'),`${mD} ${lL('من','of')} ${mT} ${lL('وجبة','meals')} (${Math.round(mD/mT*100)}%)`):''}
  ${wch!=null?blk(lL('الوزن','Weight'),`${wch>0?'+':''}${wch} ${lL('كجم','kg')}`):''}`)}
+// ===== v143 GYM (Ahmed: «options like Lyfta»: sets × reps × kg logging, exercise library + routines, rest timer, records & strength charts) =====
+const GY_G=()=>[['chest',lL('صدر','Chest')],['back',lL('ضهر','Back')],['sh',lL('أكتاف','Shoulders')],['legs',lL('رجل','Legs')],['arms',lL('دراعات','Arms')],['core',lL('بطن','Core')],['cardio',lL('كارديو','Cardio')]];
+const GY_LIB=[['bp','بنش برس بار','Barbell bench press','chest'],['dbp','بنش دمبل','Dumbbell bench press','chest'],['ibp','بنش عالي','Incline bench press','chest'],['dbf','فتح دمبل','Dumbbell fly','chest'],['cfly','كروس أوفر كابل','Cable crossover','chest'],['pu','ضغط','Push-ups','chest'],['dip','متوازي','Dips','chest'],
+ ['dl','ديدليفت','Deadlift','back'],['pl','عقلة','Pull-ups','back'],['lpd','سحب عالي','Lat pulldown','back'],['bor','سحب بار منحني','Barbell row','back'],['dbr','سحب دمبل','Dumbbell row','back'],['scr','سحب أرضي كابل','Seated cable row','back'],['tbr','تي بار','T-bar row','back'],
+ ['ohp','ضغط أكتاف بار','Overhead press','sh'],['dsp','ضغط أكتاف دمبل','Dumbbell shoulder press','sh'],['lr','رفرفة جانبي','Lateral raise','sh'],['fr','رفرفة أمامي','Front raise','sh'],['rdf','رفرفة خلفي','Rear delt fly','sh'],['fp','فيس بول','Face pull','sh'],['shr','ترابيس','Shrugs','sh'],
+ ['sq','سكوات','Squat','legs'],['lp','دفع رجل','Leg press','legs'],['lun','طعن','Lunges','legs'],['rdl','رومانيان ديدليفت','Romanian deadlift','legs'],['lex','رفرفة أمامي رجل','Leg extension','legs'],['lcu','رفرفة خلفي رجل','Leg curl','legs'],['cal','سمانة','Calf raise','legs'],['ht','هيب ثرست','Hip thrust','legs'],
+ ['bbc','باي بار','Barbell curl','arms'],['dbc','باي دمبل','Dumbbell curl','arms'],['hc','هامر','Hammer curl','arms'],['tpd','تراي كابل','Triceps pushdown','arms'],['skc','تراي بار نايم','Skull crusher','arms'],['ote','تراي دمبل فوق الراس','Overhead triceps extension','arms'],
+ ['plk','بلانك','Plank','core'],['cru','كرانش','Crunches','core'],['lgr','رفع رجل','Leg raises','core'],['rtw','لف روسي','Russian twist','core'],['abw','عجلة البطن','Ab wheel','core'],
+ ['tm','مشاية','Treadmill','cardio'],['bike','عجلة ثابتة','Stationary bike','cardio'],['ell','إليبتيكال','Elliptical','cardio'],['row','تجديف','Rowing machine','cardio'],['jr','نط حبل','Jump rope','cardio']];
+function GY(){return LF().gy}
+function gyEx(id){const b=GY_LIB.find(x=>x[0]===id);if(b)return {id,n:lL(b[1],b[2]),g:b[3]};const c=GY().lib.find(x=>x.id===id);return c?{id,n:c.n,g:c.g}:{id,n:'?',g:'core'}}
+const gyNum=v=>{v=+v||0;return Math.round(v*100)/100};const gyL=t=>`<bdi dir="ltr">${t}</bdi>`;
+function gyBest(id){let best=null;GY().ses.forEach(s=>(s.ex||[]).forEach(e=>{if(e.x!==id)return;e.sets.forEach(t=>{if(!t.ok||!(t.kg>0))return;const rm=t.kg*(1+(t.r||1)/30);if(!best||t.kg>best.kg||(t.kg===best.kg&&t.r>best.r))best={kg:t.kg,r:t.r,d:s.d,rm:Math.round(rm)}})}));return best}
+function gyLast(id){for(let i=GY().ses.length-1;i>=0;i--){const e=(GY().ses[i].ex||[]).find(x=>x.x===id);if(e&&e.sets.some(t=>t.ok))return e.sets.filter(t=>t.ok)}return null}
+function gyDur(ms){const m=Math.max(1,Math.round(ms/60000));return m>=60?Math.floor(m/60)+lL(' س ',' h ')+(m%60)+lL(' د',' min'):m+lL(' د',' min')}
+function gyEntryHtml(){const G=GY(),wk=G.ses.filter(s=>s.d>=dzK(-6)).length,last=G.ses[G.ses.length-1];
+ return lsec(lL('الجيم','Gym'),['dumbbell','green'],`${G.cur?`<div class="life-row"><b>${lL('في تمرين شغال دلوقتي','A workout is in progress')}</b></div>`:`<div class="life-row"><span>${lL('الأسبوع ده','This week')}: <b>${wk} ${lL('تمرين','workouts')}</b></span>${last?`<span>${lL('آخر مرة','Last')}: ${esc(last.n||lL('تمرين','Workout'))}</span>`:''}</div>`}
+ <button class="btn" style="width:100%;margin-top:8px" onclick="lifeOpen('gy')">${ic('dumbbell',16)}${G.cur?lL('كمّل التمرين','Continue workout'):lL('افتح الجيم','Open gym')}</button>`)}
+function gyHtml(){const G=GY();return G.cur?gyCurHtml():gyHomeHtml()}
+function gyHomeHtml(){const G=GY(),wk=G.ses.filter(s=>s.d>=dzK(-6));
+ const rts=G.rt.map(r=>`<div class="gy-rt"><button class="gy-rtb" onclick="gyStart('${r.id}')"><b>${esc(r.n)}</b><small>${r.ex.length} ${lL('تمرين','exercises')}: ${esc(r.ex.slice(0,3).map(x=>gyEx(x).n).join('، '))}${r.ex.length>3?'…':''}</small></button><button class="iconbtn sm" onclick="gyRtMenu('${r.id}')" aria-label="menu">${ic('list',16)}</button></div>`).join('');
+ const prs=[];const seen=new Set();for(let i=G.ses.length-1;i>=0;i--)(G.ses[i].ex||[]).forEach(e=>{if(!seen.has(e.x)){seen.add(e.x);const b=gyBest(e.x);if(b)prs.push([e.x,b])}});
+ const hist=G.ses.slice(-6).reverse().map((s,i)=>{const vol=(s.ex||[]).reduce((a,e)=>a+e.sets.filter(t=>t.ok).reduce((x,t)=>x+(t.kg||0)*(t.r||0),0),0),sets=(s.ex||[]).reduce((a,e)=>a+e.sets.filter(t=>t.ok).length,0);return `<button class="gy-h" onclick="gySes('${s.id}')"><span><b>${esc(s.n||lL('تمرين','Workout'))}</b><small>${s.d}، ${gyDur((s.en||s.st)-s.st)}</small></span><span class="gy-hv"><b>${sets}</b><small>${lL('مجموعة','sets')}${vol?'، '+gyL(Math.round(vol)+' kg'):''}</small></span></button>`}).join('');
+ return lsec(lL('ابدأ تمرين','Start a workout'),['play','green'],`<button class="btn" style="width:100%" onclick="gyStart()">${ic('plus',16)}${lL('تمرين فاضي','Empty workout')}</button>${rts?`<div class="sub" style="margin:14px 0 6px">${lL('الروتينات بتاعتك','Your routines')}</div>${rts}`:''}<button class="link" style="margin-top:12px" onclick="gyRtEdit()">${ic('plus',14)}${lL('روتين جديد','New routine')}</button>`)
+ +lsec(lL('الأسبوع ده','This week'),['chart','violet'],`<div class="pf-st" style="margin-top:4px"><span><b>${wk.length}</b><small>${lL('تمرين','workouts')}</small></span><span><b>${wk.reduce((a,s)=>a+(s.ex||[]).reduce((x,e)=>x+e.sets.filter(t=>t.ok).length,0),0)}</b><small>${lL('مجموعة','sets')}</small></span><span><b>${Math.round(wk.reduce((a,s)=>a+((s.en||s.st)-s.st),0)/60000)}</b><small>${lL('دقيقة','minutes')}</small></span></div>`)
+ +lsec(lL('أرقامك القياسية','Personal records'),['trophy','amber'],prs.length?prs.slice(0,12).map(([x,b])=>`<button class="gy-h" onclick="gyChart('${x}')"><span><b>${esc(gyEx(x).n)}</b><small>${lL('أقصى 1RM تقريبًا','est. 1RM')} ${gyL(b.rm+' kg')}</small></span><span class="gy-hv"><b>${gyL(gyNum(b.kg)+' kg × '+b.r)}</b><small>${b.d}</small></span></button>`).join('')+`<div class="sub" style="margin-top:8px">${lL('اضغط على أي تمرين تشوف تطوّر الوزن.','Tap an exercise to see its strength chart.')}</div>`:`<div class="sub">${lL('خلّص أول تمرين بأوزان وهتظهر أرقامك هنا.','Finish a workout with weights and your records show up here.')}</div>`)
+ +lsec(lL('السجل','History'),['clock','teal'],hist||`<div class="sub">${lL('لسه مفيش تمارين.','No workouts yet.')}</div>`)
+ +lsec(lL('الراحة بين المجموعات','Rest between sets'),['clock','indigo'],`<div class="life-row"><span>${lL('مؤقت الراحة','Rest timer')}: <b>${G.rest?G.rest+lL(' ثانية',' s'):lL('مقفول','Off')}</b></span><button class="link" onclick="gyRestSet()">${lL('غيّر','Change')}</button></div>`)}
+function gyNewSes(rt){const r=rt&&GY().rt.find(x=>x.id===rt);return {id:uid(),d:today(),st:Date.now(),n:r?r.n:lL('تمرين','Workout'),rt:r?r.id:null,ex:(r?r.ex:[]).map(x=>({x,sets:gySeed(x)}))}}
+function gySeed(x){const l=gyLast(x);return l?l.map(t=>({r:t.r,kg:t.kg,ok:false})):[{r:10,kg:0,ok:false},{r:10,kg:0,ok:false},{r:10,kg:0,ok:false}]}
+function gyStart(rt){const G=GY();if(G.cur){lifeDraw();return}G.cur=gyNewSes(rt);save();lifeDraw();gyTick()}
+function gyCurHtml(){const c=GY().cur,el=Date.now()-c.st,done=c.ex.reduce((a,e)=>a+e.sets.filter(t=>t.ok).length,0);
+ return `<div class="card gy-top"><div class="life-row" style="margin:0"><button class="gy-nm" onclick="gyRename()"><b>${esc(c.n)}</b>${ic('pen',13)}</button><b id="gyEl" class="gy-el">${gyClock(el)}</b></div><div class="sub">${done} ${lL('مجموعة خلصت','sets done')}</div></div>
+ ${c.ex.map((e,i)=>{const X=gyEx(e.x),last=gyLast(e.x),b=gyBest(e.x);return `<div class="card gy-ex"><div class="life-row" style="margin:0 0 6px"><b>${esc(X.n)}</b><button class="iconbtn sm" onclick="gyExMenu(${i})" aria-label="menu">${ic('list',16)}</button></div>${last?`<div class="sub">${lL('آخر مرة','Last time')}: ${last.map(t=>gyL(gyNum(t.kg)+'×'+t.r)).join('، ')}${b?'، '+lL('أعلى','best')+' '+gyL(gyNum(b.kg)+' kg'):''}</div>`:''}
+  <div class="gy-sets"><div class="gy-sh"><span>#</span><span>kg</span><span>${lL('عدّات','reps')}</span><span></span></div>${e.sets.map((t,j)=>`<div class="gy-set ${t.ok?'ok':''}"><span class="gy-n">${j+1}</span><input type="number" inputmode="decimal" step="0.5" min="0" value="${t.kg||''}" placeholder="0" onchange="gySetV(${i},${j},'kg',this.value)"><input type="number" inputmode="numeric" min="0" value="${t.r||''}" placeholder="0" onchange="gySetV(${i},${j},'r',this.value)"><button class="gy-ok" onclick="gySetOk(${i},${j})" aria-label="done">${ic('check',16,'',3)}</button></div>`).join('')}</div>
+  <div class="gy-exa"><button class="link" onclick="gyAddSet(${i})">${ic('plus',14)}${lL('مجموعة','Set')}</button>${e.sets.length>1?`<button class="link" style="color:var(--mu)" onclick="gyDelSet(${i})">${lL('شيل آخر مجموعة','Remove last set')}</button>`:''}</div></div>`}).join('')}
+ <button class="btn ghost" style="width:100%;margin-top:4px" onclick="gyPick()">${ic('plus',16)}${lL('ضيف تمرين','Add exercise')}</button>
+ <div class="row" style="margin-top:14px"><button class="btn ghost" style="color:var(--red)" onclick="gyCancel()">${lL('إلغاء التمرين','Discard')}</button><button class="btn" onclick="gyFinish()">${lL('خلّصت','Finish')}</button></div>
+ <div id="gyRest"></div>`}
+function gyClock(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(x).padStart(2,'0')}
+function gyTick(){clearInterval(window._gyT);window._gyT=setInterval(()=>{const G=GY();if(!G.cur){clearInterval(window._gyT);return}const e=document.getElementById('gyEl');if(e)e.textContent=gyClock(Date.now()-G.cur.st);gyRestPaint()},1000)}
+function gySetV(i,j,k,v){const t=GY().cur.ex[i].sets[j];t[k]=k==='kg'?gyNum(v):Math.max(0,Math.round(+v||0));save()}
+function gySetOk(i,j){const t=GY().cur.ex[i].sets[j];t.ok=!t.ok;if(t.ok&&!(t.r>0))t.r=t.r||0;save();HAP&&buzz();if(t.ok&&GY().rest)gyRestStart();lifeDraw()}
+function gyAddSet(i){const s=GY().cur.ex[i].sets,l=s[s.length-1]||{r:10,kg:0};s.push({r:l.r,kg:l.kg,ok:false});save();lifeDraw()}
+function gyDelSet(i){const s=GY().cur.ex[i].sets;if(s.length>1){s.pop();save();lifeDraw()}}
+function gyExMenu(i){const c=GY().cur,e=c.ex[i];openMenu(gyEx(e.x).n,[{k:'up',label:lL('حرّكه لفوق','Move up'),icon:'chevron',c:'teal'},{k:'chart',label:lL('تطوّر الوزن','Strength chart'),icon:'chart',c:'violet'},{k:'del',label:lL('شيل التمرين','Remove exercise'),icon:'trash',c:'red'}],a=>{
+ if(a==='up'&&i>0){[c.ex[i-1],c.ex[i]]=[c.ex[i],c.ex[i-1]];save();lifeDraw()}else if(a==='chart')gyChart(e.x);else if(a==='del')askConfirm(lL('تشيل «'+gyEx(e.x).n+'» من التمرين؟','Remove «'+gyEx(e.x).n+'»?'),lL('شيل','Remove'),()=>{c.ex.splice(i,1);save();lifeDraw()},1)})}
+function gyPick(cb){openMenu(lL('اختار العضلة','Pick a muscle group'),GY_G().map(([k,n])=>({k,label:n,icon:'dumbbell',c:'green'})).concat([{k:'_new',label:lL('تمرين جديد بتاعي','My own exercise'),icon:'plus',c:'amber'}]),g=>{
+ if(g==='_new'){askText(lL('اسم التمرين','Exercise name'),'',n=>{n=(n||'').trim();if(!n)return;openMenu(lL('العضلة','Muscle group'),GY_G().map(([k,nm])=>({k,label:nm,icon:'dumbbell',c:'green'})),gg=>{const id='c'+uid();GY().lib.push({id,n,g:gg});save();(cb||gyAddEx)(id)})});return}
+ const L=GY_LIB.filter(x=>x[3]===g).map(x=>({k:x[0],label:lL(x[1],x[2]),icon:'dumbbell',c:'green'})).concat(GY().lib.filter(x=>x.g===g).map(x=>({k:x.id,label:x.n,icon:'dumbbell',c:'amber'})));
+ setTimeout(()=>openMenu(GY_G().find(x=>x[0]===g)[1],L,x=>(cb||gyAddEx)(x)),250)})}
+function gyAddEx(x){const c=GY().cur;if(!c)return;c.ex.push({x,sets:gySeed(x)});save();lifeDraw();setTimeout(()=>{const b=document.getElementById('lifeBody');const cards=b.querySelectorAll('.gy-ex');cards[cards.length-1]&&cards[cards.length-1].scrollIntoView({block:'center',behavior:'smooth'})},80)}
+function gyRename(){const c=GY().cur;askText(lL('اسم التمرين','Workout name'),c.n,n=>{n=(n||'').trim();if(n){c.n=n;save();lifeDraw()}})}
+function gyCancel(){askConfirm(lL('تلغي التمرين ده؟ مش هيتسجّل.','Discard this workout? It won’t be saved.'),lL('إلغاء التمرين','Discard'),()=>{GY().cur=null;gyRestStop();save();lifeDraw()},1)}
+function gyFinish(){const G=GY(),c=G.cur,n=c.ex.reduce((a,e)=>a+e.sets.filter(t=>t.ok).length,0);
+ if(!n){askConfirm(lL('مفيش ولا مجموعة متعلّم عليها. تخلّص من غير ما تسجّل؟','No sets are ticked. Finish without saving?'),lL('خلّص من غير حفظ','Finish without saving'),()=>{G.cur=null;gyRestStop();save();lifeDraw()},1);return}
+ const prs=[];c.ex.forEach(e=>{const before=gyBest(e.x);e.sets.filter(t=>t.ok&&t.kg>0).forEach(t=>{if(!before||t.kg>before.kg)prs.push(gyEx(e.x).n)})});
+ c.en=Date.now();c.ex=c.ex.map(e=>({x:e.x,sets:e.sets.filter(t=>t.ok)})).filter(e=>e.sets.length);G.ses.push(c);if(G.ses.length>400)G.ses.shift();G.cur=null;gyRestStop();
+ const H=LF().he,k=today(),min=Math.max(1,Math.round((c.en-c.st)/60000));(H.work[k]=H.work[k]||[]).push({t:c.n,min,gym:c.id});save();
+ const uniq=[...new Set(prs)];if(awCap('work',2))lPts(5,lL('تمرين خلص 💪','Workout done 💪'),'dumbbell');else lifeDraw();
+ setTimeout(()=>{if(uniq.length)celebrate('trophy',lL('رقم قياسي جديد!','New record!'),uniq.slice(0,3).join('، '));else toast(lL('اتسجّل: ','Saved: ')+n+lL(' مجموعة في ',' sets in ')+gyDur(c.en-c.st),'check')},500)}
+function gySes(id){const s=GY().ses.find(x=>x.id===id);if(!s)return;const P=document.getElementById('askPanel');
+ P.innerHTML=`<h3>${esc(s.n||lL('تمرين','Workout'))}</h3><div class="sub">${s.d}، ${gyDur((s.en||s.st)-s.st)}</div>${(s.ex||[]).map(e=>`<div class="pg-row"><b>${esc(gyEx(e.x).n)}</b><span>${e.sets.map(t=>gyL(gyNum(t.kg)+' kg × '+t.r)).join('، ')}</span></div>`).join('')}
+ <div class="row" style="margin-top:14px"><button class="btn ghost" style="color:var(--red)" onclick="gySesDel('${id}')">${lL('امسح','Delete')}</button><button class="btn" onclick="gyRtFromSes('${id}')">${lL('احفظه كروتين','Save as routine')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+function gySesDel(id){closeAsk();setTimeout(()=>askConfirm(lL('تمسح التمرين ده من السجل؟','Delete this workout from history?'),lL('امسح','Delete'),()=>{const G=GY();G.ses=G.ses.filter(x=>x.id!==id);const H=LF().he;Object.values(H.work).forEach(L=>{const i=L.findIndex(w=>w.gym===id);if(i>=0)L.splice(i,1)});save();lifeDraw()},1),300)}
+function gyRtFromSes(id){const s=GY().ses.find(x=>x.id===id);if(!s)return;GY().rt.push({id:uid(),n:s.n||lL('روتين','Routine'),ex:s.ex.map(e=>e.x)});save();closeAsk();lifeDraw();toast(lL('اتحفظ كروتين','Saved as a routine'),'check')}
+function gyRtEdit(id){const G=GY(),r=id?G.rt.find(x=>x.id===id):{id:null,n:'',ex:[]};window._gyRt={id:r.id,n:r.n,ex:r.ex.slice()};gyRtDraw()}
+function gyRtDraw(){const r=window._gyRt,P=document.getElementById('askPanel');
+ P.innerHTML=`<h3>${r.id?lL('عدّل الروتين','Edit routine'):lL('روتين جديد','New routine')}</h3><label>${lL('اسم الروتين','Routine name')}</label><input id="gyRn" maxlength="40" value="${esc(r.n)}" placeholder="${lL('مثلًا: Push، صدر وتراي','e.g. Push day')}" oninput="window._gyRt.n=this.value">
+ <div class="sub" style="margin:12px 0 4px">${lL('التمارين','Exercises')}</div>${r.ex.map((x,i)=>`<div class="life-li"><span style="flex:1">${i+1}. ${esc(gyEx(x).n)}</span><button class="iconbtn sm" onclick="window._gyRt.ex.splice(${i},1);gyRtDraw()" aria-label="remove">${ic('x',14)}</button></div>`).join('')||`<div class="sub">${lL('ضيف تمارين للروتين.','Add exercises to the routine.')}</div>`}
+ <button class="btn ghost" style="width:100%;margin-top:10px" onclick="gyPick(x=>{window._gyRt.ex.push(x);setTimeout(()=>{document.getElementById('askSheet').classList.add('on');gyRtDraw()},260)})">${ic('plus',16)}${lL('ضيف تمرين','Add exercise')}</button>
+ <div class="row" style="margin-top:14px"><button class="btn ghost" onclick="closeAsk()">${lL('إلغاء','Cancel')}</button><button class="btn" onclick="gyRtSave()">${lL('حفظ','Save')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+function gyRtSave(){const r=window._gyRt,G=GY();r.n=(r.n||'').trim();if(!r.n){toast(lL('اكتب اسم الروتين','Name the routine'),'alert');return}if(!r.ex.length){toast(lL('ضيف تمرين واحد على الأقل','Add at least one exercise'),'alert');return}
+ if(r.id){const o=G.rt.find(x=>x.id===r.id);o.n=r.n;o.ex=r.ex}else G.rt.push({id:uid(),n:r.n,ex:r.ex});save();closeAsk();lifeDraw();toast(lL('الروتين اتحفظ','Routine saved'),'check')}
+function gyRtMenu(id){const r=GY().rt.find(x=>x.id===id);openMenu(r.n,[{k:'go',label:lL('ابدأ','Start'),icon:'play',c:'green'},{k:'ed',label:lL('عدّل','Edit'),icon:'pen',c:'blue'},{k:'del',label:lL('امسح','Delete'),icon:'trash',c:'red'}],a=>{if(a==='go')gyStart(id);else if(a==='ed')setTimeout(()=>gyRtEdit(id),250);else askConfirm(lL('تمسح روتين «'+r.n+'»؟','Delete the routine «'+r.n+'»?'),lL('امسح','Delete'),()=>{const G=GY();G.rt=G.rt.filter(x=>x.id!==id);save();lifeDraw()},1)})}
+function gyChart(x){const pts=[];GY().ses.forEach(s=>{const e=(s.ex||[]).find(y=>y.x===x);if(e){const m=Math.max(0,...e.sets.map(t=>t.kg||0));if(m>0)pts.push([s.d,m])}});const P=document.getElementById('askPanel'),L=pts.slice(-14),mx=Math.max(1,...L.map(p=>p[1])),mn=Math.min(...L.map(p=>p[1]),mx);
+ P.innerHTML=`<h3>${esc(gyEx(x).n)}</h3><div class="sub">${lL('أتقل وزن في كل تمرين','Heaviest weight per workout')}</div>${L.length?`<div class="hp-bars" dir="ltr" style="height:140px;margin-top:12px">${L.map(p=>`<span><i style="height:${mx===mn?60:15+(p[1]-mn)/(mx-mn)*85}%"></i><small>${gyNum(p[1])}</small></span>`).join('')}</div><div class="life-row" dir="ltr"><span>${L[0][0]}</span><span>${L[L.length-1][0]}</span></div>${L.length>1?`<div class="life-row"><b>${lL('التغيير','Change')}</b><b>${gyL((L[L.length-1][1]-L[0][1]>0?'+':'')+gyNum(L[L.length-1][1]-L[0][1])+' kg')}</b></div>`:''}`:`<div class="sub" style="margin-top:12px">${lL('لسه مفيش أوزان للتمرين ده.','No weights logged for this exercise yet.')}</div>`}
+ <div class="row" style="margin-top:14px"><button class="btn" onclick="closeAsk()">${lL('تمام','OK')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+// rest timer: starts after each ticked set, -15 / +15 / skip, vibrates at the end
+function gyRestSet(){openMenu(lL('الراحة بين المجموعات','Rest between sets'),[0,30,60,90,120,180,240].map(v=>({k:String(v),label:v?v+lL(' ثانية',' seconds'):lL('من غير مؤقت','No timer'),icon:'clock',c:'indigo',on:GY().rest===v})),v=>{GY().rest=+v;save();lifeDraw()})}
+function gyRestStart(){window._gyR={end:Date.now()+GY().rest*1000};gyTick();gyRestPaint()}
+function gyRestStop(){window._gyR=null;const e=document.getElementById('gyRest');if(e)e.innerHTML=''}
+function gyRestAdj(d){if(!window._gyR)return;window._gyR.end+=d*1000;gyRestPaint()}
+function gyRestPaint(){const e=document.getElementById('gyRest'),R=window._gyR;if(!R){if(e)e.innerHTML='';return}const left=Math.round((R.end-Date.now())/1000);
+ if(left<=0){window._gyR=null;if(e)e.innerHTML='';buzz(1);try{SFX('done')}catch(x){}toast(lL('الراحة خلصت، يلا المجموعة الجاية','Rest over — next set'),'dumbbell');return}
+ if(e)e.innerHTML=`<div class="gy-rest"><button onclick="gyRestAdj(-15)">−15</button><b>${lL('راحة','Rest')} ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}</b><button onclick="gyRestAdj(15)">+15</button><button onclick="gyRestStop()">${lL('تخطّي','Skip')}</button></div>`}
+// ===== v143 SLEEP MODE (Ahmed: «make the sleep mode work by telling it when you sleep and wake»): one tap to log bedtime now, one tap to log waking =====
+function slKeyNow(){const d=new Date();if(d.getHours()>=12)d.setDate(d.getDate()+1);return keyOf(d)}
+function slModeHtml(){const H=LF().he,on=H.slOn;if(on)return `<div class="sl-mode on"><div><b>${lL('نايم من ','Asleep since ')}${fmt(on.bed)}</b><small>${lL('اضغط لما تصحى','Tap when you wake up')}</small></div><button class="btn" onclick="slWake()">${ic('sun',16)}${lL('صحيت','I’m up')}</button></div>`;
+ return `<button class="btn sl-go" onclick="slSleep()">${ic('moon',16)}${lL('هنام دلوقتي','Going to sleep now')}</button>`}
+function slSleep(){const H=LF().he,t=new Date().toTimeString().slice(0,5),k=slKeyNow();H.sleep[k]=H.sleep[k]||{};H.sleep[k].bed=t;delete H.sleep[k].wake;H.slOn={k,bed:t,at:Date.now()};save();try{lifeDraw()}catch(e){}render();toast(lL('تصبح على خير 🌙 اقرا أذكار النوم','Good night 🌙 Read the sleep adhkar'),'moon');setTimeout(()=>{try{if(document.getElementById('lifeR')&&document.getElementById('lifeR').classList.contains('on'))return;}catch(e){}},0)}
+function slWake(){const H=LF().he,on=H.slOn;if(!on)return;const t=new Date().toTimeString().slice(0,5),hrs=(Date.now()-on.at)/36e5;
+ if(hrs>20){askConfirm(lL('شكلك نسيت تضغط «صحيت». سجّل ميعاد صحيانك بنفسك.','Looks like you forgot to tap «I’m up». Enter your wake time yourself.'),lL('تمام','OK'),()=>{delete H.slOn;save();try{lifeDraw()}catch(e){}render();heSleep('wake')});return}
+ H.sleep[on.k]=H.sleep[on.k]||{};H.sleep[on.k].wake=t;if(on.k!==today()){H.sleep[today()]=H.sleep[on.k];if(on.k>today())delete H.sleep[on.k]}delete H.slOn;save();try{lifeDraw()}catch(e){}render();
+ const m=Math.round(hrs*60);toast(lL('صباح الخير ☀️ نمت ','Good morning ☀️ You slept ')+Math.floor(m/60)+lL(' س ',' h ')+(m%60)+lL(' د',' min'),'sun')}
+function slCardHtml(){try{const H=LF().he,on=H.slOn;if(!on)return '';return `<div class="card sl-card"><div class="dz-ph"><span class="ico c-indigo">${ic('moon',17)}</span><b>${new Date().getHours()<12?lL('صباح الخير! صحيت؟','Good morning! Are you up?'):lL('وضع النوم شغال','Sleep mode is on')}</b></div><div class="sub">${lL('نايم من ','Asleep since ')}${fmt(on.bed)}</div><button class="btn" style="width:100%;margin-top:10px" onclick="slWake()">${ic('sun',16)}${lL('صحيت','I’m up')}</button></div>`}catch(e){return ''}}
+
 function heWork(){const T=[lL('مشي','Walking'),lL('جري','Running'),lL('جيم','Gym'),lL('كورة','Football'),lL('سباحة','Swimming'),lL('عجلة','Cycling'),lL('تمارين في البيت','Home workout')];openMenu(lL('نوع الرياضة','Activity'),T.map((t,i)=>({k:String(i),label:t,icon:'activity',c:'teal'})),i=>{askNumber(lL('كام دقيقة؟','How many minutes?'),30,m=>{if(!(m>0))return;const H=LF().he,k=today();(H.work[k]=H.work[k]||[]).push({t:T[+i],min:+m});save();setTimeout(()=>{if(awCap('work',2))lPts(5,lL('عاش! ','Nice! ')+T[+i],'activity');else lifeDraw()},300)},1,600,5)})}
 function heWeight(){const W=LF().he.weight;askNumber(lL('وزنك النهارده (كجم)','Today’s weight (kg)'),W.length?W[W.length-1].v:70,v=>{if(!(v>0))return;W.push({d:today(),v:askRound(+v,0.1)});if(W.length>100)W.shift();save();lifeDraw()},20,300,0.1)}
 function heMedAdd(){askText(lL('اسم الدوا','Medicine name'),'',n=>{n=(n||'').trim();if(!n)return;askTime(lL('أول ميعاد','First time'),'09:00',t1=>{const m={id:uid(),name:n,times:[t1]};LF().he.meds.push(m);save();lifeDraw();scheduleNative();setTimeout(()=>askConfirm(lL('تضيف ميعاد تاني؟','Add another time?'),lL('ضيف','Add'),()=>askTime(lL('الميعاد التاني','Second time'),'21:00',t2=>{m.times.push(t2);m.times.sort();save();lifeDraw();scheduleNative()})),350)})})}
@@ -2268,7 +2376,7 @@ function helpSearch(){askText(dzL('ابحث في المساعدة','Search help'
  const R=F.map((x,i)=>{const h=adkNorm(x[1]+' '+x[2].replace(/<[^>]+>/g,' '));const s=W.reduce((a,w)=>a+(h.includes(w)?1:0),0)+(adkNorm(x[1]).includes(q)?3:0);return{i,s,x}}).filter(r=>r.s>0).sort((a,b)=>b.s-a.s).slice(0,8);
  if(!R.length){toast(dzL('مفيش نتايج. جرّب كلمة تانية.','No results. Try another word.'),'search');return}openMenu(dzL('النتايج','Results'),R.map(r=>({k:r.i,label:r.x[1],icon:'chevron',c:HELP_CATS()[r.x[0]][2]})),i=>helpShow(i))})}
 
-function render(){
+function render(){try{slPaint()}catch(e){}
  applyPrayers();
  const rec=dayRec();const list=sorted();rec.total=list.length;const done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
  const pct=list.length?Math.round(done/list.length*100):0;
@@ -2343,6 +2451,7 @@ function ptsGuide(){const P=document.getElementById('askPanel'),ar=S.lang==='ar'
  ${rows.map(r=>`<div class="pg-row"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}
  <h3 style="margin-top:16px;font-size:16px">${ar?'عشان تستفيد أكتر':'To get the most out of it'}</h3>${tips.map(t=>`<div class="pg-li">${ic('check',14)}<span>${t}</span></div>`).join('')}
  <div class="row" style="margin-top:14px"><button class="btn" onclick="closeAsk()">${ar?'تمام':'OK'}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+function slPaint(){const e=document.getElementById('slSlot');if(e)e.innerHTML=slCardHtml()}
 function renderPrizes(){const pgEl=document.getElementById('ptsGuide');if(pgEl)pgEl.innerHTML=ptsGuideHtml();
  document.getElementById('addPrize').innerHTML=ic('plus',16)+'Add';
  document.getElementById('rewards').innerHTML=S.rewards.map(r=>`<div class="reward"><span class="ico ${col(r.icon)}">${ic(r.icon,22)}</span><div class="info" style="flex:1"><b>${esc(r.name)}</b><div class="meta">${ic('star',12)}${r.cost} pts${S.points<r.cost?' · '+(r.cost-S.points)+' to go':''}</div></div>
@@ -4537,7 +4646,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=142;
+const APP_VERSION=143;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
