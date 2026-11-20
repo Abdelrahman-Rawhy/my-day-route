@@ -1903,7 +1903,7 @@ function guideClose(){const G=document.getElementById('appGuide');if(G)G.classLi
 // ===== v108 LIFE MODULES: worship · health · money · learning =====
 function LF(){S.life=S.life||{};const L=S.life;L.ib=L.ib||{};L.he=L.he||{};L.mo=L.mo||{};L.le=L.le||{};
  const ib=L.ib;ib.fast=ib.fast||{};ib.sun=ib.sun||{};ib.qiyam=ib.qiyam||{};ib.sad=ib.sad||[];ib.hifz=ib.hifz||{};if(ib.qada==null)ib.qada=0;
- const he=L.he;he.water=he.water||{};if(he.wg==null)he.wg=8;he.sleep=he.sleep||{};he.work=he.work||{};he.weight=he.weight||[];he.meds=he.meds||[];he.mlog=he.mlog||{};he.plan=he.plan||{w:{},m:{}};he.plan.w=he.plan.w||{};he.plan.m=he.plan.m||{};he.plog=he.plog||{};
+ const he=L.he;he.water=he.water||{};if(he.wg==null)he.wg=8;he.sleep=he.sleep||{};he.work=he.work||{};he.weight=(he.weight||[]).map(x=>({d:x.d,v:+(+x.v).toFixed(1)}));he.meds=he.meds||[];he.mlog=he.mlog||{};he.plan=he.plan||{w:{},m:{}};he.plan.w=he.plan.w||{};he.plan.m=he.plan.m||{};he.plog=he.plog||{};
  const mo=L.mo;mo.tx=mo.tx||[];if(mo.cur==null)mo.cur=S.lang==='ar'?'ج':'EGP';mo.bills=mo.bills||[];mo.save=mo.save||{goal:0,have:0};if(mo.budget==null)mo.budget=0;
  const le=L.le;le.books=le.books||[];le.courses=le.courses||[];le.cards=le.cards||[];le.read=le.read||{};return L}
 const lL=(a,e)=>S.lang==='ar'?a:e;
@@ -2004,7 +2004,7 @@ function hpSaveM(close){const H=LF().he,M=H.plan.m,v=hpReadM(),key=M.all?7:windo
 function hpSwM(d){hpSaveM(0);hpEditM(d)}
 function hpAllTog(){hpSaveM(0);const M=LF().he.plan.m;M.all=document.getElementById('hpAll').checked;if(M.all&&!M[7])M[7]=Object.assign({},M[new Date().getDay()]||{});save();hpEditM(window._hpM)}
 function heWork(){const T=[lL('مشي','Walking'),lL('جري','Running'),lL('جيم','Gym'),lL('كورة','Football'),lL('سباحة','Swimming'),lL('عجلة','Cycling'),lL('تمارين في البيت','Home workout')];openMenu(lL('نوع الرياضة','Activity'),T.map((t,i)=>({k:String(i),label:t,icon:'activity',c:'teal'})),i=>{askNumber(lL('كام دقيقة؟','How many minutes?'),30,m=>{if(!(m>0))return;const H=LF().he,k=today();(H.work[k]=H.work[k]||[]).push({t:T[+i],min:+m});save();setTimeout(()=>{if(awCap('work',2))lPts(5,lL('عاش! ','Nice! ')+T[+i],'activity');else lifeDraw()},300)},1,600,5)})}
-function heWeight(){const W=LF().he.weight;askNumber(lL('وزنك النهارده (كجم)','Today’s weight (kg)'),W.length?W[W.length-1].v:70,v=>{if(!(v>0))return;W.push({d:today(),v:+v});if(W.length>100)W.shift();save();lifeDraw()},20,300,0.1)}
+function heWeight(){const W=LF().he.weight;askNumber(lL('وزنك النهارده (كجم)','Today’s weight (kg)'),W.length?W[W.length-1].v:70,v=>{if(!(v>0))return;W.push({d:today(),v:askRound(+v,0.1)});if(W.length>100)W.shift();save();lifeDraw()},20,300,0.1)}
 function heMedAdd(){askText(lL('اسم الدوا','Medicine name'),'',n=>{n=(n||'').trim();if(!n)return;askTime(lL('أول ميعاد','First time'),'09:00',t1=>{const m={id:uid(),name:n,times:[t1]};LF().he.meds.push(m);save();lifeDraw();scheduleNative();setTimeout(()=>askConfirm(lL('تضيف ميعاد تاني؟','Add another time?'),lL('ضيف','Add'),()=>askTime(lL('الميعاد التاني','Second time'),'21:00',t2=>{m.times.push(t2);m.times.sort();save();lifeDraw();scheduleNative()})),350)})})}
 function heMedTake(id,t){const H=LF().he,k=today();H.mlog[k]=H.mlog[k]||{};const key=id+'@'+t;H.mlog[k][key]=!H.mlog[k][key];save();HAP();lifeDraw()}
 function heMedDel(id,b){if(!b.dataset.sure){askConfirm(lL('تمسح الدوا ده ومواعيده؟','Delete this medicine and its times?'),lL('امسح','Delete'),()=>{b.dataset.sure=1;heMedDel(id,b)},1);return}const H=LF().he;H.meds=H.meds.filter(m=>m.id!==id);save();lifeDraw();scheduleNative()}
@@ -2658,10 +2658,12 @@ function openDT(inp){if(inp.type==='date')openDate(inp);else openTime(inp)}
 function askTime(title,init,cb,quick){openTime({type:'time',value:init||'',_title:title,_cb:cb,_quick:quick||[]})}
 let askCb=null;
 function askNumber(title,init,cb,min,max,step){if(min==null)min=0;if(max==null)max=1e9;if(step==null)step=1;askCb=cb;const P=document.getElementById('askPanel');
- P.innerHTML=`<h3>${esc(title)}</h3><div class="ask-num"><button class="btn ghost" onclick="askStep(-${step||1})">−</button><input id="askIn" type="number" inputmode="numeric" value="${init}" min="${min}" max="${max}"><button class="btn ghost" onclick="askStep(${step||1})">+</button></div>
- <div class="row" style="margin-top:14px"><button class="btn ghost" onclick="closeAsk()">${T('Cancel')}</button><button class="btn" onclick="askOk(${min},${max})">${T('Save')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
-function askStep(d){const i=document.getElementById('askIn');i.value=Math.max(+i.min,Math.min(+i.max,(+i.value||0)+d));buzz()}
-function askOk(min,max){const v=Math.max(min,Math.min(max,parseInt(document.getElementById('askIn').value)||0)),cb=askCb;closeAsk();if(cb)cb(v)}
+ P.innerHTML=`<h3>${esc(title)}</h3><div class="ask-num"><button class="btn ghost" onclick="askStep(-${step||1})">−</button><input id="askIn" type="number" inputmode="${step<1?'decimal':'numeric'}" step="${step}" value="${askRound(+init||0,step)}" min="${min}" max="${max}"><button class="btn ghost" onclick="askStep(${step||1})">+</button></div>
+ <div class="row" style="margin-top:14px"><button class="btn ghost" onclick="closeAsk()">${T('Cancel')}</button><button class="btn" onclick="askOk(${min},${max},${step})">${T('Save')}</button></div>`;document.getElementById('askSheet').classList.add('on')}
+// v141: decimal steps (weight 0.1 kg) — round to the step so + / − never shows 70.19999999999 (Ahmed's screenshot), and keep decimals on Save (was parseInt)
+function askRound(v,step){const dp=step&&step<1?Math.min(4,(String(step).split('.')[1]||'').length):0;return +(+v).toFixed(dp)}
+function askStep(d){const i=document.getElementById('askIn'),st=+i.step||1;i.value=askRound(Math.max(+i.min,Math.min(+i.max,(parseFloat(i.value)||0)+d)),st);buzz()}
+function askOk(min,max,step){const raw=parseFloat(String(document.getElementById('askIn').value).replace(',','.'))||0,v=askRound(Math.max(min,Math.min(max,step&&step<1?raw:Math.round(raw))),step||1),cb=askCb;closeAsk();if(cb)cb(v)}
 function askConfirm(text,okLabel,cb,danger){askCb=cb;const P=document.getElementById('askPanel');
  P.innerHTML=`<h3 style="white-space:pre-line">${esc(text)}</h3><div class="row" style="margin-top:14px"><button class="btn ghost" onclick="closeAsk()">${T('Cancel')}</button><button class="btn ${danger?'red':''}" onclick="const c=askCb;${danger?"SFX('thud');":''}closeAsk();c&&c()">${esc(okLabel||T('OK'))}</button></div>`;document.getElementById('askSheet').classList.add('on')}
 function closeAsk(){document.getElementById('askSheet').classList.remove('on');askCb=null}
@@ -4510,7 +4512,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=140;
+const APP_VERSION=141;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
