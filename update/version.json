@@ -1,7 +1,7 @@
 {
- "v": 148,
- "note": "Prayer times can now follow your location automatically: in the city list choose «Automatic (my location)». It updates by itself when you travel. Needs the new phone version (it asks for location permission once).",
- "note_ar": "مواعيد الصلاة بقت ممكن تمشي على موقعك تلقائي: من قائمة المدن اختار «تلقائي (موقعي)»، وهتتظبط لوحدها لما تسافر. محتاجة نسخة الموبايل الجديدة (هتطلب إذن الموقع مرة واحدة).",
+ "v": 149,
+ "note": "New sleep coach in My life → Health → Sleep. Set a bedtime and wake time and get wind-down, bedtime and wake reminders. Stayed up all night? Tap «No sleep yet?» for a step-by-step plan for today, with a timed nap. It also shows how much sleep you are short and your wake-time streak.",
+ "note_ar": "مدرّب النوم الجديد في حياتي ← الصحة ← النوم. حدد ميعاد نوم وصحيان ويوصلك تذكير للتهدئة والنوم والصحيان. سهرت ومانمتش؟ اضغط «سهرت ومانمتش؟» وهتطلعلك خطة لليوم خطوة بخطوة ومعاها قيلولة بمؤقت. وكمان بيوريك ناقصك نوم قد إيه وانتظام صحيانك.",
  "apk": 189,
  "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
  "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»)."
