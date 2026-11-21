@@ -2,7 +2,7 @@
  "v": 148,
  "note": "Prayer times can now follow your location automatically: in the city list choose «Automatic (my location)». It updates by itself when you travel. Needs the new phone version (it asks for location permission once).",
  "note_ar": "مواعيد الصلاة بقت ممكن تمشي على موقعك تلقائي: من قائمة المدن اختار «تلقائي (موقعي)»، وهتتظبط لوحدها لما تسافر. محتاجة نسخة الموبايل الجديدة (هتطلب إذن الموقع مرة واحدة).",
- "apk": 173,
- "apk_note": "Family invite links: tapping a Yawmi invite link now opens the app and joins the family.",
- "apk_note_ar": "لينكات دعوة العيلة: لما تضغط على لينك دعوة يومي، التطبيق بيفتح وينضم للعيلة على طول."
+ "apk": 189,
+ "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
+ "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»)."
 }
