@@ -594,6 +594,8 @@ body.reading .toast,html.light body.reading .toast,html.glass body.reading .toas
 body.reading .toast.on{box-shadow:0 12px 30px rgba(60,40,10,.45)!important}
 body.reading .toast .ico{background:#A9875A!important;color:#fff!important}
 body.reading .toast *{color:inherit}
+.td-call{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);margin-inline-start:6px;align-self:center}
+.td-phr{display:flex;gap:8px;align-items:center;margin:8px 0}.td-phr input{flex:1;min-width:0}.td-callb{flex:none;min-width:0!important;padding:0 16px;text-decoration:none;background:#047857!important;color:#fff!important}
 /* v144: while the keyboard is open the floating menu, mic and status pills step aside so the field you type in has room */
 body.kb .nav,body.kb .fab,body.kb #pcPill{opacity:0!important;pointer-events:none!important;transform:translateX(-50%) translateY(140%)!important;transition:opacity .15s,transform .2s}body.kb .fab{transform:translateY(140%)!important}
 .gy-rt{display:flex;align-items:center;gap:8px;border-top:1px solid var(--bd);padding:4px 0}.gy-rtb{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 2px;background:none;border:0;text-align:start;font-family:inherit;color:var(--tx);min-width:0}.gy-rtb small{font-size:12.5px;color:var(--mu);line-height:1.6}
@@ -3392,7 +3394,12 @@ function tdIn(v,x){const t=today();if(v==='done')return x.status==='done';if(x.s
 function tdSort(a,b){const ad=a.due||'9999',bd=b.due||'9999';if(ad!==bd)return ad<bd?-1:1;if((b.pri||0)!==(a.pri||0))return(b.pri||0)-(a.pri||0);const at=a.time||'99',bt=b.time||'99';return at<bt?-1:at>bt?1:a.created-b.created}
 function tdDueTxt(x){if(!x.due)return'';const t=today(),ar=S.lang==='ar';let d=x.due===t?L('النهارده','Today'):x.due===tdAdd(t,1)?L('بكرة','Tomorrow'):x.due===tdAdd(t,-1)?L('امبارح','Yesterday'):tdD(x.due).toLocaleDateString(ar?'ar-EG':'en-GB',{day:'numeric',month:'short'});return d+(x.time?' · '+fmt(x.time):'')}
 // ---- natural language: "Call Ali tomorrow 5pm #work !2 ~Office every week"
-function tdParse(raw){let s=' '+raw.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c))+' ',tags=[],pri=0,list=null,due=null,time=null,rep=null,m;
+// v145 CALL TASKS (Ahmed: «Add that I can add calls» → call tasks with a call button)
+const PH_RE=/(?:\+|00)?\d[\d\s-]{6,16}\d/;
+function phNorm(v){v=String(v||'').replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[۰-۹]/g,c=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(c)).replace(/[^\d+]/g,'');return v.length>=7?v:''}
+function phTel(v){return 'tel:'+phNorm(v)}
+function tdParse(raw){const pm=String(raw).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c)).match(PH_RE);if(pm&&phNorm(pm[0]).replace('+','').length>=8){const P=tdParse0(String(raw).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(pm[0],' ').replace(/\s+/g,' ').trim());P.ph=phNorm(pm[0]);return P}return tdParse0(raw)}
+function tdParse0(raw){let s=' '+raw.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c))+' ',tags=[],pri=0,list=null,due=null,time=null,rep=null,m;
  s=s.replace(/#([\p{L}\p{N}_-]+)/gu,(a,b)=>{tags.push(b);return' '});
  s=s.replace(/(^|\s)!([0-3])(?=\s)/,(a,b,c)=>{pri=+c;return' '});
  if(/(^|\s)(عاجل|urgent)(?=\s)/i.test(s)){pri=3;s=s.replace(/(^|\s)(عاجل|urgent)(?=\s)/i,' ')}else if(/(^|\s)(مهم|important)(?=\s)/i.test(s)){pri=Math.max(pri,2);s=s.replace(/(^|\s)(مهم|important)(?=\s)/i,' ')}
@@ -3410,7 +3417,7 @@ function tdParse(raw){let s=' '+raw.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'
  const t=s.replace(/\s{2,}/g,' ').trim();return{t,tags,pri,list,due,time,rep}}
 function tdQuickAdd(){const i=document.getElementById('tdIn');const v=(i.value||'').trim();if(!v){i.focus();toast(L('اكتب المهمة الأول','Type the task first'),'pen');return}const P=tdParse(v);if(!P.t){toast(L('اكتب اسم المهمة','Type a task name'),'pen');return}
  const V=tdView;if(!P.list&&V.startsWith('l:'))P.list=V.slice(2);if(!P.due&&(V==='today'||V==='week'))P.due=today();if(!P.due&&V==='tomorrow')P.due=tdAdd(today(),1);if(V.startsWith('t:')&&!P.tags.includes(V.slice(2)))P.tags.push(V.slice(2));
- const x={id:uid(),t:P.t,list:P.list,pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
+ const x={id:uid(),ph:P.ph||undefined,t:P.t,list:P.list,pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
  TD().items.push(x);i.value='';save();renderTasks();SFX('pop');toast(L('اتضافت: ','Added: ')+x.t+(x.due?' · '+tdDueTxt(x):''),'check')}
 function tdToggle(id){const x=TD().items.find(y=>y.id===id);if(!x)return;
  if(x.status==='done'){x.status='todo';if(x.pa){x.pa=0;subPts(5,1)}x.doneAt=null;save();renderTasks();return}
@@ -3420,7 +3427,7 @@ function tdNext(x){let k=x.due;if(x.rep==='daily')return tdAdd(k,1);if(x.rep==='
  if(x.rep==='weekdays'){do{k=tdAdd(k,1)}while([5,6].includes(tdD(k).getDay()));return k}return tdAdd(k,1)}
 function tdRow(x){const pc=PRI_C[x.pri||0],ov=x.due&&x.due<today()&&x.status!=='done',sd=(x.subs||[]).filter(s=>s.d).length,ls=x.list&&TD().lists.find(l=>l.id===x.list);
  return `<div class="td-row ${x.status==='done'?'dn':''}" onclick="tdOpen('${x.id}')"><button class="td-cb" style="--pc:${pc}" onclick="event.stopPropagation();tdToggle('${x.id}')">${x.status==='done'?ic('check',14,'',3):''}</button>
- <div class="td-b"><b>${esc(x.t)}</b><div class="td-m">${x.due?`<span class="${ov?'ov':''}">${ic('calendar',12)}${tdDueTxt(x)}</span>`:''}${x.rep?`<span>${ic('rotate',12)}</span>`:''}${x.rem!=null&&x.time?`<span>${ic('bell',12)}</span>`:''}${(x.subs||[]).length?`<span>${ic('check',12)}${sd}/${x.subs.length}</span>`:''}${ls&&!tdView.startsWith('l:')?`<span class="c-${ls.c||'violet'} tlist">${esc(ls.name)}</span>`:''}${(x.tags||[]).map(t=>`<span class="ttag">#${esc(t)}</span>`).join('')}${x.notes?`<span>${ic('pen',12)}</span>`:''}</div></div>
+ <div class="td-b"><b>${esc(x.t)}</b><div class="td-m">${x.due?`<span class="${ov?'ov':''}">${ic('calendar',12)}${tdDueTxt(x)}</span>`:''}${x.rep?`<span>${ic('rotate',12)}</span>`:''}${x.rem!=null&&x.time?`<span>${ic('bell',12)}</span>`:''}${(x.subs||[]).length?`<span>${ic('check',12)}${sd}/${x.subs.length}</span>`:''}${ls&&!tdView.startsWith('l:')?`<span class="c-${ls.c||'violet'} tlist">${esc(ls.name)}</span>`:''}${(x.tags||[]).map(t=>`<span class="ttag">#${esc(t)}</span>`).join('')}${x.notes?`<span>${ic('pen',12)}</span>`:''}</div></div>${x.ph&&x.status!=='done'?`<a class="td-call" href="${phTel(x.ph)}" onclick="event.stopPropagation()" aria-label="call">${ic('phone',17)}</a>`:''}
  ${x.pri?`<span class="td-flag" style="color:${pc}">${ic('flag',15)}</span>`:''}</div>`}
 function renderTasks(){const el=document.getElementById('tdBody');if(!el)return;const V=tdViewInfo(),items=TD().items.filter(x=>tdIn(V.k,x)).sort(V.k==='done'?(a,b)=>(b.doneAt||0)-(a.doneAt||0):tdSort);
  const cnt=TD().items.filter(x=>tdIn('today',x)).length;
@@ -3455,7 +3462,7 @@ function tdMxTap(id){const x=TD().items.find(y=>y.id===id);if(!x)return;const cu
  it.unshift({k:'open',label:L('التفاصيل','Details'),icon:'pen',c:'blue'},{k:'done',label:L('خلصت ✓','Done ✓'),icon:'check',c:'green'});
  openMenu(x.t,it,k=>{if(k==='open')tdOpen(id);else if(k==='done')tdToggle(id);else{tdMxMove(x,+k.slice(1));save();renderTasks();toast(L('اتنقلت','Moved'),'check')}})}
 function tdMxAdd(q){askText(MXQ()[q-1][1],'',v=>{v=(v||'').trim();if(!v)return;const P=tdParse(v);if(!P.t)return;
- const x={id:uid(),t:P.t,list:P.list||(tdView.startsWith('l:')?tdView.slice(2):null),pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
+ const x={id:uid(),ph:P.ph||undefined,t:P.t,list:P.list||(tdView.startsWith('l:')?tdView.slice(2):null),pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()};
  tdMxMove(x,q);if(q===2||q===4){if(x.due&&x.due<=tdAdd(today(),1)&&!P.due)x.due=null}TD().items.push(x);save();renderTasks();SFX('pop');toast(L('اتضافت: ','Added: ')+x.t,'check')})}
 function tdSet(id,st){const x=TD().items.find(y=>y.id===id);if(!x)return;if(st==='done'&&x.status!=='done'){tdToggle(id);return}x.status=st;if(st!=='done')x.doneAt=null;save();renderTasks()}
 function tdCalHtml(){const t=today();tdCalM=tdCalM||t.slice(0,7);tdCalSel=tdCalSel||t;const [y,mo]=tdCalM.split('-').map(Number),first=new Date(y,mo-1,1),start=(first.getDay()+1)%7,n=new Date(y,mo,0).getDate(),ar=S.lang==='ar';
@@ -3482,6 +3489,7 @@ function tdOpen(id){const x=TD().items.find(y=>y.id===id);if(!x)return;tdEditId=
  const lists=TD().lists,remO=[[null,L('بدون تذكير','No reminder')],[0,L('في الميعاد','At time')],[5,L('قبلها بـ٥ دقايق','5 min before')],[15,L('قبلها بربع ساعة','15 min before')],[30,L('قبلها بنص ساعة','30 min before')],[60,L('قبلها بساعة','1 hour before')],[1440,L('قبلها بيوم','1 day before')]];
  const repO=[[null,L('مابتتكررش','Does not repeat')],['daily',L('كل يوم','Every day')],['weekdays',L('أيام الشغل','Weekdays')],['weekly',L('كل أسبوع','Every week')],['monthly',L('كل شهر','Every month')]];
  P.innerHTML=`<div class="td-eh"><button class="td-cb big" style="--pc:${PRI_C[x.pri||0]}" onclick="tdToggle('${x.id}');tdOpen('${x.id}')">${x.status==='done'?ic('check',16,'',3):''}</button><input id="tdT" class="td-ti" value="${esc(x.t)}" placeholder="${L('اسم المهمة','Task name')}" oninput="tdF('t',this.value)"></div>
+ <div class="td-phr"><input id="tdPh" type="tel" inputmode="tel" dir="ltr" placeholder="${L('رقم تليفون (لو هتتصل)','Phone number (for a call)')}" value="${esc(x.ph||'')}" onchange="tdF('ph',phNorm(this.value)||undefined);tdOpen(tdEditId)">${x.ph?`<a class="btn td-callb" href="${phTel(x.ph)}">${ic('phone',16)}${L('اتصل','Call')}</a>`:''}</div>
  <textarea id="tdN" rows="2" placeholder="${L('ملاحظات','Notes')}" oninput="tdF('notes',this.value)">${esc(x.notes||'')}</textarea>
  <label>${L('الأولوية','Priority')}</label><div class="td-pri">${[0,1,2,3].map(p=>`<button class="${(x.pri||0)===p?'on':''}" style="--pc:${PRI_C[p]}" onclick="tdF('pri',${p});tdOpen('${x.id}')">${ic('flag',16)}${[L('بدون','None'),L('منخفضة','Low'),L('متوسطة','Medium'),L('عالية','High')][p]}</button>`).join('')}</div>
  <div class="td-2"><div><label>${L('التاريخ','Date')}</label><input type="date" value="${x.due||''}" onchange="tdF('due',this.value||null)"></div><div><label>${L('الوقت','Time')}</label><input type="time" value="${x.time||''}" onchange="tdF('time',this.value||null);if(this.value&&tdCur().rem==null)tdF('rem',0)"></div></div>
@@ -4207,11 +4215,12 @@ async function doSchedule(){
     const [h,m]=tm.split(':').map(Number),at=new Date(day);at.setHours(h,m,0,0);if(at.getTime()<=now+20000)return;
     const pr=t.prayer?tName(t,day).replace(/^pray\s*/i,''):'';
     out.push({id:(d+1)*1000+i,channelId:t.prayer&&['bell','file'].includes(S.psound)?'prayer':'route',title:S.lang==='ar'?(t.prayer?trS(tName(t,day)):trS(t.name)):(t.prayer?pr+' prayer':t.name),body:S.lang==='ar'?(t.prayer?'حان وقت الصلاة':'حان وقتها'):(t.prayer?'It’s time to pray':'It’s time'),schedule:{at,allowWhileIdle:true}})})}
-  if(S.pcheck!==false){try{await pcRegister()}catch(e){}const mins=S.pcheckMin||60;
+  try{await pcRegister()}catch(e){}
+  if(S.pcheck!==false){const mins=S.pcheckMin||60;
    for(let d=0;d<14;d++){const day=new Date();day.setHours(0,0,0,0);day.setDate(day.getDate()+d);const pt=prayerTimes(day,c[1],c[2]);
     S.tasks.filter(t=>t.prayer&&PN_AR[t.prayer]).forEach((t,j)=>{if(!onDay(t,day))return;if(d===0&&rec.done.includes(t.id))return;const w=pcWin(pt,t.prayer);if(!w)return;const at=new Date(day);at.setHours(0,w[0],0,0);if(at.getTime()<=now+20000)return;
      out.push({id:50000+d*10+j,channelId:'route',actionTypeId:'pcheck',extra:{pc:t.prayer,tid:t.id,day:keyOf(day)},title:pcTitle(t.prayer,day),body:S.lang==='ar'?'سجّلها: 👥 جماعة · ✅ في وقتها · ⏰ متأخرة':'Log it: 👥 Jama\'ah · ✅ On time · ⏰ Late',schedule:{at,allowWhileIdle:true}})})}}
-  (((S.todo||{}).items)||[]).filter(x=>x.status!=='done'&&x.due&&x.time&&x.rem!=null).slice(0,900).forEach((x,i)=>{const [h,m]=x.time.split(':').map(Number),at=new Date(x.due+'T00:00');at.setHours(h,m-(x.rem||0),0,0);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:60000+i,channelId:'route',title:(x.pri>=3?'❗ ':'')+x.t,body:S.lang==='ar'?('مهمة · '+fmt(x.time)+(x.rem?' · بعد '+(x.rem>=1440?'يوم':x.rem>=60?'ساعة':x.rem+' دقيقة'):'')):('Task · '+fmt(x.time)),schedule:{at,allowWhileIdle:true}})});
+  (((S.todo||{}).items)||[]).filter(x=>x.status!=='done'&&x.due&&x.time&&x.rem!=null).slice(0,900).forEach((x,i)=>{const [h,m]=x.time.split(':').map(Number),at=new Date(x.due+'T00:00');at.setHours(h,m-(x.rem||0),0,0);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:60000+i,channelId:'route',...(x.ph?{actionTypeId:'call',extra:{ph:x.ph,tdid:x.id}}:{extra:{tdid:x.id}}),title:(x.ph?'📞 ':'')+(x.pri>=3?'❗ ':'')+x.t,body:S.lang==='ar'?('مهمة · '+fmt(x.time)+(x.rem?' · بعد '+(x.rem>=1440?'يوم':x.rem>=60?'ساعة':x.rem+' دقيقة'):'')):('Task · '+fmt(x.time)),schedule:{at,allowWhileIdle:true}})});
   ((S.cal&&S.cal.ev)||[]).forEach((e,i)=>{if(e.allDay)return;const at=new Date(e.at-10*6e4);if(at.getTime()<=now+20000||at.getTime()>now+14*864e5)return;out.push({id:80000+i,channelId:'route',title:'📅 '+e.t,body:'In 10 minutes · '+clock12(e.at),schedule:{at,allowWhileIdle:true}})});
   {const c=dzCfg();if(c.rem){[['planT',0],['revT',1]].forEach(([key,o])=>{const [h,m]=(c[key]||'').split(':').map(Number);if(isNaN(h))return;for(let d=0;d<14;d++){const at=new Date();at.setHours(0,0,0,0);at.setDate(at.getDate()+d);at.setHours(h,m,0,0);if(at.getTime()<=Date.now()+20000)continue;const k=keyOf(at);if(o===0&&(S.plan||{})[k])continue;if(o===1&&d===0&&rec.review)continue;out.push({id:76000+d*2+o,channelId:'route',title:o===0?dzL('🎯 خطة النهارده','🎯 Today’s plan'):dzL('🌙 مراجعة اليوم','🌙 Day review'),body:o===0?dzL('إيه أهم 3 حاجات هتعملها النهارده؟ دقيقة واحدة.','What are your top 3 today? One minute.'):dzL('دقيقة تقفل بيها يومك، وتحدد أهم 3 لبكرة.','One minute to close your day and set tomorrow’s top 3.'),schedule:{at,allowWhileIdle:true}})}})}}
   try{const Lf=LF();Lf.he.meds.forEach((m,mi)=>m.times.forEach((tm,ti)=>{const [h,mm]=tm.split(':').map(Number);for(let d=0;d<5;d++){const at=new Date();at.setHours(0,0,0,0);at.setDate(at.getDate()+d);at.setHours(h,mm,0,0);if(at.getTime()<=Date.now()+20000)continue;const id=77000+((mi*4+ti)%140)*5+d;out.push({id,channelId:'route',title:'💊 '+m.name,body:lL('ميعاد الدوا','Time for your medicine'),schedule:{at,allowWhileIdle:true}})}}));
@@ -4229,7 +4238,7 @@ const PN_AR={fajr:'الفجر',dhuhr:'الظهر',asr:'العصر',maghrib:'ال
 function pcName(k,day){if(k==='dhuhr'&&isFri(day||new Date()))return S.lang==='ar'?'الجمعة':"Jumu'ah";return S.lang==='ar'?PN_AR[k]:PN_EN[k]}
 function pcTitle(k,day){return S.lang==='ar'?'صلّيت '+pcName(k,day)+'؟':'Did you pray '+pcName(k,day)+'?'}
 let _pcReg=false;async function pcRegister(){if(_pcReg||!LN||!LN.registerActionTypes)return;const ar=S.lang==='ar';
- await LN.registerActionTypes({types:[{id:'pcheck',actions:[{id:'jamaah',title:ar?'👥 جماعة':"👥 Jama'ah"},{id:'ontime',title:ar?'✅ في وقتها':'✅ On time'},{id:'late',title:ar?'⏰ متأخرة':'⏰ Late'}]}]});_pcReg=true}
+ await LN.registerActionTypes({types:[{id:'call',actions:[{id:'call',title:ar?'📞 اتصل':'📞 Call',foreground:true}]},{id:'pcheck',actions:[{id:'jamaah',title:ar?'👥 جماعة':"👥 Jama'ah"},{id:'ontime',title:ar?'✅ في وقتها':'✅ On time'},{id:'late',title:ar?'⏰ متأخرة':'⏰ Late'}]}]});_pcReg=true}
 function pcLog(tid,q){const t=S.tasks.find(x=>x.id===tid);if(!t)return;const r=dayRec();if(q==='missed'){r.pmiss=r.pmiss||{};r.pmiss[t.prayer]=1;save();pcHide();toast(S.lang==='ar'?'اقضِها الآن، ثم سجّلها «متأخرة»':'Make it up now, then log it as late','rotate');return}
  if(!r.done.includes(tid))toggle(tid);setPQ(t.prayer,q);pcHide();try{LN&&LN.cancel({notifications:[{id:window._pcNid||0}]})}catch(e){}}
 function pcHide(){const el=document.getElementById('pcPill');if(el){el.classList.remove('on');setTimeout(()=>el.remove(),300)}}
@@ -4248,7 +4257,7 @@ function pcLater(k){const r=dayRec();r.pcx=r.pcx||{};r.pcx[k]=1;save();pcHide()}
 function togglePCheck(){const L=[60,30,120,0],cur=S.pcheck===false?0:(S.pcheckMin||60);const nx=L[(L.indexOf(cur)+1)%L.length];if(nx===0)S.pcheck=false;else{S.pcheck=true;S.pcheckMin=nx}save();renderSettings();scheduleNative();toast(pcLabel(),'mosque')}
 function pcLabel(){const ar=S.lang==='ar';if(S.pcheck===false)return ar?'متوقف':'Off';const m=S.pcheckMin||60;return ar?(m===30?'بعد ٣٠ دقيقة':m===60?'بعد ساعة':'بعد ساعتين'):(m===30?'After 30 min':m===60?'After 1 hour':'After 2 hours')}
 setTimeout(()=>pcShow(),2500);setInterval(()=>pcShow(),60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>pcShow(),800)});
-if(LN&&LN.addListener){try{LN.addListener('localNotificationActionPerformed',a=>{const n=a.notification||{},x=n.extra||{};if(!x.pc)return;window._pcNid=n.id;
+if(LN&&LN.addListener){try{LN.addListener('localNotificationActionPerformed',a=>{const n=a.notification||{},x=n.extra||{};if(x.ph&&a.actionId==='call'){setTimeout(()=>{location.href=phTel(x.ph)},300);return}if(x.tdid&&!x.pc){setTimeout(()=>{try{go('tasks');tdOpen(x.tdid)}catch(e){}},600);return}if(!x.pc)return;window._pcNid=n.id;
  if(x.day!==today()){toast(S.lang==='ar'?'هذا التذكير ليوم سابق':'That reminder was for an earlier day','clock');return}
  if(['jamaah','ontime','late'].includes(a.actionId)){setTimeout(()=>pcLog(x.tid,a.actionId),400)}else{const t=S.tasks.find(y=>y.id===x.tid);if(t)setTimeout(()=>pcShow({t}),600)}})}catch(e){}}
 async function allowExact(){try{await LN.changeExactNotificationSetting();setTimeout(scheduleNative,1500)}catch(e){}}
@@ -4653,7 +4662,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=144;
+const APP_VERSION=145;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
