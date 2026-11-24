@@ -1,7 +1,7 @@
 {
- "v": 154,
- "note": "Desktop widgets now look and work like TickTick: pin them to the desktop behind your windows, pick a list (Inbox, Today, All or your own), add tasks right from the widget, see each task's reminder and date, and open «Completed today». New taskbar strip with the next prayer and a countdown.",
- "note_ar": "ويدجت الكمبيوتر بقت زي TickTick: ثبّتها على سطح المكتب ورا البرامج، اختار القائمة (صندوق المهام أو النهارده أو كل المهام أو قوايمك)، ضيف مهام من الويدجت على طول، وشوف التذكير والتاريخ لكل مهمة، وافتح «اتعملت النهارده». وجديد: شريط صغير على شريط المهام فيه الصلاة الجاية والعدّاد.",
+ "v": 155,
+ "note": "Real alarm for naps and waking up: it rings at alarm volume until you stop or snooze it, shows over the lock screen, and comes back after a restart. Turn it on in Health → Sleep → Sleep plan, then tap «Test the alarm». It needs the next app update.",
+ "note_ar": "منبّه حقيقي للقيلولة والصحيان: بيرن على صوت المنبّه لحد ما توقفه أو تأجّله، بيظهر على الشاشة وهي مقفولة، وبيرجع حتى بعد ما تقفل الموبايل وتفتحه. شغّله من الصحة ← النوم ← خطة النوم، واضغط «جرّب المنبّه». محتاج تحديث التطبيق الجاي.",
  "apk": 189,
  "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
  "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»).",

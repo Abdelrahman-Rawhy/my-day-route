@@ -9,6 +9,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(WidgetBridge.class);
         registerPlugin(SpeechBridge.class);
         registerPlugin(ApkUpdater.class);
+        registerPlugin(AlarmBridge.class);
         super.onCreate(savedInstanceState);
         SelfUpdate.schedule(getApplicationContext());
     }
