@@ -1,7 +1,7 @@
 {
- "v": 150,
- "note": "Tasks can repeat your way: in a task open Repeat → «Custom…» and choose every 2 days, every 2 weeks, every few months, or the exact weekdays. You can also type it, like «every 2 weeks» or «every Sat and Tue». Also new: the sleep coach in My life → Health → Sleep, with a sleep plan, reminders and a «No sleep yet?» recovery plan.",
- "note_ar": "المهام بقت تتكرر زي ما تحب: افتح المهمة ← التكرار ← «مخصص…» واختار كل يومين أو كل أسبوعين أو كل كام شهر أو أيام محددة في الأسبوع. وممكن تكتبها على طول زي «كل أسبوعين» أو «كل سبت وتلات». وكمان جديد: مدرّب النوم في حياتي ← الصحة ← النوم، فيه خطة نوم وتذكيرات وخطة «سهرت ومانمتش؟».",
+ "v": 151,
+ "note": "Medicines can now be taken every 2 days, every 3 days, weekly, or any number of days. Tap a medicine in My life → Health to set how often, the first dose day and the times. Reminders come on dose days only, and the card shows the next dose.",
+ "note_ar": "الأدوية بقت ممكن تتاخد كل يومين أو كل 3 أيام أو كل أسبوع أو أي عدد أيام. اضغط على الدوا في حياتي ← الصحة واختار بتاخده كل قد إيه، وأول جرعة، والمواعيد. التذكير بيوصل في أيام الجرعة بس، والكارت بيوريك الجرعة الجاية.",
  "apk": 189,
  "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
  "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»)."
