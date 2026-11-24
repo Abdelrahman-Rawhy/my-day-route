@@ -2,9 +2,9 @@
  "v": 155,
  "note": "Real alarm for naps and waking up: it rings at alarm volume until you stop or snooze it, shows over the lock screen, and comes back after a restart. Turn it on in Health → Sleep → Sleep plan, then tap «Test the alarm». It needs the next app update.",
  "note_ar": "منبّه حقيقي للقيلولة والصحيان: بيرن على صوت المنبّه لحد ما توقفه أو تأجّله، بيظهر على الشاشة وهي مقفولة، وبيرجع حتى بعد ما تقفل الموبايل وتفتحه. شغّله من الصحة ← النوم ← خطة النوم، واضغط «جرّب المنبّه». محتاج تحديث التطبيق الجاي.",
- "apk": 189,
- "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
- "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»).",
+ "apk": 199,
+ "apk_note": "Real alarm for naps and waking up: rings until you stop or snooze it, even on the lock screen.",
+ "apk_note_ar": "منبّه حقيقي للقيلولة والصحيان: بيرن لحد ما توقفه أو تأجّله، حتى والشاشة مقفولة.",
  "desk": 4,
  "desk_note": "TickTick-style widgets: pin them to the desktop, pick a list, add tasks from the widget, and a prayer countdown on the taskbar.",
  "desk_note_ar": "ويدجت زي TickTick: تتثبّت على سطح المكتب، تختار القائمة، تضيف مهام منها، وعدّاد الصلاة على شريط المهام."
