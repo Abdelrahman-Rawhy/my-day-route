@@ -29,6 +29,13 @@ jobs:
           cd desktop
           npm version --no-git-tag-version "1.0.${{ github.run_number }}"
 
+      - name: Build pin helper (pin widgets to the desktop)
+        shell: bash
+        run: |
+          mkdir -p desktop/bin
+          "/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" -nologo -optimize -target:winexe -out:desktop/bin/pinhelper.exe desktop/native/pin.cs
+          ls -la desktop/bin
+
       - name: Build installer
         working-directory: desktop
         shell: bash

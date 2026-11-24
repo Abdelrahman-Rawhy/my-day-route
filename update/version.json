@@ -1,7 +1,7 @@
 {
- "v": 153,
- "note": "Desktop widgets for the Windows app, like TickTick: today's route, prayer times with a live countdown, today's tasks, habits, countdowns and faith. Add them from Settings or the tray icon, tick right from the widget, and right-click a widget to keep it on top, change its transparency or lock it in place.",
- "note_ar": "ويدجت سطح المكتب في تطبيق الكمبيوتر زي TickTick: مسار النهارده، مواعيد الصلاة مع عدّاد، مهام النهارده، العادات، عدّاد الأيام، والإيمانيات. ضيفها من الإعدادات أو من أيقونة شريط المهام، وعلّم على طول من الويدجت، وكليك يمين عليه عشان يفضل فوق البرامج أو تغيّر الشفافية أو تثبّت مكانه.",
+ "v": 154,
+ "note": "Desktop widgets now look and work like TickTick: pin them to the desktop behind your windows, pick a list (Inbox, Today, All or your own), add tasks right from the widget, see each task's reminder and date, and open «Completed today». New taskbar strip with the next prayer and a countdown.",
+ "note_ar": "ويدجت الكمبيوتر بقت زي TickTick: ثبّتها على سطح المكتب ورا البرامج، اختار القائمة (صندوق المهام أو النهارده أو كل المهام أو قوايمك)، ضيف مهام من الويدجت على طول، وشوف التذكير والتاريخ لكل مهمة، وافتح «اتعملت النهارده». وجديد: شريط صغير على شريط المهام فيه الصلاة الجاية والعدّاد.",
  "apk": 189,
  "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
  "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»).",

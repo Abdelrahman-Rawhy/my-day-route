@@ -21,6 +21,7 @@
     "directories": { "output": "dist", "buildResources": "build" },
     "files": ["main.js", "preload.js", "wpreload.js", "widgets/**/*", "tray.png", "build/icon.png", "www/**/*"],
     "win": { "target": ["nsis"], "icon": "build/icon.ico" },
+    "extraResources": [{ "from": "bin/pinhelper.exe", "to": "pinhelper.exe" }],
     "nsis": {
       "oneClick": true,
       "perMachine": false,

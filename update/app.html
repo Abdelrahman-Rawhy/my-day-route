@@ -4938,7 +4938,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=153;
+const APP_VERSION=154;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -5481,7 +5481,8 @@ let wT=null;function pushWidget(){const DW=IS_DESK&&window.yawmiDesk.widgetData;
  const list=sorted(),done=rec.done.filter(id=>list.some(t=>t.id===id)).length;
  const todayList=list.filter(t=>!rec.done.includes(t.id)).map(t=>({id:t.id,n:T(tName(t)),t:atTime(now,effTime(t)).getTime(),tt:wTT(atTime(now,effTime(t)).getTime()),pts:t.pts,p:t.prayer?1:0}));
  const PAY={day:today(),today:todayList,sound:!!S.sound,prayers:prayerSchedule(3).filter(p=>p.t>Date.now()-6e4).map(p=>({n:T(p.n),t:p.t,tt:wTT(p.t)})),L:widgetLabels(),rtl:S.lang==='ar',...widgetExtra(),steps:steps.sort((a,b)=>a.t-b.t),done,total:list.length,pct:list.length?Math.round(done/list.length*100):0,updated:Date.now()};
- if(DW){const H=document.documentElement;PAY.theme=H.classList.contains('cream')?'cream':H.classList.contains('light')?'light':'dark';window.yawmiDesk.widgetData(PAY)}
+ if(DW){try{const t=today(),I=TD().items,fmtD=x=>x.due?tdDueTxt({due:x.due}):'';PAY.td={lists:TD().lists.map(l=>({id:l.id,n:l.name})),open:I.filter(x=>x.status!=='done').sort(tdSort).slice(0,120).map(x=>({id:x.id,n:x.t,l:x.list||null,d:x.due||'',dt:fmtD(x)+(x.time?' '+trS(fmt(x.time)):''),ov:x.due&&x.due<t?1:0,td:x.due===t?1:0,rem:x.time&&x.rem!=null?1:0,pri:x.pri||0,rep:x.rep?1:0,tg:x.tags||[]})),tags:[...new Set(I.filter(x=>x.status!=='done').flatMap(x=>x.tags||[]))].slice(0,30),days:{t,tm:tdAdd(t,1),w:tdAdd(t,7)},done:I.filter(x=>x.status==='done'&&x.doneAt&&keyOf(new Date(x.doneAt))===t).slice(-20).map(x=>({id:x.id,n:x.t,l:x.list||null})),L:{inbox:L('صندوق المهام','Inbox'),today:L('النهارده','Today'),tomorrow:L('بكرة','Tomorrow'),week:L('الـ 7 أيام الجاية','Next 7 days'),lists:L('القوايم','Lists'),tagsH:L('الوسوم','Tags'),all:L('كل المهام','All'),add:L('أضف مهمة','Add task'),done:L('اتعملت النهارده','Completed today'),empty:L('مفيش مهام هنا','No tasks here')}}}catch(e){}
+  const H=document.documentElement;PAY.theme=H.classList.contains('cream')?'cream':H.classList.contains('light')?'light':'dark';window.yawmiDesk.widgetData(PAY)}
  if(WIDGET)WIDGET.setData({data:arSep(JSON.stringify(PAY))}).catch(()=>{})}catch(e){}};if(document.hidden)run();else wT=setTimeout(run,600)}
 // leaving the app always hands the latest data to the widgets
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pushWidget()});
@@ -5512,11 +5513,13 @@ document.addEventListener('keydown',e=>{if(!window.matchMedia('(min-width:1000px
  if(e.key==='n'||e.key==='N'||e.key==='ى'){e.preventDefault();go('tasks');setTimeout(()=>{const i=document.getElementById('tdIn');if(i)i.focus()},120)}});
 
 // ===== v153 DESKTOP WIDGETS (Ahmed Nov 24: «Widgets like TickTick»): the Windows shell shows frameless widget windows fed by pushWidget(); ticks come back here =====
-const DW_TYPES=()=>[['today',L('مسار النهارده',"Today's route"),'map'],['prayers',L('مواعيد الصلاة','Prayer times'),'mosque'],['tasks',L('مهام النهارده',"Today's tasks"),'check'],['habits',L('العادات','Habits'),'rotate'],['cds',L('عدّاد الأيام','Countdown'),'clock'],['faith',L('إيمانيات النهارده','Faith today'),'heart']];
+const DW_TYPES=()=>[['tasks',L('المهام (زي TickTick)','Tasks (TickTick style)'),'check'],['tbar',L('الصلاة الجاية على شريط المهام','Next prayer on the taskbar'),'mosque'],['today',L('مسار النهارده',"Today's route"),'map'],['prayers',L('مواعيد الصلاة','Prayer times'),'mosque'],['habits',L('العادات','Habits'),'rotate'],['cds',L('عدّاد الأيام','Countdown'),'clock'],['faith',L('إيمانيات النهارده','Faith today'),'heart']];
 function deskWAct(x){try{if(!x)return;
  if(x.k==='step'){const t=S.tasks.find(k=>k.id===x.id);if(t&&!dayRec().done.includes(t.id)){window._lpFired=false;toggle(t.id)}}
  else if(x.k==='task'){const it=TD().items.find(y=>y.id===x.id);if(it&&it.status!=='done')tdToggle(it.id)}
  else if(x.k==='habit'){const g=(S.goals||[]).find(y=>y.id===x.id);if(g){g.log=g.log||{};const kk=today();g.log[kk]=(g.log[kk]||0)+1;if(awCap('whabit',10)){S.points+=3;S.earned+=3}save();render()}}
+ else if(x.k==='untask'){const it=TD().items.find(y=>y.id===x.id);if(it&&it.status==='done')tdToggle(it.id)}
+ else if(x.k==='add'){const v=String(x.t||'').trim().slice(0,300);if(v){const P=tdParse(v);if(P.t){const V=x.v||'inbox';if(!P.list&&V.startsWith('l:'))P.list=V.slice(2);if(!P.due&&V==='today')P.due=today();TD().items.push({id:uid(),ph:P.ph||undefined,t:P.t,list:P.list,pri:P.pri,due:P.due,time:P.time,rem:P.time?0:null,rep:P.rep,tags:P.tags,notes:'',subs:[],status:'todo',created:Date.now()});save();try{renderTasks()}catch(e){}try{scheduleNative()}catch(e){}}}}
  else if(x.k==='open'){openFromLink('com.rawhy.mydayroute://open/'+(x.v||'today'))}
  setTimeout(pushWidget,300)}catch(e){console.log('wact',e)}}
 function deskWMenu(){if(!IS_DESK||!window.yawmiDesk.addWidget){toast(L('الويدجت شغّالة في تطبيق الكمبيوتر بس','Widgets work in the Windows app only'),'alert');return}

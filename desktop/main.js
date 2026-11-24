@@ -54,33 +54,45 @@ function createTray(){tray=new Tray(nativeImage.createFromPath(path.join(__dirna
 
 
 // ---- Desktop widgets (TickTick-style): frameless cards on the desktop, fed by the app (pushWidget → 'wdata') ----
-const WTYPES=[['today','مسار النهارده',"Today's route"],['prayers','مواعيد الصلاة','Prayer times'],['tasks','مهام النهارده',"Today's tasks"],['habits','العادات','Habits'],['cds','عدّاد الأيام','Countdown'],['faith','إيمانيات النهارده','Faith today']];
-const WSIZE={today:[310,380],prayers:[290,360],tasks:[320,400],habits:[300,320],cds:[290,300],faith:[290,250]};
+const WTYPES=[['tasks','المهام (زي TickTick)','Tasks (TickTick style)'],['tbar','الصلاة على شريط المهام','Prayer on the taskbar'],['today','مسار النهارده',"Today's route"],['prayers','مواعيد الصلاة','Prayer times'],['habits','العادات','Habits'],['cds','عدّاد الأيام','Countdown'],['faith','إيمانيات النهارده','Faith today']];
+const WSIZE={today:[310,380],prayers:[290,360],tasks:[420,640],tbar:[170,48],habits:[300,320],cds:[290,300],faith:[290,250]};
 let WCFG=[],wData=null;const wwins=new Map();
+// pin to desktop: pinhelper.exe keeps 'desk' widgets at the bottom of the window stack (see native/pin.cs)
+let pinP=null;function pinBottom(b){if(process.platform!=='win32'||!b||b.isDestroyed())return;try{
+ if(!pinP){const exe=app.isPackaged?path.join(process.resourcesPath,'pinhelper.exe'):path.join(__dirname,'bin','pinhelper.exe');if(!fs.existsSync(exe))return;
+  pinP=require('child_process').spawn(exe,[],{windowsHide:true,stdio:['pipe','ignore','ignore']});pinP.on('exit',()=>{pinP=null});pinP.stdin.on('error',()=>{pinP=null})}
+ const h=b.getNativeWindowHandle();const v=h.length>=8?h.readBigUInt64LE(0):BigInt(h.readUInt32LE(0));pinP.stdin.write('bottom '+v.toString()+'\n')}catch(e){}}
+function wLayer(c){if(c.layer)return c.layer;return c.top===false?'normal':(c.top===true&&c.type!=='tasks'?'top':'desk')}
+function tbarPos(c){const {screen}=require('electron');const d=screen.getPrimaryDisplay(),B=d.bounds,W=d.workArea;const th=B.height-W.height;
+ if(th>20&&W.y===B.y){c.h=Math.min(th,60);c.y=W.y+W.height;if(c.x==null)c.x=B.x+180}else{c.h=48;if(c.y==null)c.y=B.y+B.height-48;if(c.x==null)c.x=B.x+180}c.w=c.w||170}
 const wFile=()=>path.join(app.getPath('userData'),'widgets.json');
 function wLoad(){try{WCFG=JSON.parse(fs.readFileSync(wFile(),'utf8'))||[]}catch(e){WCFG=[]}}
 let wST=null;function wSave(){clearTimeout(wST);wST=setTimeout(()=>{try{fs.writeFileSync(wFile(),JSON.stringify(WCFG))}catch(e){}},400)}
 function wCfgOf(b){for(const [id,w] of wwins)if(w===b)return WCFG.find(c=>c.id===id);return null}
 function wOpen(c){const {screen}=require('electron');const wa=screen.getPrimaryDisplay().workArea;const [dw,dh]=WSIZE[c.type]||[300,340];
- if(c.w==null){c.w=dw;c.h=dh}if(c.x==null){const n=WCFG.indexOf(c);c.x=wa.x+wa.width-c.w-24-(n%3)*30;c.y=wa.y+24+(n%3)*30}
- const vis=screen.getAllDisplays().some(d=>{const a=d.workArea;return c.x<a.x+a.width-40&&c.x+c.w>a.x+40&&c.y<a.y+a.height-40&&c.y+30>a.y});if(!vis){c.x=wa.x+wa.width-c.w-24;c.y=wa.y+24}
- const b=new BrowserWindow({x:c.x,y:c.y,width:c.w,height:c.h,minWidth:220,minHeight:160,frame:false,transparent:true,resizable:!c.lock,movable:!c.lock,skipTaskbar:true,alwaysOnTop:!!c.top,minimizable:false,maximizable:false,fullscreenable:false,hasShadow:false,show:false,title:'Yawmi widget',
+ if(c.type==='tbar')tbarPos(c);
+ if(c.w==null){c.w=dw;c.h=dh}if(c.x==null){const n=WCFG.indexOf(c);c.x=c.type==='tasks'?wa.x+16:wa.x+wa.width-c.w-24-(n%3)*30;c.y=c.type==='tasks'?wa.y+wa.height-c.h-16:wa.y+24+(n%3)*30}
+const TB=c.type==='tbar';const vis=TB||screen.getAllDisplays().some(d=>{const a=d.workArea;return c.x<a.x+a.width-40&&c.x+c.w>a.x+40&&c.y<a.y+a.height-40&&c.y+30>a.y});if(!vis){c.x=wa.x+wa.width-c.w-24;c.y=wa.y+24}
+ const b=new BrowserWindow({x:c.x,y:c.y,width:c.w,height:c.h,minWidth:TB?120:220,minHeight:TB?30:160,frame:false,transparent:true,resizable:!c.lock&&!TB,movable:!c.lock,skipTaskbar:true,alwaysOnTop:TB||wLayer(c)==='top',minimizable:false,maximizable:false,fullscreenable:false,hasShadow:false,show:false,title:'Yawmi widget',
   webPreferences:{preload:path.join(__dirname,'wpreload.js'),contextIsolation:true,nodeIntegration:false,sandbox:true,spellcheck:false}});
  b.loadURL(ORIGIN+'/w/widget.html?type='+encodeURIComponent(c.type));
- b.once('ready-to-show',()=>b.showInactive());
+ b.once('ready-to-show',()=>{b.showInactive();if(TB)b.setAlwaysOnTop(true,'screen-saver');else if(wLayer(c)==='desk')setTimeout(()=>pinBottom(b),300)});
+ b.on('blur',()=>{if(!TB&&wLayer(c)==='desk')pinBottom(b)});
+ if(TB){const iv=setInterval(()=>{if(b.isDestroyed())return clearInterval(iv);if(b.isVisible()){b.setAlwaysOnTop(true,'screen-saver');b.moveTop()}},4000)}
  const keep=()=>{const r=b.getBounds();Object.assign(c,{x:r.x,y:r.y,w:r.width,h:r.height});wSave()};b.on('moved',keep);b.on('resized',keep);
  b.on('closed',()=>wwins.delete(c.id));b.webContents.setWindowOpenHandler(()=>({action:'deny'}));b.webContents.on('will-navigate',e=>e.preventDefault());
  wwins.set(c.id,b)}
-function wAdd(type){const c={id:'w'+Date.now().toString(36),type,top:true,op:1,lock:false};WCFG.push(c);wSave();wOpen(c)}
-function wApply(c){const b=wwins.get(c.id);if(!b)return;b.setAlwaysOnTop(!!c.top);b.setResizable(!c.lock);b.setMovable(!c.lock);b.webContents.send('w-cfg',c);wSave()}
+function wAdd(type){if(type==='tbar'){const ex=WCFG.find(x=>x.type==='tbar');if(ex){const b=wwins.get(ex.id);if(b)b.showInactive();return}}const c={id:'w'+Date.now().toString(36),type,layer:type==='tbar'?'top':'desk',op:type==='tbar'?1:.86,lock:false,view:'inbox'};WCFG.push(c);wSave();wOpen(c)}
+function wApply(c){const b=wwins.get(c.id);if(!b)return;const L=wLayer(c);if(c.type!=='tbar'){b.setAlwaysOnTop(L==='top');if(L==='desk')pinBottom(b)}b.setResizable(!c.lock);b.setMovable(!c.lock);b.webContents.send('w-cfg',c);wSave()}
 ipcMain.on('wdata',(e,d)=>{wData=d;wwins.forEach(b=>{try{b.webContents.send('w-data',d)}catch(x){}})});
 ipcMain.handle('w-add',(e,type)=>{if(WTYPES.some(t=>t[0]===type))wAdd(type);return WCFG.length});
 ipcMain.on('w-ready',e=>{const b=BrowserWindow.fromWebContents(e.sender),c=b&&wCfgOf(b);if(c)e.sender.send('w-cfg',c);if(wData)e.sender.send('w-data',wData)});
+ipcMain.on('w-view',(e,v)=>{const b=BrowserWindow.fromWebContents(e.sender),c=b&&wCfgOf(b);if(c&&typeof v==='string'&&v.length<200){c.view=v;wSave()}});
 ipcMain.on('w-act',(e,x)=>{if(!x)return;if(x.k==='open')showWin();if(win)win.webContents.send('w-act',x)});
 ipcMain.on('w-menu',e=>{const b=BrowserWindow.fromWebContents(e.sender),c=b&&wCfgOf(b);if(!c)return;const t=WTYPES.find(x=>x[0]===c.type)||WTYPES[0];
  Menu.buildFromTemplate([{label:t[1]+'  ·  '+t[2],enabled:false},{type:'separator'},
-  {label:'فوق كل البرامج  ·  Always on top',type:'checkbox',checked:!!c.top,click:i=>{c.top=i.checked;wApply(c)}},
-  {label:'الشفافية  ·  Background',submenu:[[1,'100%'],[.85,'85%'],[.7,'70%'],[.5,'50%'],[.3,'30%']].map(([v,n])=>({label:n,type:'radio',checked:Math.abs((c.op==null?1:c.op)-v)<.01,click:()=>{c.op=v;wApply(c)}}))},
+  ...(c.type==='tbar'?[]:[{label:'ثبّت على سطح المكتب (ورا البرامج)  ·  Pin to desktop',type:'radio',checked:wLayer(c)==='desk',click:()=>{c.layer='desk';wApply(c)}},{label:'فوق كل البرامج  ·  Always on top',type:'radio',checked:wLayer(c)==='top',click:()=>{c.layer='top';wApply(c)}},{label:'نافذة عادية  ·  Normal window',type:'radio',checked:wLayer(c)==='normal',click:()=>{c.layer='normal';wApply(c)}},{type:'separator'}]),
+  {label:'الشفافية  ·  Background',submenu:[[1,'100%'],[.86,'85%'],[.7,'70%'],[.5,'50%'],[.3,'30%'],[0,'0%']].map(([v,n])=>({label:n,type:'radio',checked:Math.abs((c.op==null?.86:c.op)-v)<.01,click:()=>{c.op=v;wApply(c)}}))},
   {label:'ثبّت المكان والحجم  ·  Lock position',type:'checkbox',checked:!!c.lock,click:i=>{c.lock=i.checked;wApply(c)}},
   {type:'separator'},{label:'افتح يومي  ·  Open Yawmi',click:showWin},
   {label:'اقفل الويدجت ده  ·  Remove widget',click:()=>{WCFG=WCFG.filter(x=>x.id!==c.id);wSave();b.destroy()}}]).popup({window:b})});
