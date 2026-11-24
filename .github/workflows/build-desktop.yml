@@ -33,8 +33,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p desktop/bin
-          "/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" -nologo -optimize -target:winexe -out:desktop/bin/pinhelper.exe desktop/native/pin.cs
-          ls -la desktop/bin
+          cd desktop/native
+          "/c/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe" -nologo -optimize -target:winexe -out:pinhelper.exe pin.cs
+          mv pinhelper.exe ../bin/pinhelper.exe
+          ls -la ../bin
 
       - name: Build installer
         working-directory: desktop
