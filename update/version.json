@@ -5,7 +5,7 @@
  "apk": 189,
  "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
  "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»).",
- "desk": 2,
- "desk_note": "Desktop widgets: today's route, prayer times, tasks, habits, countdowns and faith.",
- "desk_note_ar": "فيها ويدجت سطح المكتب: مسار النهارده، الصلاة، المهام، العادات، العدّادات والإيمانيات."
+ "desk": 4,
+ "desk_note": "TickTick-style widgets: pin them to the desktop, pick a list, add tasks from the widget, and a prayer countdown on the taskbar.",
+ "desk_note_ar": "ويدجت زي TickTick: تتثبّت على سطح المكتب، تختار القائمة، تضيف مهام منها، وعدّاد الصلاة على شريط المهام."
 }
