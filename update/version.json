@@ -1,7 +1,7 @@
 {
- "v": 156,
- "note": "Fixed: the recovery code was invisible on the «Save your recovery code» screen. That screen and the account note are now in Arabic.",
- "note_ar": "اتصلّح: كود الاسترجاع كان مش ظاهر في شاشة «احفظ كود الاسترجاع». الشاشة دي وسطر الحساب بقوا بالعربي.",
+ "v": 157,
+ "note": "Recovery code: save it with Share (pick Telegram Saved Messages, a notes app or a password manager) or straight to Telegram. The WhatsApp button is gone.",
+ "note_ar": "كود الاسترجاع: احفظه بـ «مشاركة» (اختار الرسائل المحفوظة في تليجرام أو تطبيق ملاحظات أو مدير كلمات السر) أو على تليجرام مباشرة. زرار واتساب اتشال.",
  "apk": 199,
  "apk_note": "Real alarm for naps and waking up: rings until you stop or snooze it, even on the lock screen.",
  "apk_note_ar": "منبّه حقيقي للقيلولة والصحيان: بيرن لحد ما توقفه أو تأجّله، حتى والشاشة مقفولة.",
