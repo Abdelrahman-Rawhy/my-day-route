@@ -1,7 +1,7 @@
 {
- "v": 155,
- "note": "Real alarm for naps and waking up: it rings at alarm volume until you stop or snooze it, shows over the lock screen, and comes back after a restart. Turn it on in Health → Sleep → Sleep plan, then tap «Test the alarm». It needs the next app update.",
- "note_ar": "منبّه حقيقي للقيلولة والصحيان: بيرن على صوت المنبّه لحد ما توقفه أو تأجّله، بيظهر على الشاشة وهي مقفولة، وبيرجع حتى بعد ما تقفل الموبايل وتفتحه. شغّله من الصحة ← النوم ← خطة النوم، واضغط «جرّب المنبّه». محتاج تحديث التطبيق الجاي.",
+ "v": 156,
+ "note": "Fixed: the recovery code was invisible on the «Save your recovery code» screen. That screen and the account note are now in Arabic.",
+ "note_ar": "اتصلّح: كود الاسترجاع كان مش ظاهر في شاشة «احفظ كود الاسترجاع». الشاشة دي وسطر الحساب بقوا بالعربي.",
  "apk": 199,
  "apk_note": "Real alarm for naps and waking up: rings until you stop or snooze it, even on the lock screen.",
  "apk_note_ar": "منبّه حقيقي للقيلولة والصحيان: بيرن لحد ما توقفه أو تأجّله، حتى والشاشة مقفولة.",

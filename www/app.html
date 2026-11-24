@@ -4781,9 +4781,9 @@ async function createAccount(){const email=document.getElementById('acEmail').va
   await uRef().set({keys:{salt,rsalt,wMKp:await wrapKey(mk,pk),wMKr:await wrapKey(mk,rk),wJKp:await wrapKey(jk,pk),wJKr:await wrapKey(jk,rk)},created:Date.now()});
   MK=mk;S.mk=await rawKey(mk);S.acct={email};S._sync={st:{},j:{},m:{}};store.set(S);showRecovery(rc);doSync();renderSettings()
  }catch(e){toast(e.code==='auth/email-already-in-use'?'This email has an account. Use Sign in.':'Could not create: '+(e.message||e),'alert');btn.disabled=false;btn.textContent='Create account'}}
-function showRecovery(rc){document.getElementById('acctBody').innerHTML=`<h3>${ic('lock',20)}Save your recovery code</h3>
+function showRecovery(rc){document.getElementById('acctBody').innerHTML=`<h3>${ic('lock',20)}${dzL('احفظ كود الاسترجاع','Save your recovery code')}</h3>
  <div class="sub">If you ever forget your password, this code is the only way to unlock your data. Write it down or save it somewhere safe. It is shown only once.</div>
- <div class="code" style="font-size:18px;text-align:center;word-break:break-all;padding:16px;background:rgba(0,0,0,.25);border-radius:16px;margin:10px 0">${rc}</div>
+ <div class="rc-code selok notr" dir="ltr" style="font:800 19px/1.6 ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;color:var(--tx);text-align:center;word-break:break-all;padding:16px;background:var(--s2,rgba(0,0,0,.25));border:1px solid var(--bd);border-radius:16px;margin:10px 0">${rc}</div>
  <div class="row"><button class="btn ghost" onclick="try{navigator.clipboard.writeText('${rc}').then(()=>toast('Copied','clipboard'))}catch(e){}">${ic('clipboard',15)}Copy</button><button class="btn ghost" onclick="openExt('https://wa.me/?text='+encodeURIComponent('Yawmi recovery code (keep private): ${rc}'))">Save to WhatsApp</button></div>
  <button class="btn wide" style="margin-top:12px" onclick="closeSheets();toast('Account ready. Your data now syncs securely','check');burst(80)">I saved it</button>`;document.getElementById('acctSheet').classList.add('on')}
 async function signInAccount(){const email=document.getElementById('acEmail').value.trim(),pw=document.getElementById('acPw').value;const btn=document.getElementById('acBtn');btn.disabled=true;btn.textContent='Signing in…';
@@ -4812,7 +4812,7 @@ function acctCardHtml(){if(!FB_CONFIG||!window.firebase)return`<div class="sub" 
  if(!FB.ok)return`<div class="sub" style="margin:0">Connecting…</div>`;
  if(!isAcct()||!S.mk)return`<div class="sub">Create an account to restore everything on a new phone and reset a forgotten PIN. End-to-end encrypted.</div><div class="row" style="margin-top:4px"><button class="btn ghost" onclick="openAccount('signin')">Sign in</button><button class="btn" onclick="openAccount('create')">Create account</button></div>`;
  return`<div style="display:flex;align-items:center;gap:10px"><span class="av" style="background:${S.color||AVCOLORS[0]}">${esc(initials(S.name||FB.email))}</span><div style="flex:1;min-width:0"><b style="font-size:14px">${esc(FB.email)}</b><div class="meta" id="syncTxt">${S.lastSync?'Synced · '+ago(S.lastSync):'Syncing…'}</div></div></div>
-  <div class="meta" style="margin-top:10px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>End-to-end encrypted. Photos sync too; videos stay on this phone and in backup files.</span></div>
+  <div class="meta" style="margin-top:10px;flex-wrap:nowrap;align-items:flex-start">${ic('lock',12)}<span>${dzL('مشفّر تشفير تام. الصور بتتزامن كمان، والفيديوهات بتفضل على الموبايل وفي ملفات النسخ الاحتياطي.','End-to-end encrypted. Photos sync too; videos stay on this phone and in backup files.')}</span></div>
   <div class="row"><button class="btn ghost" onclick="newRecovery()">New recovery code</button><button class="btn red" onclick="signOutAcct()">Sign out</button></div>`}
 
 // ================= REVIEW (week / month / year / all) =================
@@ -4963,7 +4963,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=155;
+const APP_VERSION=156;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
