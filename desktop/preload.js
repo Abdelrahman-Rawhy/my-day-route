@@ -17,6 +17,10 @@ contextBridge.exposeInMainWorld('yawmiDesk',{
   addListener:(ev,cb)=>{if(ev==='localNotificationActionPerformed'&&typeof cb==='function')subs.push(cb);return {remove:()=>{}}},
   removeAllListeners:async()=>{subs.length=0}
  },
+ version:((process.argv||[]).find(a=>a.startsWith('--yawmi-ver='))||'').slice(12),
+ widgetData:d=>{try{ipcRenderer.send('wdata',JSON.parse(JSON.stringify(d)))}catch(e){}},
+ addWidget:t=>ipcRenderer.invoke('w-add',t),
+ onWidgetAction:cb=>ipcRenderer.on('w-act',(e,x)=>{try{cb(x)}catch(err){}}),
  getLogin:()=>ipcRenderer.invoke('login','get'),
  setLogin:v=>ipcRenderer.invoke('login','set',!!v)
 });
