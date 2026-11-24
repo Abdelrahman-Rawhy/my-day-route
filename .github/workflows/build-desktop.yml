@@ -1,0 +1,48 @@
+name: Build Windows app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/build-desktop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Bundle the web app
+        shell: bash
+        run: |
+          rm -rf desktop/www
+          cp -r www desktop/www
+          cd desktop
+          npm version --no-git-tag-version "1.0.${{ github.run_number }}"
+
+      - name: Build installer
+        working-directory: desktop
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: |
+          npm install --no-audit --no-fund
+          npx electron-builder --win nsis --publish never
+
+      - name: Publish (fixed tag, never marked latest so the APK link keeps working)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view desktop-latest >/dev/null 2>&1 || gh release create desktop-latest --title "Yawmi for Windows" --latest=false --notes "Download **Yawmi-Setup.exe**, open it, and Yawmi installs and opens. It updates itself like the phone app. Sign in with the same email account as on your phone to sync."
+          gh release upload desktop-latest desktop/dist/Yawmi-Setup.exe --clobber
+          gh release edit desktop-latest --title "Yawmi for Windows 1.0.${{ github.run_number }}" --latest=false

@@ -1244,6 +1244,30 @@ body.th-plan #dzPlan,body.th-tasks #tdToday,body.th-cds #cds,body.th-faith #fait
 .tdt-t{flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.6;cursor:pointer}
 .tdt-t em{font-style:normal;font-size:12px;color:var(--red);font-weight:700}.tdt-t em.tm{color:var(--mu)}
 .bkc{border-color:rgba(244,63,94,.35)!important}
+.nav .dk-mic,.nav .dk-sync{display:none!important}
+@media (min-width:1000px){
+.nav .dk-mic,.nav .dk-sync{display:flex!important}
+body{max-width:1320px;padding:26px 36px 48px;padding-inline-start:284px}
+.nav{top:20px;bottom:20px;left:auto;right:auto;inset-inline-start:20px;transform:none!important;width:236px;max-width:none;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:6px;padding:16px 12px;border-radius:26px;overflow:auto}
+.nav::before{content:attr(data-brand);display:block;font-size:22px;font-weight:800;padding:8px 14px 16px;color:var(--tx)}
+.nav button{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:12px;font-size:15px;padding:12px 14px;border-radius:14px;min-height:48px}
+.nav button:hover{background:color-mix(in srgb,var(--a1) 12%,transparent)}
+.nav .dk-sync{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mu);padding:10px 14px;line-height:1.5}
+.nav .dk-sync i{width:9px;height:9px;border-radius:50%;background:var(--mu);flex:none}
+body[data-sync=ok] .nav .dk-sync i{background:#10B981}body[data-sync=off] .nav .dk-sync i{background:#F59E0B}
+body.kb .nav{opacity:1!important;pointer-events:auto!important;transform:none!important}
+body.kb .fab{opacity:1!important;pointer-events:auto!important;transform:none!important}
+.fab{display:none!important}
+.nav .dk-mic{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:12px;font-size:15px;padding:12px 14px;border-radius:14px;min-height:48px;margin-top:10px;background:var(--grad)!important;color:#fff!important}
+#dkCols{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:0 26px;align-items:start}
+.dk-side{min-width:0}.dk-main{min-width:0}
+.sheet{align-items:center}
+.sheet .panel{max-width:660px;border-radius:26px!important;border-bottom:1px solid var(--bd2)!important;max-height:86vh!important;padding-bottom:26px!important}
+#chatScreen{max-width:900px}
+.dk-keys{display:block}
+button,a,.step,.fsel,.card[onclick]{cursor:pointer}
+}
+.dk-keys{display:none}
 </style>
 </head>
 <body>
@@ -2468,9 +2492,9 @@ function tip(key,el,text,scroll){OB();if(S.tips[key]||window._tipShown||!el||doc
  let R=el.getBoundingClientRect();if(!R.width&&!R.height)return false;const vh=innerHeight;
  if(R.bottom<0||R.top>vh||(scroll&&(R.top<60||R.bottom>vh-110))){if(!scroll)return false;el.scrollIntoView({block:'center'});R=el.getBoundingClientRect()}
  window._tipShown=1;S.tips[key]=1;save();tipClose();const z=parseFloat(document.body.style.zoom)||1;
- const B=document.createElement('div');B.id='coach';B.className='coach';B.innerHTML=`<span>${text}</span>`;document.body.appendChild(B);
+ const B=document.createElement('div');B.id='coach';B.className='coach';B.innerHTML=`<span>${text}</span>`;document.body.appendChild(B);if(innerWidth/z>=1000){B.style.insetInline='auto';B.style.width='380px'}
  const top=R.top/z,bot=R.bottom/z,W=innerWidth/z,bh=B.offsetHeight,below=!(top-bh-14>70)&&bot+bh+16<vh/z;B.style.top=(below?bot+10:Math.max(8,top-bh-10))+'px';B.classList.add(below?'dn':'up');
- const cx=Math.min(Math.max((R.left+R.width/2)/z,30),W-30);B.style.setProperty('--ax',cx+'px');
+ const cx=Math.min(Math.max((R.left+R.width/2)/z,30),W-30);B.style.setProperty('--ax',cx+'px');if(W>=1000){const bl=Math.min(Math.max(cx-190,16),W-396);B.style.left=bl+'px';B.style.setProperty('--ax',(cx-bl+16)+'px')}
  window._tipAt=Date.now();requestAnimationFrame(()=>B.classList.add('on'));setTimeout(()=>{const f=()=>{document.removeEventListener('pointerdown',f,true);tipClose()};document.addEventListener('pointerdown',f,true)},300);clearTimeout(window._tipT);window._tipT=setTimeout(tipClose,9000);return true}
 addEventListener('scroll',()=>{if(document.getElementById('coach')&&Date.now()-(window._tipAt||0)>700)tipClose()},{passive:true});
 function tipClose(){const B=document.getElementById('coach');if(B){B.classList.remove('on');setTimeout(()=>B.remove(),200)}}
@@ -4386,7 +4410,8 @@ setInterval(()=>{const a=document.activeElement;if(a&&(a.tagName==='INPUT'||a.ta
 
 // ================= NATIVE (Android) =================
 const CAP=window.Capacitor,IS_NATIVE=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform());
-const LN=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.LocalNotifications)||(CAP.registerPlugin&&CAP.registerPlugin('LocalNotifications'))):null;
+const IS_DESK=!IS_NATIVE&&!!(window.yawmiDesk&&window.yawmiDesk.LN),IS_APP=IS_NATIVE||IS_DESK;if(IS_DESK){document.documentElement.classList.add('desk');if(S.notifDeskInit!==true){S.notif=true;S.notifDeskInit=true;store.set(S)}}
+const LN=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.LocalNotifications)||(CAP.registerPlugin&&CAP.registerPlugin('LocalNotifications'))):(IS_DESK?window.yawmiDesk.LN:null);
 let schedT=null,channelMade=false;
 function scheduleNative(){if(!LN)return;clearTimeout(schedT);schedT=setTimeout(doSchedule,700)}
 async function ensurePerm(){let p=await LN.checkPermissions();if(p.display!=='granted')p=await LN.requestPermissions();return p.display==='granted'}
@@ -4533,7 +4558,7 @@ async function renderJournal(){const el=document.getElementById('jBody');if(!el)
  let html=`${jSearch?`<input id="jSearchIn" placeholder="Search your journal…" value="${esc(q)}" oninput="jSearch=this.value||' ';renderJournalList()" style="margin-bottom:12px">`:''}
   <button class="btn wide" style="margin-bottom:14px" onclick="openJEditor()">${ic('pen',17)}${todayDone?'Write another entry':'Write about today'}</button>
   ${onThis.length&&!q?`<div class="card" style="border-color:rgba(251,191,36,.35)"><h3><span class="ico c-amber">${ic('sparkles',18)}</span><span class="sp">On this day</span></h3>${onThis.map(e=>`<div class="li" onclick="openJView('${e.id}')" style="cursor:pointer"><span style="font-size:22px">${MOODS[e.mood??3]}</span><span class="t">${esc(e.title||e.text.slice(0,50)||'Memories')}</span><span class="meta">${e.date.slice(0,4)}</span></div>`).join('')}</div>`:''}
-  ${IS_NATIVE?'':`<div class="banner" style="border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)"><span class="ico" style="color:var(--gold)">${ic('alert',22)}</span><p>In this browser link, the journal is saved in this browser only and can be cleared by the browser. Use the phone app for a safe, permanent journal.</p></div>`}
+  ${IS_APP?'':`<div class="banner" style="border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)"><span class="ico" style="color:var(--gold)">${ic('alert',22)}</span><p>In this browser link, the journal is saved in this browser only and can be cleared by the browser. Use the phone app for a safe, permanent journal.</p></div>`}
   <div id="jList"></div>`;
  el.innerHTML=html;renderJournalList()}
 async function renderJournalList(){const box=document.getElementById('jList');if(!box)return;const list=jCache||[];const q=jSearch.trim().toLowerCase();
@@ -4607,7 +4632,7 @@ function genRecovery(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=new Uint32Ar
 const normRec=c=>(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/(.{4})(?=.)/g,'$1-');
 const uRef=()=>FB.db.collection('users').doc(FB.uid);
 let MK=null,syncT=null,syncing=false;
-function scheduleSync(){if(!isAcct()||!S.mk)return;clearTimeout(syncT);syncT=setTimeout(doSync,4000)}
+function scheduleSync(){if(!isAcct()||!S.mk)return;clearTimeout(syncT);syncT=setTimeout(doSync,4000);clearTimeout(syT2);syT2=setTimeout(syRun,2500)}
 const sigOf=str=>{let h=0;for(let i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))|0;return h.toString(36)+':'+str.length};
 async function cloudBytes(u8){return firebase.firestore.Blob.fromUint8Array(u8)}
 async function doSync(){if(syncing||!isAcct()||!S.mk)return;syncing=true;
@@ -4631,6 +4656,68 @@ async function doSync(){if(syncing||!isAcct()||!S.mk)return;syncing=true;
   S.lastSync=Date.now();store.set(S);const el=document.getElementById('syncTxt');if(el)el.textContent='Synced · just now';
  }catch(e){console.log('sync',e);const el=document.getElementById('syncTxt');if(el)el.textContent='Sync waiting for connection'}
  syncing=false}
+// ===== v152 TWO-WAY SYNC (Ahmed Nov 24: desktop edition + sync; picked encrypted cloud) =====
+// The state is split into small "units" (a path → value): top-level keys, objects one level down (deeper for history/life/plan),
+// and arrays of objects with an id → one unit per item + an order unit (path/@o). Each unit has a stamp [time, sig] in S._mt;
+// a deleted unit keeps [time,'-'] (tombstone, pruned after 90 days). Devices merge per unit: newer time wins.
+// Cloud: users/{uid}/sync/{doc}, doc = 'm' (main) | 'g' (gym) | 'd2026-11' (history month), each = sealJ(MK,{u,t}). Writes are transactions that merge with what's there.
+const SY_LOCAL=new Set(['mk','jkRaw','timer','notified','famSeen','famSeenBy','famSeenOpen','chatRead','lastSync','theme','style','fs','vib','sound','tapSnd','psound','ps2','notif','notifNativeInit','wg','wgOcc','tips','thMig','colMig','wipe1','guide1','ob1','bkAt','bkSnooze','autoUpd','home','bio','appLock','jLock','pirate']);
+const SY_SET=/^history\/[^/]+\/(done|skip|moved)$/;
+const SY_DEPTH={history:3,life:3,plan:2,todo:1,wkPlan:2,dz:2,game:2,qr:2,kh:1,cal:1,ob:1,mods:1,adkRem:1,adkFav:1,tHide:1,cds:1};
+var SYR={},syBusy=false,syAgain=false,syUnsub=null,syJUnsub=null,syReady=false,syT2=null,syUid=null;
+function syIdArr(v){if(!v.length)return false;const ids=new Set();for(const x of v){if(!x||typeof x!=='object'||Array.isArray(x)||(typeof x.id!=='string'&&typeof x.id!=='number')||String(x.id).includes('/'))return false;ids.add(String(x.id))}return ids.size===v.length}
+function syUnits(){const U={};
+ const walk=(p,v,dep)=>{if(v===undefined||typeof v==='function')return;
+  if(Array.isArray(v)){if(SY_SET.test(p)&&v.every(x=>typeof x==='string'&&!x.includes('/'))){U[p+'/@s']=1;v.forEach(x=>{U[p+'/$'+x]=1});return}if(!v.length){U[p+'/@o']=[];return}if(syIdArr(v)){v.forEach(x=>{U[p+'/#'+x.id]=x});U[p+'/@o']=v.map(x=>String(x.id));return}U[p]=v;return}
+  if(v&&typeof v==='object'&&dep>0){const ks=Object.keys(v).filter(k=>!k.includes('/')&&k[0]!=='#'&&k[0]!=='@');if(!ks.length&&!Object.keys(v).length){U[p+'/@e']=1;return}if(ks.length!==Object.keys(v).length){U[p]=v;return}ks.forEach(k=>walk(p+'/'+k,v[k],dep-1));return}
+  U[p]=v};
+ for(const k in S){if(SY_LOCAL.has(k)||k[0]==='_')continue;walk(k,S[k],SY_DEPTH[k]==null?1:SY_DEPTH[k])}
+ return U}
+function syStamp(ts){const U=syUnits(),M=S._mt=S._mt||{},now=Date.now(),t=ts||now;let ch=0;
+ for(const p in U){const g=sigOf(JSON.stringify(U[p]));const m=M[p];if(!m||m[1]!==g){M[p]=[t,g];ch++}}
+ for(const p in M){if(!(p in U)&&M[p][1]!=='-'){M[p]=[t,'-'];ch++}else if(M[p][1]==='-'&&now-M[p][0]>90*864e5)delete M[p]}
+ return [U,ch]}
+function syDoc(p){if(p.startsWith('history/'))return 'd'+p.slice(8,15);if(p.startsWith('life/gy/'))return 'g';return 'm'}
+function syLocalSets(){const [U]=syStamp(),M=S._mt,D={};for(const p in M){const d=syDoc(p);(D[d]=D[d]||{u:{},t:{}}).t[p]=M[p];if(M[p][1]!=='-'&&p in U)D[d].u[p]=U[p]}return D}
+function syMerge(A,B){const o={u:{},t:{}};let fromA=0,fromB=0;const ps=new Set([...Object.keys(A.t||{}),...Object.keys(B.t||{})]);
+ for(const p of ps){const a=A.t[p],b=B.t[p];let w;if(!b)w=A;else if(!a)w=B;else if(a[0]!==b[0])w=a[0]>b[0]?A:B;else w=a[1]>=b[1]?A:B;
+  const t=w.t[p];o.t[p]=t;if(t[1]!=='-')o.u[p]=w.u[p];const same=a&&b&&a[0]===b[0]&&a[1]===b[1];if(!same){if(w===A)fromA++;else fromB++}}
+ return {o,fromA,fromB}}
+function syApply(u){const keep={};for(const k in S)if(SY_LOCAL.has(k)||k[0]==='_')keep[k]=S[k];const N={};
+ Object.keys(u).sort((a,b)=>a.split('/').length-b.split('/').length).forEach(p=>{const sg=p.split('/');let n=N;
+  for(let i=0;i<sg.length;i++){const s=sg[i],last=i===sg.length-1;
+   if(s==='@e')break;if(s==='@s'||s[0]==='$'){if(!n.__s){for(const k in n)delete n[k];n.__s=1;n.v=[]}if(s[0]==='$')n.v.push(s.slice(1));break}
+   if(s==='@o'&&!(u[p]||[]).length&&!n.__a&&Object.keys(n).length)break;if(s[0]==='#'||s[0]==='@'){if(!n.__a){for(const k in n)delete n[k];n.__a=1;n.m={};n.o=null}if(s==='@o')n.o=u[p];else n.m[s.slice(1)]=u[p];break}
+   if(last){const cur=n[s];if(cur&&typeof cur==='object'&&!Array.isArray(cur))break;n[s]=u[p]===null||typeof u[p]!=='object'?u[p]:JSON.parse(JSON.stringify(u[p]));break}
+   if(!n[s]||typeof n[s]!=='object'||Array.isArray(n[s]))n[s]={};n=n[s]}});
+ const fin=n=>{if(!n||typeof n!=='object'||Array.isArray(n))return n;if(n.__s)return [...new Set(n.v)];if(n.__a){const seen=new Set(),a=[];(n.o||[]).forEach(id=>{if(id in n.m&&!seen.has(id)){seen.add(id);a.push(n.m[id])}});for(const id in n.m)if(!seen.has(id))a.push(n.m[id]);return a}for(const k in n)n[k]=fin(n[k]);return n};
+ const R=fin(N);for(const k in S)delete S[k];Object.assign(S,R,keep)}
+async function syRun(){if(!syReady||!isAcct()||!S.mk)return;if(syBusy){syAgain=true;return}syBusy=true;
+ try{MK=MK||await impKey(S.mk);const L=syLocalSets(),docs=new Set([...Object.keys(L),...Object.keys(SYR)]),all={u:{},t:{}};let got=0,sent=0;
+  for(const d of docs){const loc=L[d]||{u:{},t:{}};let o=(SYR[d]&&syMerge(loc,SYR[d]))||{o:loc,fromA:Object.keys(loc.t).length,fromB:0};
+   if(o.fromA){const ref=uRef().collection('sync').doc(d);
+    const m=await FB.db.runTransaction(async tx=>{const s=await tx.get(ref);let R={u:{},t:{}};if(s.exists){try{R=await openJ(MK,s.data().e)}catch(e){}}const r=syMerge(loc,R);if(r.fromA)tx.set(ref,{e:await sealJ(MK,r.o),at:Date.now()});return r.o});
+    SYR[d]=m;o=syMerge(loc,m);sent++}
+   if(o.fromB)got++;Object.assign(all.u,o.o.u);Object.assign(all.t,o.o.t)}
+  if(got){const ch2=syStamp()[1];if(ch2)syAgain=true;else{S._mt=all.t;syApply(all.u);store.set(S);syRefresh()}}
+  S.lastSync=Date.now();store.set(S);const el=document.getElementById('syncTxt');if(el)el.textContent=L_('متزامن مع أجهزتك، دلوقتي','Synced with your devices · just now');syDot('ok')
+ }catch(e){console.log('sync2',e);syDot('off')}
+ syBusy=false;if(syAgain){syAgain=false;setTimeout(syRun,600)}}
+function L_(a,e){return S.lang==='ar'?a:e}
+function syDot(st){document.body.dataset.sync=st}
+function syRefresh(){try{applyLang&&0}catch(e){}try{render()}catch(e){}try{if(document.body.classList.contains('lifeon'))lifeDraw()}catch(e){}try{const v=document.querySelector('.view.on');if(v&&v.id==='v-tasks')renderTasks()}catch(e){}try{scheduleNative()}catch(e){}}
+function syStart(){if(!isAcct()||!S.mk||!FB.db)return;const uid=FB.uid;if(syUnsub&&syUid===uid)return;try{syUnsub&&syUnsub();syJUnsub&&syJUnsub()}catch(e){}syUid=uid;syReady=false;SYR={};
+ syUnsub=uRef().collection('sync').onSnapshot(async snap=>{MK=MK||await impKey(S.mk);let ch=0;
+  for(const c of snap.docChanges()){if(c.doc.metadata.hasPendingWrites)continue;if(c.type==='removed'){delete SYR[c.doc.id];continue}try{SYR[c.doc.id]=await openJ(MK,c.doc.data().e);ch++}catch(e){}}
+  if(!syReady){syReady=true;if(!S._mt||!Object.keys(S._mt).length)syStamp(Object.keys(SYR).length?1:0);syRun();return}
+  if(ch)syRun()},e=>{console.log('sync listen',e);syUnsub=null;syDot('off')});
+ if(window.indexedDB)syJUnsub=uRef().collection('journal').onSnapshot(async snap=>{const sy=S._sync=S._sync||{st:{},j:{},m:{}};let ch=0;
+  for(const c of snap.docChanges()){if(c.doc.metadata.hasPendingWrites)continue;const id=c.doc.id;
+   if(c.type==='removed'){if(sy.j[id]){await idbDel('entries',id);delete sy.j[id];ch++}continue}
+   const r=c.doc.data();if(!r.enc)continue;const enc=unwire(r.enc);if(sy.j[id]===enc.iv)continue;const have=await idbGet('entries',id);if(have&&have.enc&&have.enc.iv===enc.iv){sy.j[id]=enc.iv;continue}
+   if(have&&!have.enc&&sy.j[id]==null)continue;await idbPut('entries',{id,date:r.date,at:r.at,media:r.media||[],enc});sy.j[id]=enc.iv;ch++}
+  if(ch){store.set(S);try{const v=document.querySelector('.view.on');if(v&&v.id==='v-journal'&&typeof renderJournal==='function')renderJournal()}catch(e){}}},()=>{syJUnsub=null})}
+setInterval(syStart,4000);
 async function restoreFromCloud(mkKey,jkKey,hadPin){
  const st=await uRef().collection('state').get();let main=null;const hist={};
  for(const d of st.docs){if(d.id==='main')main=await openJ(mkKey,d.data().e);else if(d.id[0]==='h')Object.assign(hist,await openJ(mkKey,d.data().e))}
@@ -4850,7 +4937,7 @@ async function autoHomeBackup(){const H=S.home;if(!IS_NATIVE||!H||!H.key||H.auto
  if(onWifi)homeBackupNow(true);else if(H.mobile)homeBackupNow(true,H.vids!==false&&!!H.mobileVids)}
 
 // ================= AUTO-UPDATE =================
-const APP_VERSION=151;
+const APP_VERSION=152;
 const UPD='https://raw.githubusercontent.com/Abdelrahman-Rawhy/my-day-route/main/update/';
 // fresh update files: GitHub API (no CDN cache) first, raw.githubusercontent as fallback
 async function updFetch(f){try{const r=await fetch('https://api.github.com/repos/Abdelrahman-Rawhy/my-day-route/contents/update/'+f+'?ref=main&t='+Date.now(),{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});if(r.ok)return r}catch(e){}
@@ -4865,12 +4952,12 @@ async function manualUpdate(){const b=document.getElementById('updBtn'),ar=S.lan
  const done=(txt,ok)=>{if(b){b.disabled=false;b.innerHTML=(ok?ic('check',16):'')+txt}const vt=document.getElementById('verTxt');if(vt)vt.textContent=verLabel()};
  try{const j=await (await updFetch('version.json')).json();
   if(j.v<=APP_VERSION){done(ar?'محدّث':'Up to date',true);toast(ar?'أنت على أحدث إصدار ('+arNum(APP_VERSION)+')':'You are up to date (v'+APP_VERSION+')','check');return}
-  if(!IS_NATIVE){done(ar?'فحص':'Check');toast(ar?'أعد تحميل الصفحة لتحصل على الإصدار '+arNum(j.v):'Reload the page to get version '+j.v,'rocket');return}
+  if(!IS_APP){done(ar?'فحص':'Check');toast(ar?'أعد تحميل الصفحة لتحصل على الإصدار '+arNum(j.v):'Reload the page to get version '+j.v,'rocket');return}
   if((+localStorage.getItem('appV')||0)<j.v){const h=await (await updFetch('app.html')).text();if(!h.includes('APP_VERSION='+j.v+';'))throw 0;localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v))}
   done(ar?'جاهز':'Ready',true);showUpdate((ar&&j.note_ar)||j.note||'New features are ready.')
  }catch(e){done(ar?'حاول مجددًا':'Try again');toast(ar?'تعذّر الفحص، تأكد من الإنترنت':'Could not check. Check your internet.','alert')}}
 async function checkUpdate(){
- if(!IS_NATIVE)return;
+ if(!IS_APP)return;
  try{const j=await (await updFetch('version.json')).json();setTimeout(()=>apkCheck(j),1500);
   const have=Math.max(APP_VERSION,+localStorage.getItem('appV')||0);
   if(j.v>have){const h=await (await updFetch('app.html')).text();
@@ -4932,7 +5019,7 @@ async function updateAll(){const b=document.getElementById('updAllBtn'),ar=S.lan
   // 1) phone version first (it already contains the newest app part)
   if(IS_NATIVE&&j.apk){const inf=await apkInfo();if(!inf||+inf.code<j.apk){set(L('نسخة جديدة','New version'));showApk(j,inf);setTimeout(()=>apkGo(),300);return}}
   // 2) app part
-  if(j.v>APP_VERSION){if(!IS_NATIVE){set(L('تحديث','Update'));toast(ar?'أعد تحميل الصفحة لتحصل على الإصدار '+arNum(j.v):'Reload the page to get version '+j.v,'rocket');return}
+  if(j.v>APP_VERSION){if(!IS_APP){set(L('تحديث','Update'));toast(ar?'أعد تحميل الصفحة لتحصل على الإصدار '+arNum(j.v):'Reload the page to get version '+j.v,'rocket');return}
    set(ic('rotate',16)+L('بننزّل…','Downloading…'),1);if((+localStorage.getItem('appV')||0)<j.v){const h=await (await updFetch('app.html')).text();if(!h.includes('APP_VERSION='+j.v+';'))throw 0;localStorage.setItem('appHtml',h);localStorage.setItem('appV',String(j.v))}
    localStorage.setItem('updNote',(ar&&j.note_ar)||j.note||'');localStorage.setItem('justUpd',String(j.v));toast(L('بنحدّث…','Updating…'),'rocket');setTimeout(()=>location.href='index.html',600);return}
   set(ic('check',16)+L('محدّث','Up to date'));toast(L('كل حاجة محدّثة ✓','Everything is up to date ✓'),'check');setTimeout(()=>set(T('Update')),3000)
@@ -4942,10 +5029,10 @@ function showUpdate(note){if(document.getElementById('updBox'))return;const b=do
  b.innerHTML=`<div class="upd-h"><span class="upd-ic">${ic('rocket',22,'draw')}</span><div><b>${T('Update ready')}</b><small>${ar?'ما الجديد':"What's new"}</small></div></div><ul class="upd-l">${pts.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="upd-b"><button class="btn ghost" onclick="const u=document.getElementById('updBox');u.classList.add('bye');setTimeout(()=>u.remove(),220)">${ar?'لاحقًا':'Later'}</button><button class="btn" onclick="location.href='index.html'">${ar?'إعادة تشغيل':'Restart'}</button></div>`;document.body.appendChild(b)}
 // v118 (Ahmed: «updates are slow, I have to click manual»): check every 5 min while open; apply a downloaded update at the next calm moment:
 // coming back after 15 s away, or switching tabs — never inside a sheet, reader, typing or a running timer.
-function updApply(){if(S.autoUpd===false||!IS_NATIVE)return false;if((+localStorage.getItem('appV')||0)<=APP_VERSION)return false;
+function updApply(){if(S.autoUpd===false||!IS_APP)return false;if((+localStorage.getItem('appV')||0)<=APP_VERSION)return false;
  const busy=document.querySelector('.sheet.on')||['reading','adkreading','lifeon','guiding','obon'].some(c=>document.body.classList.contains(c))||(document.getElementById('chatScreen')||{classList:{contains:()=>0}}).classList.contains('on')||(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))||(S.timer&&S.timer.running)||rec_;
  if(busy)return false;localStorage.setItem('justUpd',String(localStorage.getItem('appV')));location.href='index.html';return true}
-if(IS_NATIVE){setTimeout(checkUpdate,2500);setInterval(()=>{if(!document.hidden)checkUpdate()},5*6e4);let _hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){_hidAt=Date.now();return}
+if(IS_APP){setTimeout(checkUpdate,2500);setInterval(()=>{if(!document.hidden)checkUpdate()},5*6e4);let _hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){_hidAt=Date.now();return}
  // a downloaded update is applied quietly when you come back after 3+ minutes away (like store apps)
  if(_hidAt&&Date.now()-_hidAt>15000&&updApply())return;
  checkUpdate()})
@@ -5403,6 +5490,23 @@ let setFrom='today';function go(v){{const cur=document.querySelector('.view.on')
 document.getElementById('nav').innerHTML=NAV.map(([v,k,n],i)=>`<button data-v="${v}" data-k="${k}" class="${i?'':'on'}" onclick="go('${v}')"><span>${ic(k,22)}</span>${n}</button>`).join('');
 // ---- phone back button: close what is open, then go to Today, then press twice to leave ----
 const APPP=IS_NATIVE?((CAP.Plugins&&CAP.Plugins.App)||null):null;let backAt=0;
+// ===== v152 DESKTOP LAYOUT: side menu + two columns on Today + keyboard shortcuts (screens ≥ 1000px; the Windows app adds reminders/tray) =====
+const DK_MAIN=['slSlot','pcSlot','rescue','cds','dzPlan','@routeSec','route','skipped','tdToday'],DK_SIDE=['bkCard','dzNmt','obCk','tShortH','tShort','projChip','calCard','obDay','guide','quote','review'];
+let dkOn=null;
+function dkEl(id){return id==='@routeSec'?document.getElementById('routeH')&&document.getElementById('routeH').closest('.sec'):document.getElementById(id)}
+function dkLayout(on){if(on===dkOn)return;dkOn=on;const V=document.getElementById('v-today'),hero=V&&V.querySelector('.hero');if(!hero)return;
+ if(on){const C=document.createElement('div');C.id='dkCols';C.innerHTML='<div class="dk-main"></div><div class="dk-side"></div>';hero.after(C);const M=C.firstChild,Sd=C.lastChild;
+  DK_MAIN.forEach(i=>{const e=dkEl(i);if(e)M.appendChild(e)});DK_SIDE.forEach(i=>{const e=dkEl(i);if(e)Sd.appendChild(e)})}
+ else{const C=document.getElementById('dkCols');if(!C)return;let at=hero;['slSlot','pcSlot','rescue','bkCard','dzNmt','cds','obCk','dzPlan','@routeSec','route','skipped','tdToday','tShortH','tShort','projChip','calCard','obDay','guide','quote','review'].forEach(i=>{const e=dkEl(i);if(e){at.after(e);at=e}});C.remove()}}
+function dkNav(){const N=document.getElementById('nav');if(!N)return;N.dataset.brand=S.lang==='ar'?'يومي':'Yawmi';if(!N.querySelector('.dk-mic')){const m=document.createElement('button');m.className='dk-mic';m.onclick=()=>startRec();m.innerHTML='<span>'+ic('mic',20)+'</span>'+L_('سجّل فكرة','Voice note');const sy=N.querySelector('.dk-sync');N.insertBefore(m,sy||null)}let d=N.querySelector('.dk-sync');if(!d){d=document.createElement('div');d.className='dk-sync';N.appendChild(d)}
+ const acc=typeof isAcct==='function'&&isAcct();d.innerHTML='<i></i><span>'+(acc?(S.lastSync?L_('متزامن مع موبايلك','Synced with your phone'):L_('بيتزامن…','Syncing…')):L_('سجّل دخول عشان المزامنة','Sign in to sync'))+'</span>';d.onclick=acc?null:()=>go('settings')}
+(function(){const mq=window.matchMedia('(min-width:1000px)');const f=()=>{dkLayout(mq.matches);if(mq.matches)dkNav()};try{mq.addEventListener('change',f)}catch(e){mq.addListener(f)}setTimeout(f,0);setInterval(()=>{if(mq.matches)dkNav()},15000)})();
+document.addEventListener('keydown',e=>{if(!window.matchMedia('(min-width:1000px)').matches&&!IS_DESK)return;const t=e.target,typing=t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);
+ if(e.key==='Escape'){if(typing)t.blur();if(document.querySelector('.sheet.on')||document.querySelector('.adkr.on,#chatScreen.on,#qReader.on')){e.preventDefault();try{handleBack()}catch(x){}}return}
+ if(typing||e.altKey||e.metaKey)return;
+ if(e.ctrlKey){if(e.key===','){e.preventDefault();go('settings')}return}
+ const n=parseInt(e.key);if(n>=1&&n<=NAV.length){const v=NAV[n-1][0];const b=document.querySelector('.nav button[data-v="'+v+'"]');if(b&&b.offsetParent!==null){e.preventDefault();go(v)}return}
+ if(e.key==='n'||e.key==='N'||e.key==='ى'){e.preventDefault();go('tasks');setTimeout(()=>{const i=document.getElementById('tdIn');if(i)i.focus()},120)}});
 function handleBack(){if(document.getElementById('coach')){tipClose();return}if(document.body.classList.contains('obon')){if(obI>0)obGo(-1);return}if(document.body.classList.contains('lifeon')&&!document.querySelector('.sheet.on:not(.closing)')){lifeClose();return}if(document.body.classList.contains('guiding')){guideClose();return}if(document.body.classList.contains('adkreading')&&!document.querySelector('.sheet.on:not(.closing)')&&!(document.getElementById('celebrate')||{classList:{contains:()=>0}}).classList.contains('on')){adkRExit();return}if(document.body.classList.contains('reading')&&!document.querySelector('.sheet.on:not(.closing)')){closeReader();return}document.querySelectorAll('.sheet.closing').forEach(x=>x.classList.remove('closing','on'));const cel=document.getElementById('celebrate');if(cel&&cel.classList.contains('on')){cel.classList.remove('on');return}const vw=document.getElementById('viewer');if(vw&&vw.classList.contains('on')&&typeof closeViewer==='function'){closeViewer();return}const open=[...document.querySelectorAll('.sheet.on:not(.closing)')];
  if(document.getElementById('pickSheet').matches('.on:not(.closing)')){closePick();return}
  if(document.getElementById('dtSheet').matches('.on:not(.closing)')){closeDT();return}if(document.getElementById('askSheet').matches('.on:not(.closing)')){closeAsk();return}
@@ -5477,7 +5581,7 @@ dtEnhance(document);new MutationObserver(ms=>{for(const m of ms)m.addedNodes.for
  DOMTokenList.prototype.add=function(...c){const el=own.get(this);if(el&&c.includes('on')){if(!this.contains('on')){const pn=el.querySelector&&el.querySelector('.panel');if(pn)pn.classList.remove('opened')}if(!this.contains('on')||this.contains('closing'))SFX('up');clearTimeout(el._ct);R.call(this,'closing')}return A.apply(this,c)};
  document.querySelectorAll('.sheet,#celebrate,#viewer').forEach(sh=>own.set(sh.classList,sh));window._smoothReg=el=>{if(el)own.set(el.classList,el)}}
 applyTheme();hydrateIcons();{const f=document.getElementById('micFab');if(f)f.innerHTML=ic('mic',26)}
-applyWidgetChecks();render();applyLang();checkBadges();if(IS_NATIVE)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
+applyWidgetChecks();render();applyLang();checkBadges();if(IS_APP)scheduleNative();bioInit();setTimeout(fbInit,50);setTimeout(autoHomeBackup,15000);
 if(new Date().getDay()===5&&new Date().getHours()>=12&&S.lastReport!==today())setTimeout(()=>{S.lastReport=today();save();openReview('week');toast('Your weekly review is ready','chart')},1500);
 </script>
 </body>

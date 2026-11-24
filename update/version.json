@@ -1,7 +1,7 @@
 {
- "v": 151,
- "note": "Medicines can now be taken every 2 days, every 3 days, weekly, or any number of days. Tap a medicine in My life → Health to set how often, the first dose day and the times. Reminders come on dose days only, and the card shows the next dose.",
- "note_ar": "الأدوية بقت ممكن تتاخد كل يومين أو كل 3 أيام أو كل أسبوع أو أي عدد أيام. اضغط على الدوا في حياتي ← الصحة واختار بتاخده كل قد إيه، وأول جرعة، والمواعيد. التذكير بيوصل في أيام الجرعة بس، والكارت بيوريك الجرعة الجاية.",
+ "v": 152,
+ "note": "Yawmi for Windows is here, with two-way sync. Sign in with your email account on the phone and the PC, and changes show up on both within seconds, end-to-end encrypted. Wide screens get a side menu, a two-column Today page and keyboard shortcuts.",
+ "note_ar": "يومي بقى على الكمبيوتر (ويندوز) ومعاه مزامنة في الاتجاهين. سجّل دخول بحسابك (الإيميل) على الموبايل والكمبيوتر، وأي تعديل هيظهر على الاتنين في ثواني، ومشفّر بالكامل. وعلى الشاشات العريضة فيه قائمة جانبية وصفحة النهارده عمودين واختصارات كيبورد.",
  "apk": 189,
  "apk_note": "Location permission for automatic prayer times (asked once, only when you choose «Automatic»).",
  "apk_note_ar": "إذن الموقع لمواعيد الصلاة التلقائية (بيتطلب مرة واحدة، بس لما تختار «تلقائي»)."

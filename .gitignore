@@ -3,3 +3,6 @@ node_modules/
 *.apk
 home-server/mdr_server_config.json
 home-server/backups/
+desktop/www/
+desktop/dist/
+desktop/node_modules/

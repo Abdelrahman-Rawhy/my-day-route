@@ -1,0 +1,34 @@
+{
+  "name": "yawmi-desktop",
+  "productName": "Yawmi",
+  "version": "1.0.0",
+  "description": "Yawmi (يومي) for Windows",
+  "author": "Rawhy",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.rawhy.yawmi",
+    "productName": "Yawmi",
+    "artifactName": "Yawmi-Setup.${ext}",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "preload.js", "tray.png", "build/icon.png", "www/**/*"],
+    "win": { "target": ["nsis"], "icon": "build/icon.ico" },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Yawmi",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}
